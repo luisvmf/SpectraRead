@@ -1,0 +1,40 @@
+<body style="background-color:rgba(0,0,0,0);color:rgba(0,0,0,0);font-size:11px;">
+<script type="text/javascript">
+	function sendtopython() {
+		document.title = "null";
+		document.title = ""+Math.random();
+	}
+	setInterval("sendtopython()",50);
+	function convertecorvbvbv(hexcodejggg) {
+		if (hexcodejggg.indexOf("#") + "" == "-1") {
+		    hexcodejggg = "#" + hexcodejggg;
+		}
+		if (hexcodejggg.length + "" == "13") {
+		    var parte1hggh = hexcodejggg.substr(1, 2);
+		    var parte2hggh = hexcodejggg.substr(5, 2);
+		    var parte3hggh = hexcodejggg.substr(9, 2);
+		    return "#" + parte1hggh + "" + parte2hggh + "" + parte3hggh + "";
+		} else {
+		    return hexcodejggg;
+		}
+	}
+	var oldsyscolors="";
+	function updategtktheme(){
+		var intupdategtktheme="";
+		try{
+		if(""+oldsyscolors!=""+systemcolors){
+			if(systemcolors+""!=""){
+				if(systemcolors.indexOf("text-normal-color:")+""!="-1"){
+				//document.body.style.backgroundColor=convertecorvbvbv(""+systemcolors.split("text-input-normal:")[1].split(";")[0]);
+				//corlinhagrafico = invertColor(convertecorvbvbv("" + ((systemcolors.split("text-input-normal:")[1]).split(";")[0]) + ""));
+				document.body.style.color=""+convertecorvbvbv(""+systemcolors.split("text-normal-color:")[1].split(";")[0]);
+				oldsyscolors=systemcolors;
+				}
+			}
+		}
+		}catch(e){}
+	}
+	setInterval("updategtktheme()",3);
+</script>
+<br>This is the help window...
+<br></body>
