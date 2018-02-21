@@ -6,6 +6,7 @@
 
 SpectraRead is a spectroscopy program with peak detection and baseline removal algorithms. It can be used for high speed acquisitions and support for devices can be added easily with some functions written in python.
 
+The GUI uses GTK3.
 
 ![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/Screenshot%20from%202018-02-21%2018-03-57.png)
 
