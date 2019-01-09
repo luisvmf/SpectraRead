@@ -8,20 +8,12 @@ SpectraRead is a spectroscopy program with peak detection and baseline removal a
 
 The GUI uses GTK3.
 
-![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/Screenshot%20from%202018-02-21%2018-03-57.png)
+![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/Screenshot%20from%202019-01-09%2016-08-54.png)
 
-![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/Screenshot%20from%202018-02-21%2018-04-33.png)
+![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/Screenshot%20from%202019-01-09%2016-09-29.png)
 
-![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/Screenshot%20from%202018-02-21%2018-04-53.png)
+![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/Screenshot%20from%202019-01-09%2016-09-47.png)
 
-![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/Screenshot%20from%202018-02-21%2018-05-15.png)
+![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/Screenshot%20from%202019-01-09%2016-10-43.png)
 
-![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/Screenshot%20from%202018-02-21%2018-05-44.png)
 
-![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/Screenshot%20from%202018-02-21%2018-05-55.png)
-
-![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/Screenshot%20from%202018-02-21%2018-06-26.png)
-
-![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/Screenshot%20from%202018-02-21%2018-08-22.png)
-
-![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/Screenshot%20from%202018-02-21%2018-07-44.png)

@@ -29,6 +29,7 @@ def showerrormessage(messagetext):
 					self.set_default_size(150, 100)
 					self.add_button("_OK", Gtk.ResponseType.OK)
 					self.connect("response", self.on_response)
+					self.set_keep_above(True)
 					hboxdialogerror = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=3)
 					imageerror=(Gtk.Image.new_from_icon_name("dialog-error",Gtk.IconSize.DIALOG))
 					label = Gtk.Label(""+str(messagetext.value))
@@ -55,5 +56,5 @@ def showerrormessage(messagetext):
 	p2=Process(target=message,args=(internaltextvalue,winclosed))
 	p2.start()
 	while(str(winclosed.value)!="True"):
-		time.sleep(0.3)
+		time.sleep(0.1)
 	p2.terminate()
