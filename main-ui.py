@@ -1530,9 +1530,9 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 			hbox.pack_start(toolbarb, False, False, 0)
 			hbox.pack_start(toolbarc, False, False, 0)
 	win = MyWIndow()
-	time.sleep(0.5)
+	time.sleep(0.1)
 	fastmmap.write(mmap,",11gui loaded")
-	time.sleep(0.5)
+	time.sleep(0.2)
 	fastmmap.write(mmap,",10main window load...")
 	time.sleep(0.5)
 	while(readyshoww.value=="False"):

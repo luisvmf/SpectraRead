@@ -6,8 +6,8 @@ import os
 import fastmmap
 import signal
 import warnings
-#warnings.filterwarnings("ignore")
-#sys.tracebacklimit=0
+warnings.filterwarnings("ignore")
+sys.tracebacklimit=0
 loaded_spectrometer_modules=[None]*1000000
 loaded_spectrometer_names=[None]*1000000
 import_counter=0
@@ -25,6 +25,8 @@ cmdargsb=""
 dataclickmap=-1
 errmap=-1
 datamapaaa=-1
+datamapaaab=-1
+dropspec=0
 idinta=-1
 guistata=[None]*8
 guistatb=[]
@@ -37,14 +39,16 @@ datamaphs=-1
 def connectm(cmdargs):
 	global errmap
 	global datamapaaa
+	global datamapaaab
 	global idinta
 	global cmdargsb
 	global dataclickmap
 	global datamaphs
 	datamapaaa=fastmmap.createmmap("k"+str(cmdargs),"rwx------") #Aqui
+	datamapaaab=fastmmap.createmmap("?"+str(cmdargs),"rwx------") #Aqui
 	dataclickmap=fastmmap.createmmap("L"+str(cmdargs),"rwx------")
 	errmap=fastmmap.connectmmap("spectrareadd","d"+cmdargs)
-	datamaphs=fastmmap.createmmap("dproc1","rwx------")
+	datamaphs=fastmmap.createmmap("dprf","rwx------")
 	while(errmap==-1):
 		errmap=fastmmap.connectmmap("spectrareadd","d"+cmdargs)
 		time.sleep(0.1)
@@ -76,15 +80,16 @@ def pushvalgui(xstring,ystring):
 	global globalstat
 	global errmap
 	global datamapaaa
+	global datamapaaab
 	global idinta
 	if(datamapaaa!=-1):
 		if(errmap!=-1):
 			if(idinta!=-1):
 				if(len(xstring.split(" "))==len(ystring.split(" "))):
-					fastmmap.write(datamapaaa,";buffer:"+str(xstring)+"?"+str(ystring)+"final")
+					fastmmap.writesharedstring(datamapaaab,";buffer:"+str(xstring)+"?"+str(ystring)+"final")
 				else:
 					print "pushval(xstring,ystring) error,\n\txstring.split(" ") and ystring.split(" ") must have the same length."
-				fastmmap.writesharedstring(datamapaaa,";frequency:"+str(globalfreq)+",deviceinfo:      "+str(globaltemp)+"--int-info-seperator--     "+str(globalstat)+"");
+				fastmmap.writesharedstring(datamapaaa,";frequency:"+str(globalfreq)+",deviceinfo:      "+str(globaltemp)+"--int-info-seperator--     "+str(globalstat)+" Dropped spectra: "+str(dropspec));
 def getguistat():
 	global guistata
 	global guistatb
@@ -159,8 +164,9 @@ def initp():
 	global terminatesignal
 	global datamaphs
 	global testi
+	global 	dropspec
 	makesingle=False
-	#fastmmap.read(datamaphs,1)
+	timestamp=0
 	try:
 		while(terminatesignal==0):
 			if(True):
@@ -193,14 +199,17 @@ def initp():
 						runfunc=1
 					if(runfunc==1):
 						if(retv!=False):
-							if(abs(timelastspec-time.time())>0.1):
+							if(abs(timelastspec-time.time())>0.03):
 								if(retv[0]!=""):
 									if(retv[1]!=""):
 										pushvalgui(retv[0],retv[1])
+										timelastspec=time.time()
 							if(retv[0]!=""):
 								if(retv[1]!=""):
-									if(testi==9):
-										fastmmap.write(datamaphs,";"+str(retv[0])+"?"+str(retv[1])+";")
+									if(testi==5):
+										if(fastmmap.write(datamaphs,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
+											dropspec=dropspec+1
+										timestamp=timestamp+1
 										testi=0
 									testi=testi+1
 							if(retv[2]!=""):
