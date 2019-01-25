@@ -44,11 +44,27 @@ def connectm(cmdargs):
 	global cmdargsb
 	global dataclickmap
 	global datamaphs
+	global datamaphsa
+	global datamaphsb
+	global datamaphsc
+	global datamaphsd
+	global datamaphse
+	global datamaphsf
+	global datamaphsg
+	global datamaphsh
 	datamapaaa=fastmmap.createmmap("k"+str(cmdargs),"rwx------") #Aqui
 	datamapaaab=fastmmap.createmmap("?"+str(cmdargs),"rwx------") #Aqui
 	dataclickmap=fastmmap.createmmap("L"+str(cmdargs),"rwx------")
 	errmap=fastmmap.connectmmap("spectrareadd","d"+cmdargs)
-	datamaphs=fastmmap.createmmap("dprf","rwx------")
+	datamaphs=fastmmap.createmmap("["+str(cmdargs),"rwx------")
+	datamaphsa=fastmmap.createmmap("{"+str(cmdargs),"rwx------")
+	datamaphsb=fastmmap.createmmap("("+str(cmdargs),"rwx------")
+	datamaphsc=fastmmap.createmmap("~"+str(cmdargs),"rwx------")
+	datamaphsd=fastmmap.createmmap(","+str(cmdargs),"rwx------")
+	datamaphse=fastmmap.createmmap("'"+str(cmdargs),"rwx------")
+	datamaphsf=fastmmap.createmmap("%"+str(cmdargs),"rwx------")
+	datamaphsg=fastmmap.createmmap("#"+str(cmdargs),"rwx------")
+	datamaphsh=fastmmap.createmmap(":"+str(cmdargs),"rwx------")
 	while(errmap==-1):
 		errmap=fastmmap.connectmmap("spectrareadd","d"+cmdargs)
 		time.sleep(0.1)
@@ -165,6 +181,14 @@ def initp():
 	global datamaphs
 	global testi
 	global 	dropspec
+	global datamaphsa
+	global datamaphsb
+	global datamaphsc
+	global datamaphsd
+	global datamaphse
+	global datamaphsf
+	global datamaphsg
+	global datamaphsh
 	makesingle=False
 	timestamp=0
 	try:
@@ -206,11 +230,35 @@ def initp():
 										timelastspec=time.time()
 							if(retv[0]!=""):
 								if(retv[1]!=""):
+									if(testi==0):
+										if(fastmmap.write(datamaphsa,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
+											dropspec=dropspec+1
+									if(testi==1):
+										if(fastmmap.write(datamaphsb,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
+											dropspec=dropspec+1
+									if(testi==2):
+										if(fastmmap.write(datamaphsc,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
+											dropspec=dropspec+1
+									if(testi==3):
+										if(fastmmap.write(datamaphsd,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
+											dropspec=dropspec+1
+									if(testi==4):
+										if(fastmmap.write(datamaphse,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
+											dropspec=dropspec+1
 									if(testi==5):
+										if(fastmmap.write(datamaphsf,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
+											dropspec=dropspec+1
+									#if(testi==6):
+									#	if(fastmmap.write(datamaphsg,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
+									#		dropspec=dropspec+1
+									#if(testi==7):
+									#	if(fastmmap.write(datamaphsh,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
+									#		dropspec=dropspec+1
+									if(testi==6):
 										if(fastmmap.write(datamaphs,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
 											dropspec=dropspec+1
 										timestamp=timestamp+1
-										testi=0
+										testi=-1
 									testi=testi+1
 							if(retv[2]!=""):
 								showerr(retv[2])

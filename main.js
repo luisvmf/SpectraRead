@@ -37,6 +37,12 @@
 		var workergd=cluster.fork();
 		var workerhsh=cluster.fork();
 		var workersgagf=cluster.fork();
+		var workersgagfb=cluster.fork();
+		var workersgagfc=cluster.fork();
+		var workersgagfd=cluster.fork();
+		var workersgagfe=cluster.fork();//
+		var workersgagff=cluster.fork();
+		var workersgagfg=cluster.fork();
 		var mmap=require("./fastmmapmq");
 		var python = require('python.node');
 		var os = python.import('os');
@@ -108,21 +114,42 @@
 				terminateallworkers();
 			}
 		});
-		worker.on('exit', function(aaa,bbb) {
-			console.log('Worker 1 died. Starting close process');
+		function exithandler(){
+			console.log('Worker died. Starting close process');
 			startexitprocess();
 			//setTimeout(function (){
 				errmessage.showerrormessage("An unexpected exception has happened.\nProgram will close.");
 				terminateallworkers();
 			//},2000);
+		}
+		worker.on('exit', function(aaa,bbb) {
+			console.log("a");
+			exithandler();
 		});
 		workerb.on('exit', function(aaa,bbb) {
-			console.log('Worker 2 died. Starting close process');
-			startexitprocess();
-			//setTimeout(function (){
-				errmessage.showerrormessage("An unexpected exception has happened.\nProgram will close.");
-				terminateallworkers();
-			//},2000);
+			console.log("b");
+			exithandler();
+		});
+		workergd.on('exit', function(aaa,bbb) {
+			console.log("c");
+			exithandler();
+		});
+		workerhsh.on('exit', function(aaa,bbb) {
+			console.log("d");
+			exithandler();
+		});
+		workersgagf.on('exit', function(aaa,bbb) {
+			console.log("e");
+			exithandler();
+		});
+		workersgagfb.on('exit', function(aaa,bbb) {
+			exithandler();
+		});
+		workersgagfc.on('exit', function(aaa,bbb) {
+			exithandler();
+		});
+		workersgagfd.on('exit', function(aaa,bbb) {
+			exithandler();
 		});
 		process.on('exit', function () {
 			console.log('About to exit');
@@ -172,6 +199,8 @@
 		sys.path.append(dirpython+'/Python/lib/python2.7/site-packages');
 		sys.path.append(dirpython+'/Python/lib/python2.7/site-packages/numpy');
 		var time=python.import("time");
+		var errmessage = python.import('acquisitiondialog');
+		var datahspeaks=mmap.CreateMmapSync("@"+cmdargs,"rwx------");
 		var idintb=mmap.ConnectMmapSync("spectrareadd","b"+cmdargs);
 		while(idintb==-1){
 			idintb=mmap.ConnectMmapSync("spectrareadd","b"+cmdargs);
@@ -194,6 +223,9 @@
 		var datamainguiproc=[0,0,0];//baseline, risingthreshold, boxcar
 		var spectranumbercounter=0;
 		var timefirstsave=time.time()
+		var errsavecmd="";
+		var showerrmessage=0;
+		var iscontmeasactive="False";
 		Number.prototype.addzeros=function(numlength){
 			var strnum=this+"";
 			while (strnum.length<(numlength||2)){
@@ -207,6 +239,11 @@
 				var rawreadcommands="";
 				if(idintb!=-1){
 					rawreadcommands=mmap.GetSharedStringSync(idintb);
+				}
+				if(rawreadcommands==",False"){
+					spectranumbercounter=0;
+					errsavecmd="";
+					showerrmessage=0;
 				}
 				rawreadcommands=rawreadcommands.split(",");
 				var i=0;
@@ -232,6 +269,7 @@
 				}else{
 					currentsavecommands="";
 				}
+				console.log(e);
 			}
 			if(aqstop==1){
 				currentsavecommands="";
@@ -255,12 +293,19 @@
 			}
 			if(guistatnew!=""){
 				guistatnew=guistatnew.split(";");
+				if(guistatnew[4]=="True"){
+					iscontmeasactive=guistatnew[4];
+				}
+				if(guistatnew[4]=="False"){
+					iscontmeasactive=guistatnew[4];
+				}
 				if(guistatnew.length!=5){
 					guistatnew="";
 				}
 			}
 			}catch(e){
 				guistatnew="";
+				console.log(e);
 			}
 			if(guistatnew!=""){
 				if(guistatnew.length==5){
@@ -288,6 +333,7 @@
 				}
 			}
 			try{
+				mmap.WriteSharedStringSync(datahspeaks,"["+datamainguiproc+",'"+iscontmeasactive+"']");
 				if(currentsavecommands!=""){
 					//console.log(datamainguiproc[0]+","+datamainguiproc[1]+","+datamainguiproc[2]);
 					//console.log(currentsavecommands);
@@ -309,7 +355,35 @@
 											if(((dataintupdateui[i].split("buffer:")[1].split("?")[1].split("final")[0]+" ").split(" ")).length==((xdataintpeaks+" ").split(" ").length)){
 												if((/^[0-9 .]*$/.test(dataintupdateui[i].split("buffer:")[1].split("?")[1].split("final")[0]+""))==true){
 													data=polfit.getspecsync(xdataintpeaks+" ",dataintupdateui[i].split("buffer:")[1].split("?")[1].split("final")[0]+" ",Number(datamainguiproc[0]),Number(datamainguiproc[2]),Number(datamainguiproc[1]));
-													console.log("save: "+savelocationfinal+"-"+spectranumbercounter.addzeros(4)+".dat "+xdataintpeaks+" "+(data+"").replace("[","").replace("]","").replace(new RegExp(",", 'g'), " "));
+													xsavefinalarr=xdataintpeaks.split(" ");
+													ysavefinalarr=((data+"").replace("[","").replace("]","").replace(new RegExp(",", 'g'), " ")).split(" ");
+													savestringfinal="";
+													jj=0;
+													while(jj<xsavefinalarr.length){
+														if(jj>=ysavefinalarr.length){
+															break;
+														}
+															savestringfinal=savestringfinal+xsavefinalarr[jj]+"\t"+ysavefinalarr[jj]+"\n";
+														jj=jj+1;
+													}
+													if (fs.existsSync(savelocationfinal+"-"+spectranumbercounter.addzeros(4)+".dat")){
+															if(errsavecmd==""){
+																errsavecmd=savelocationfinal+"-"+(0).addzeros(4)+".dat";
+															}
+															if(errsavecmd!=savelocationfinal+"-"+(0).addzeros(4)+".dat"){
+																errsavecmd="";
+																showerrmessage=0;
+															}else{
+																if(showerrmessage==0){
+																	console.log("Error. File already exists.");
+																	errmessage.showerrormessage("Error saving file: File already exists.");
+																	showerrmessage=1;
+																}
+															}
+
+													}else{
+														fs.writeFileSync(savelocationfinal+"-"+spectranumbercounter.addzeros(4)+".dat", savestringfinal);
+													}
 													spectranumbercounter=spectranumbercounter+1;
 												}
 											}
@@ -321,20 +395,41 @@
 						}
 					}else{
 						spectranumbercounter=0;
+						errsavecmd="";
+						showerrmessage=0;
 					}
 					//pb(datamainguiproc[0],datamainguiproc[1],datamainguiproc[2],1,1,0,0.5,"spec","peaks");
 				}else{
 					time.sleep(0.1);
 				}
+			time.sleep(0.01);
 			}catch(e){console.log(e);}
 			}
 	}else if (cluster.worker.id === 3) {
-		//Workerc
-		//require("./dataprocess2");
+		var peakshs=require("./hspeaks.js");
+		peakshs.inithspeaksprocess("[","]");
 	}else if (cluster.worker.id === 4) {
-		//Workerc
-		//require("./dataprocess3");
+		var peakshs=require("./hspeaks.js");
+		peakshs.inithspeaksprocess("{","}");
 	}else if (cluster.worker.id === 5) {
-		//Workerc
-		//require("./dataprocess4");
+		var peakshs=require("./hspeaks.js");
+		peakshs.inithspeaksprocess("(",")");
+	}else if (cluster.worker.id === 6) {
+		var peakshs=require("./hspeaks.js");
+		peakshs.inithspeaksprocess("~","/");
+	}else if (cluster.worker.id === 7) {
+		var peakshs=require("./hspeaks.js");
+		peakshs.inithspeaksprocess(",","*");
+	}else if (cluster.worker.id === 8) {
+		var peakshs=require("./hspeaks.js");
+		peakshs.inithspeaksprocess("'",'"');
+	}else if (cluster.worker.id === 9) {
+		var peakshs=require("./hspeaks.js");
+		peakshs.inithspeaksprocess("%","$");
+	}else if (cluster.worker.id === 10) {
+		//var peakshs=require("./hspeaks.js");
+		//peakshs.inithspeaksprocess("#",";");
+	}else if (cluster.worker.id === 11) {
+		//var peakshs=require("./hspeaks.js");
+		//peakshs.inithspeaksprocess(":","|");
 	}

@@ -4,7 +4,6 @@
 #include <fstream>
 #include <chrono>
 #include <stdio.h>
-#include <pthread.h>
 #include "fastmmapmq.c"
 #include <sstream>
 //Copyright (c) 2018 Luís Victor Muller Fabris. Apache License.
@@ -13,9 +12,23 @@ using namespace std::chrono;
 #define TEMPDATASIZE 300000
 int mapid=-1;
 int mapidb=-1;
-void connectmappfhs(){
-	mapid=connectmmap("spectrareadd","dproc1");
-	mapidb=createmmap("peaks1","rwx------");
+int order;
+int boxcarsizeint;
+float risingthreshold;
+int nruns;
+int savepeaks;
+int savespectra;
+float savespectrainterval;
+std::string spectrafilename;
+std::string peaksfilename;
+void connectmappfhs(char *internalconnectid,char *internalconnectidpeaks){
+	mapid=connectmmap("spectrareadd",internalconnectid);
+	while(mapid==-1){
+		mapid=connectmmap("spectrareadd",internalconnectid);
+		perror("Connection failed, reconnecting...");
+		usleep(1.5*1000000.0);
+	}
+	mapidb=createmmap(internalconnectidpeaks,"rwx------");
 }
 void boxcarint(double *dados,int dadoslen,int loopselect){
 	int contador1=1;
@@ -82,8 +95,7 @@ int isNumbera(std::string stringnum){
 	return 1;
 }
 int getvector(int N,int len, std::string str,double *yb){
-	int i,j,cntintnodestring,cntintnodestringb;
-	cntintnodestringb=0;
+	int i,cntintnodestring;
 	cntintnodestring=0;
 	std::string auxb="";
 	char* cptr;
@@ -92,9 +104,9 @@ int getvector(int N,int len, std::string str,double *yb){
 			auxb=auxb+str[i];
 		}else{
 			if(isNumbera(auxb)==1){
-				yb[cntintnodestring]=strtod(auxb.c_str(),&cptr);
+	yb[cntintnodestring]=strtod(auxb.c_str(),&cptr);
 			}else{
-				return -1;
+	return -1;
 			}
 			auxb="";
 			cntintnodestring=cntintnodestring+1;
@@ -137,15 +149,15 @@ int fit(double* x,double* y,int count,int order, double* coef){
 		k=i*(2*order+2);
 		if(xint!=0){
 			for(j=0;j<=(2*order+1);j++){
-				C[k+j]=C[k+j]/xint;
+	C[k+j]=C[k+j]/xint;
 			}
 			for(j=0;j<=order;j++){
-				if(j!=i){
-					yint=C[j*(2*order+2)+i];
-					for(k=0;k<=(2*order+1);k++){
-						C[j*(2*order+2)+k]=C[j*(2*order+2)+k]-yint*C[i*(2*order+2)+k];
-					}
-				}
+	if(j!=i){
+		yint=C[j*(2*order+2)+i];
+		for(k=0;k<=(2*order+1);k++){
+			C[j*(2*order+2)+k]=C[j*(2*order+2)+k]-yint*C[i*(2*order+2)+k];
+		}
+	}
 			}
 		}else{return -1;}
 	}
@@ -153,7 +165,7 @@ int fit(double* x,double* y,int count,int order, double* coef){
 		for(j=0;j<=order;j++){
 			xint=0;
 			for(k=0;k<=order;k++){
-				xint=xint+C[i*(2*order+2)+k+order+1]*A[k];
+	xint=xint+C[i*(2*order+2)+k+order+1]*A[k];
 			}
 			coef[i]=xint;
 		}
@@ -163,7 +175,9 @@ int fit(double* x,double* y,int count,int order, double* coef){
 void fitbaseline(double *y,double *yb, int order,int N){
 	if(order>0){
 		double coef[order+1];
-		int res=fit(y,yb,N,order,coef);
+		if(fit(y,yb,N,order,coef)==-1){
+			return;
+		}
 		int i=0;
 		int j=0;
 		double aux=0;
@@ -179,242 +193,230 @@ void fitbaseline(double *y,double *yb, int order,int N){
 		}
 	}
 }
-int mainproc(std::string internalstringauxreadx,std::string internalstringauxready,int order,int boxcarsizeint,float risingthreshold,int nruns,std::string spectrafilename,std::string peaksfilename){
-											int countrawstrconvertb=0;
-											int strselect=0;
-											std::string internalstring=internalstringauxreadx;
-											std::string internalstring2=internalstringauxready;
-											int length = internalstring.length();
-											int lengthb = internalstring2.length();
-											double estimate=0;
-											double returnarray[TEMPDATASIZE];
-											double peaks[TEMPDATASIZE];
-											int peakscount=0;
-											std::string str=internalstring;
-											std::string strb=internalstring2;
-											int len = length;
-											int lenb = lengthb;
-											int j=0;
-											int N=getN(len,str)-1;
-											if((getN(lenb,strb)-1)!=N){
-												return -1;
-											}
-											double yb[N];
-											double ybb[N];
-											double xb[N];
-											int currentnruns=0;
-											int oldN=N;
-											double y[(int)N];
-											if(getvector(oldN,len,str,xb)==-1){
-												return -1;
-											}
-											if(getvector(oldN,lenb,strb,yb)==-1){
-												return -1;
-											}
-											fitbaseline(xb,yb,order,N);
-											boxcar(yb,boxcarsizeint,oldN);
-											double valmaxderivada=0;
-											for (j=0;j<=oldN;j++){
-												ybb[j]=yb[j];
-												if(ybb[j]>valmaxderivada){
-													valmaxderivada=ybb[j];
-												}
-											}
-											derivada(ybb,xb,1,oldN);
-											double adjustsection[3];
-											double adjustsectionx[3];
-											peakscount=0;
-											double adjustsectioncoef[3];
-											int zeroderivativepoints[oldN];
-											int zeroderivativepointscount=0;
-											for (j=0;j<oldN;j++){
-												// Local minimum.
-												//if(ybb[j]<0){
-												//	if(ybb[j+1]>0){
-												//		if(ybb[j]<-risingthreshold){  // rising threshold=0.5.
-												//		zeroderivativepoints[zeroderivativepointscount]=j;
-												//		zeroderivativepointscount=zeroderivativepointscount+1;
-												//		}
-												//	}
-												//}
-												// Local maximum.
-												if(ybb[j]>0){
-													if(ybb[j+1]<0){
-														if(ybb[j]>risingthreshold*valmaxderivada){ // rising threshold=0.5.
-														zeroderivativepoints[zeroderivativepointscount]=j;
-														zeroderivativepointscount=zeroderivativepointscount+1;
-														}
-													}
-												}
-											}
-											for (j=0;j<zeroderivativepointscount;j++){
-												//if(ybb[zeroderivativepoints[j]]>0){ //Maximum, not minimum.
-													adjustsection[0]=yb[zeroderivativepoints[j]];
-													adjustsection[1]=yb[zeroderivativepoints[j]+1];
-													adjustsection[2]=yb[zeroderivativepoints[j]+2];
-													adjustsectionx[0]=xb[zeroderivativepoints[j]];
-													adjustsectionx[1]=xb[zeroderivativepoints[j]+1];
-													adjustsectionx[2]=xb[zeroderivativepoints[j]+2];
-													int resfitpeak=fit(adjustsectionx,adjustsection,3,2,adjustsectioncoef);
-													peaks[peakscount]=(-1*adjustsectioncoef[1]/(2*adjustsectioncoef[2]));
-													peakscount=peakscount+1;
-												//}
-											}
-											//writemmap(mapidb,"\t");
-											//std::ostringstream strsb;
-
-
-											char *chartemppeakbuffer=malloc(64);
-											int ret=0;
-											for (j=0;j<peakscount;j++){
-												ret=snprintf(chartemppeakbuffer,sizeof chartemppeakbuffer,"%f",peaks[j]);
-												writemmap(mapidb,chartemppeakbuffer);
-												writemmap(mapidb,",");
-											}
-											free(chartemppeakbuffer);
-											writemmap(mapidb,"\n");
-											length=oldN+1;
-											currentnruns=currentnruns+1;
+	char *chartemppeakbuffer=malloc(64);
+int mainproc(std::string internalstringauxreadx,std::string internalstringauxready,int order,int boxcarsizeint,float risingthreshold,float timestamp){
+	std::string internalstring=internalstringauxreadx;
+	std::string internalstring2=internalstringauxready;
+	int length = internalstring.length();
+	int lengthb = internalstring2.length();
+	double peaks[TEMPDATASIZE];
+	int peakscount=0;
+	std::string str=internalstring;
+	std::string strb=internalstring2;
+	int len = length;
+	int lenb = lengthb;
+	int j=0;
+	int N=getN(len,str)-1;
+	if((getN(lenb,strb)-1)!=N){
+		return -1;
+	}
+	double yb[N];
+	double ybb[N];
+	double xb[N];
+	int currentnruns=0;
+	int oldN=N;
+	if(getvector(oldN,len,str,xb)==-1){
+		return -1;
+	}
+	if(getvector(oldN,lenb,strb,yb)==-1){
+		return -1;
+	}
+	fitbaseline(xb,yb,order,N);
+	boxcar(yb,boxcarsizeint,oldN);
+	double valmaxderivada=0;
+	for (j=0;j<=oldN;j++){
+		ybb[j]=yb[j];
+		if(ybb[j]>valmaxderivada){
+			valmaxderivada=ybb[j];
+		}
+	}
+	derivada(ybb,xb,1,oldN);
+	double adjustsection[3];
+	double adjustsectionx[3];
+	peakscount=0;
+	double adjustsectioncoef[3];
+	int zeroderivativepoints[oldN];
+	int zeroderivativepointscount=0;
+	for (j=0;j<oldN;j++){
+		if(ybb[j]>0){
+			if(ybb[j+1]<0){
+	if(ybb[j]>risingthreshold*valmaxderivada){ // rising threshold=0.5.
+	zeroderivativepoints[zeroderivativepointscount]=j;
+	zeroderivativepointscount=zeroderivativepointscount+1;
+	}
+			}
+		}
+	}
+	for (j=0;j<zeroderivativepointscount;j++){
+			adjustsection[0]=yb[zeroderivativepoints[j]];
+			adjustsection[1]=yb[zeroderivativepoints[j]+1];
+			adjustsection[2]=yb[zeroderivativepoints[j]+2];
+			adjustsectionx[0]=xb[zeroderivativepoints[j]];
+			adjustsectionx[1]=xb[zeroderivativepoints[j]+1];
+			adjustsectionx[2]=xb[zeroderivativepoints[j]+2];
+			if(fit(adjustsectionx,adjustsection,3,2,adjustsectioncoef)==-1){
+				return -1;
+			}
+			peaks[peakscount]=(-1*adjustsectioncoef[1]/(2*adjustsectioncoef[2]));
+			peakscount=peakscount+1;
+	}
+	snprintf(chartemppeakbuffer,strlen(chartemppeakbuffer),"%f",timestamp);
+	writemmap(mapidb,chartemppeakbuffer);
+	writemmap(mapidb,",");
+	for (j=0;j<peakscount;j++){
+		snprintf(chartemppeakbuffer,strlen(chartemppeakbuffer),"%f",peaks[j]);
+		writemmap(mapidb,chartemppeakbuffer);
+		writemmap(mapidb,",");
+	}
+	//free(chartemppeakbuffer);
+	writemmap(mapidb,"\n");
+	length=oldN+1;
+	currentnruns=currentnruns+1;
 	return 0;
 }
-int order;
-int boxcarsizeint;
-float risingthreshold;
-int nruns;
-int savepeaks;
-int savespectra;
-float savespectrainterval;
-std::string spectrafilename;
-std::string peaksfilename;
-void* procdatath(void* argument){
-							//std::cout<<aaaaajjj<<"\n\n";
-							int countrawstrconvertb=0;
-							int strselect=0;
-							std::string internalstringauxreadx="";
-							std::string internalstringauxready="";
-							std::string internalstringauxread=*reinterpret_cast<std::string*>(argument);
-							char *fastchararrb=malloc(internalstringauxread.length()+10);
-							int fastchararrbcounter=0;
-							char *fastchararrc=malloc(internalstringauxread.length()+10);
-							int fastchararrccounter=0;
-							while(countrawstrconvertb<internalstringauxread.length()){
-								if(internalstringauxread[countrawstrconvertb]!='?'){
-									if(strselect==0){
-										//internalstringauxreadx=internalstringauxreadx+internalstringauxread[countrawstrconvertb];//Aqui também deve ser lento!!!!!!!!!!!!!!
-										fastchararrb[fastchararrbcounter]=internalstringauxread[countrawstrconvertb];
-										fastchararrb[fastchararrbcounter+1]='\0';
-										fastchararrbcounter=fastchararrbcounter+1;
-									}else{
-										//internalstringauxready=internalstringauxready+internalstringauxread[countrawstrconvertb];//Aqui também deve ser lento!!!!!!!!!!!!!!
-										fastchararrc[fastchararrccounter]=internalstringauxread[countrawstrconvertb];
-										fastchararrc[fastchararrccounter+1]='\0';
-										fastchararrccounter=fastchararrccounter+1;
-									}
-								}else{
-									strselect=1;
-								}
-								countrawstrconvertb=countrawstrconvertb+1;
-							}
-							if(fastchararrbcounter>3){
-								internalstringauxreadx=std::string(fastchararrb);
-								internalstringauxready=std::string(fastchararrc);
-								int retmainprocstatus=mainproc(internalstringauxreadx,internalstringauxready,order,boxcarsizeint,risingthreshold,nruns,spectrafilename,peaksfilename);
-							//std::cout<<internalstringauxreadx<<"::::::";
-							//std::cout<<internalstringauxready<<"\n\n";
-							}
-							pthread_exit(NULL);
-}
-
-
-
-//void polfit(order,boxcar,risingthreshold,nruns,savepeaks,savespectra,savespectrainterval,spectrafilename,peaksfilename)
-void polfit(const FunctionCallbackInfo<Value>& info) {
-				pthread_t my_thread;
-				if(mapid==-1){
-					connectmappfhs();
-				}
-				high_resolution_clock::time_point t1=high_resolution_clock::now();
-				high_resolution_clock::time_point t1s=high_resolution_clock::now();
-				high_resolution_clock::time_point t1b=high_resolution_clock::now();
-
-
-				order=info[0]->NumberValue();
-				boxcarsizeint=info[1]->NumberValue();;
-				risingthreshold=info[2]->NumberValue();
-				nruns=info[3]->NumberValue();
-				savepeaks=info[4]->NumberValue();
-				savespectra=info[5]->NumberValue();
-				savespectrainterval=info[6]->NumberValue(); //seconds
-				v8::String::Utf8Value param1(info[7]->ToString());
-				spectrafilename = std::string(*param1);
-				v8::String::Utf8Value param2(info[8]->ToString());
-				peaksfilename = std::string(*param2);
-
-
-				int currentnruns=0;
-				high_resolution_clock::time_point t2b=high_resolution_clock::now();
-				float durationtotalacquisition=duration_cast<microseconds>(t2b-t1b).count();
-				std::string internalstringauxread="";
-				int counternspectra=0;
-				while(durationtotalacquisition/1000000<nruns){
-					t2b=high_resolution_clock::now();
-					durationtotalacquisition=duration_cast<microseconds>(t2b-t1b).count();
-					//std::cout<<"read\n";
-					std::string rawreaddata=readmmap(mapid,0);
-					//std::cout<<rawreaddata;
-					int countrawstrconvert=0;
-					while(countrawstrconvert<rawreaddata.length()){
-					//std::cout<<rawreaddata.length()<<"aaa";
-						if(rawreaddata[countrawstrconvert]==';'){
-							break;
-						}
-						countrawstrconvert=countrawstrconvert+1;
-					}
-					internalstringauxread="";
-					//internalstringauxreadx="";
-					//internalstringauxready="";
-
-
-
-					char *fastchararr=malloc(rawreaddata.length()+10);
-
-
-
-						int fastchararrcounter=0;
-					int countrawstrconvertb=0;
-					int strselect=0;
-					while(countrawstrconvert<rawreaddata.length()){
-						if(rawreaddata[countrawstrconvert]!=';'){
-							//internalstringauxread=internalstringauxread+rawreaddata[countrawstrconvert];//Esta linha é lenta!!!!!!!!!!!!!!!!!!!!!!!!!!!
-							fastchararr[fastchararrcounter]=rawreaddata[countrawstrconvert];
-							fastchararr[fastchararrcounter+1]='\0';
-							//internalstringauxread=internalstringauxread+fastchararr[fastchararrcounter];//Esta linha é lenta!!!!!!!!!!!!!!!!!!!!!!!!!!!
-							fastchararrcounter=fastchararrcounter+1;
-							strselect=0;
-						}else{
-							//char *fastchararrb=malloc(fastchararrcounter+2);
-							//int ijj=0;
-							//while(ijj<fastchararrcounter){
-							//	fastchararrb[ijj]=fastchararr[ijj];
-							//	ijj=ijj+1;
-							//}
-							//fastchararrb[ijj]='\0';
-							internalstringauxread=std::string(fastchararr);
-							pthread_create(&my_thread, NULL, procdatath, &internalstringauxread);
-							pthread_join(my_thread, NULL);
-							counternspectra=counternspectra+1;
-							internalstringauxread="";
-							fastchararrcounter=0;
-						}
-						countrawstrconvert=countrawstrconvert+1;
-					}
-					free(fastchararr);
-
+			char *fastchararrcnt=malloc(90);
+	char *fastchararrb=malloc(10);
+	int alloccountera=10;
+	char *fastchararrc=malloc(10);
+	int alloccounterb=10;
+int procdatath(std::string internalstringauxread){
+	int countrawstrconvertb=0;
+	int strselect=0;
+	std::string internalstringauxreadx="";
+	std::string internalstringauxready="";
+	if(internalstringauxread.length()+10>alloccountera){
+		fastchararrb=realloc(fastchararrb,internalstringauxread.length()+10);
+	}
+	//char *fastchararrb=malloc(internalstringauxread.length()+10);
+	int fastchararrbcounter=0;
+	//char *fastchararrc=malloc(internalstringauxread.length()+10);
+	if(internalstringauxread.length()+10>alloccounterb){
+		fastchararrc=realloc(fastchararrc,internalstringauxread.length()+10);
+	}
+	int fastchararrccounter=0;
+	float thistimestamp=-1;
+	int realnspectra=0;
+	while(countrawstrconvertb<internalstringauxread.length()){
+		if(internalstringauxread[countrawstrconvertb]!='?'){
+			if(strselect==0){
+				fastchararrb[fastchararrbcounter]=internalstringauxread[countrawstrconvertb];
+				fastchararrb[fastchararrbcounter+1]='\0';
+				fastchararrbcounter=fastchararrbcounter+1;
+			}else{
+				fastchararrc[fastchararrccounter]=internalstringauxread[countrawstrconvertb];
+				fastchararrc[fastchararrccounter+1]='\0';
+				fastchararrccounter=fastchararrccounter+1;
 			}
-			std::cout<<counternspectra;
-			//peaksfile.close();
-		  }
-void Init(Local<Object> exports, Local<Object> module) {
-	NODE_SET_METHOD(module, "exports", polfit);
+		}else{
+			strselect=1;
+			int kk=0;
+			countrawstrconvertb=countrawstrconvertb+1;
+			while(internalstringauxread[countrawstrconvertb]!='?'){
+				fastchararrcnt[kk]=internalstringauxread[countrawstrconvertb];
+				countrawstrconvertb=countrawstrconvertb+1;
+				if(countrawstrconvertb>=internalstringauxread.length()){
+					break;
+				}
+				kk=kk+1;
+			}
+			fastchararrcnt[kk]='\0';
+			char* cptr;
+			thistimestamp=strtod(fastchararrcnt,&cptr);
+			if (*cptr){
+				printf("Invalid timestamp data on polfiths");
+				return 0;
+			}
+			//free(fastchararrcnt);
+		}
+		countrawstrconvertb=countrawstrconvertb+1;
+	}
+	if(fastchararrbcounter>3){
+		internalstringauxreadx=std::string(fastchararrb);
+		internalstringauxready=std::string(fastchararrc);
+		int retmainprocstatus=mainproc(internalstringauxreadx,internalstringauxready,order,boxcarsizeint,risingthreshold,thistimestamp);
+		if(retmainprocstatus==0){
+			realnspectra=realnspectra+1;
+		}
+	}
+	//free(fastchararrb);
+	//free(fastchararrc);
+	return realnspectra;
 }
-NODE_MODULE(addon, Init)
+		char *fastchararr=malloc(10);
+		int alloccounterc=10;
+void polfit(const FunctionCallbackInfo<Value>& info) {
+	high_resolution_clock::time_point t1b=high_resolution_clock::now();
+	order=info[0]->NumberValue();
+	boxcarsizeint=info[1]->NumberValue();;
+	risingthreshold=info[2]->NumberValue();
+	nruns=info[3]->NumberValue();
+	high_resolution_clock::time_point t2b=high_resolution_clock::now();
+	float durationtotalacquisition=duration_cast<microseconds>(t2b-t1b).count();
+	std::string internalstringauxread="";
+	int counternspectra=0;
+	int counterrealnspectra=0;
+	int readlastinteractionb=0;
+	while(durationtotalacquisition/1000000<nruns){
+		t2b=high_resolution_clock::now();
+		durationtotalacquisition=duration_cast<microseconds>(t2b-t1b).count();
+		if(readlastinteractionb<250){
+			usleep(0.05*1000000.0);
+		}
+		if(readlastinteractionb<550){
+			usleep(0.05*1000000.0);
+		}
+		if(readlastinteractionb<5){
+			usleep(0.05*1000000.0);
+		}
+		readlastinteractionb=0;
+		std::string rawreaddata=readmmap(mapid,0);
+		int countrawstrconvert=0;
+		while(countrawstrconvert<rawreaddata.length()){
+			if(rawreaddata[countrawstrconvert]==';'){
+				break;
+			}
+			countrawstrconvert=countrawstrconvert+1;
+		}
+		internalstringauxread="";
+		//char *fastchararr=malloc(rawreaddata.length()+10);
+	if(rawreaddata.length()+10>alloccounterc){
+		fastchararr=realloc(fastchararr,rawreaddata.length()+10);
+	}
+		int fastchararrcounter=0;
+		while(countrawstrconvert<rawreaddata.length()){
+			if(rawreaddata[countrawstrconvert]!=';'){
+				fastchararr[fastchararrcounter]=rawreaddata[countrawstrconvert];
+				fastchararr[fastchararrcounter+1]='\0';
+				fastchararrcounter=fastchararrcounter+1;
+			}else{
+				internalstringauxread=std::string(fastchararr);
+				counterrealnspectra=counterrealnspectra+procdatath(internalstringauxread);
+				counternspectra=counternspectra+1;
+				readlastinteractionb=readlastinteractionb+1;
+				internalstringauxread="";
+				fastchararrcounter=0;
+			}
+			countrawstrconvert=countrawstrconvert+1;
+		}
+		//free(fastchararr);
+		}
+		info.GetReturnValue().Set(counterrealnspectra);
+}
+void nodesleep(const FunctionCallbackInfo<Value>& info){
+	usleep((float)((info[0]->NumberValue())*1000000.0));
+}
+void connect(const FunctionCallbackInfo<Value>& info){
+	if(mapid==-1){
+		v8::String::Utf8Value param1b(info[0]->ToString());
+		std::string internalstringtth = std::string(*param1b);
+		v8::String::Utf8Value param1c(info[1]->ToString());
+		std::string internalstringtthb = std::string(*param1c);
+		connectmappfhs(internalstringtth.c_str(),internalstringtthb.c_str());
+	}
+}
+NAN_MODULE_INIT(InitAll) {
+	NODE_SET_METHOD(target, "polfit", polfit);
+	NODE_SET_METHOD(target, "connect", connect);
+	NODE_SET_METHOD(target, "sleep", nodesleep);
+}
+NODE_MODULE(NativeExtension, InitAll)

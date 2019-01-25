@@ -144,6 +144,9 @@
 			//
 			//Here we save single spectrum, peaks and spectrum and peaks.
 			var savecomands=processsavedialog.process(tests.getsavecommand());
+			if(tests.getsavecommand()=="False"){
+				process.send({savefilecommand:"False"});
+			}
 			if(savecomands[3]==false){
 				if(savecomands[4]==false){
 					tests.clearsavecommand();
@@ -215,7 +218,12 @@
 		var xdataintpeaks="";
 		var winopened="";
 		var messageb=0
+		var uiupdatedlastinteraction=0;
+		var lastspecmathuiupdatedlastinteraction="";
 		function updateui(){
+			if(uiupdatedlastinteraction>-1){
+				uiupdatedlastinteraction=uiupdatedlastinteraction-1;
+			}
 			try{
 			if(winopened==""){
 				if(id!=-1){
@@ -279,6 +287,12 @@
 													tests.updategraphspectrumvariable(xdataintpeaks,(data+"").replace("[","").replace("]","").replace(new RegExp(",", 'g'), " "));
 													k=0;
 													intvecx=xdataintpeaks.split(" ");
+													if(uiupdatedlastinteraction<9){
+														if(lastspecmathuiupdatedlastinteraction!=xdataintpeaks+""+(data+"").replace("[","").replace("]","").replace(new RegExp(",", 'g'), " ")){
+															uiupdatedlastinteraction=uiupdatedlastinteraction+2;
+														}
+													}
+													lastspecmathuiupdatedlastinteraction=xdataintpeaks+""+(data+"").replace("[","").replace("]","").replace(new RegExp(",", 'g'), " ");
 													currentspectrabuffer="";
 													while(k<data.length){
 														currentspectrabuffer=currentspectrabuffer+intvecx[k]+"\t"+data[k]+"\n";
@@ -325,9 +339,18 @@
 			}
 		}catch(e){console.log(e);}
 		}
-		setInterval(function (){
+		//setInterval(function (){
+		//	updateui();
+		//},30);
+		//setInterval(function (){
+		//	getvalues();
+		//},50);
+		while(true){
 			updateui();
-		},30);
-		setInterval(function (){
 			getvalues();
-		},50);
+			if(uiupdatedlastinteraction>0){
+				time.sleep(0.03);
+			}else{
+				time.sleep(0.1);
+			}
+		}

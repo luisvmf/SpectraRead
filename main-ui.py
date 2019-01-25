@@ -482,8 +482,10 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 								buttondialognext.set_sensitive(False)
 							multiplefilesavedialoginternal="/smsbgjbvgfdsubsgbhjgsbbgdvhbvdgfsvbhgfdg:::..."+str(entry_botton_a_dialog.get_value())+"/---internal-python-variable-separator---gghjfvhvfdvbdfhhbvdbhfdbvfhbdfvhbvdfjhfvdhdf---"+str(entry_botton_b_dialog.get_value())+"/---internal-python-variable-separator---gghjfvhvfdvbdfhhbvdbhfdbvfhbdfvhbvdfjhfvdhdf---"+str(fileentry.get_text())
 						entry_botton_a_dialog.connect("changed", updatesavemultipleinternalvalues)
+						entry_botton_a_dialog.connect("value-changed", updatesavemultipleinternalvalues)
 						fileentry.connect("changed", updatesavemultipleinternalvalues)
 						entry_botton_b_dialog.connect("changed", updatesavemultipleinternalvalues)
+						entry_botton_b_dialog.connect("value-changed", updatesavemultipleinternalvalues)
 						self.show_all()
 					def on_response(self, dialog, response):
 						if response == Gtk.ResponseType.OK:
@@ -602,8 +604,10 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 								buttondialognext.set_sensitive(False)
 							multiplefilesavedialoginternal="/smpgdkhgdfkhgfkjhkjuhkghdghjgvjfbgjfsfsbhbhfjkaogirhgdshgfgjasdgffagh:::..."+str(entry_botton_a_dialog.get_value())+"/---internal-python-variable-separator---gghjfvhvfdvbdfhhbvdbhfdbvfhbdfvhbvdfjhfvdhdf---"+str(entry_botton_b_dialog.get_value())+"/---internal-python-variable-separator---gghjfvhvfdvbdfhhbvdbhfdbvfhbdfvhbvdfjhfvdhdf---"+str(fileentry.get_text())
 						entry_botton_a_dialog.connect("changed", updatesavemultipleinternalvalues)
+						entry_botton_a_dialog.connect("value-changed", updatesavemultipleinternalvalues)
 						fileentry.connect("changed", updatesavemultipleinternalvalues)
 						entry_botton_b_dialog.connect("changed", updatesavemultipleinternalvalues)
+						entry_botton_b_dialog.connect("value-changed", updatesavemultipleinternalvalues)
 						self.show_all()
 					def on_response(self, dialog, response):
 						if response == Gtk.ResponseType.OK:
@@ -753,9 +757,11 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 								buttondialognext.set_sensitive(False)
 							multiplefilesavedialoginternal="/smsphjdfghfjgshhfuygbhguuygyhguybhgyuygduygsyugrfvuyrkauesgfkuaegyuegarhfaelgjaewgfrgyg:::..."+str(entry_botton_a_dialog.get_value())+"/---internal-python-variable-separator---gghjfvhvfdvbdfhhbvdbhfdbvfhbdfvhbvdfjhfvdhdf---"+str(entry_botton_b_dialog.get_value())+"/---internal-python-variable-separator---gghjfvhvfdvbdfhhbvdbhfdbvfhbdfvhbvdfjhfvdhdf---"+str(fileentry.get_text())+"/---internal-python-variable-separator---gghjfvhvfdvbdfhhbvdbhfdbvfhbdfvhbvdfjhfvdhdf---"+str(fileentryd.get_text())
 						entry_botton_a_dialog.connect("changed", updatesavemultipleinternalvalues)
+						entry_botton_a_dialog.connect("value-changed", updatesavemultipleinternalvalues)
 						fileentry.connect("changed", updatesavemultipleinternalvalues)
 						fileentryd.connect("changed", updatesavemultipleinternalvalues)
 						entry_botton_b_dialog.connect("changed", updatesavemultipleinternalvalues)
+						entry_botton_b_dialog.connect("value-changed", updatesavemultipleinternalvalues)
 						self.show_all()
 					def on_response(self, dialog, response):
 						if response == Gtk.ResponseType.OK:
@@ -1222,8 +1228,11 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 							#rect.set_xy((mousepos[0],mousepos[1]-(((ax.axis())[3]-(ax.axis())[2])*0.4/100.0)),)
 							recttext.set_position((mousepos[0],mousepos[1]))
 							#recttext.set_text("x,y=("+str(round(mousepostext[0]*100)/100)+","+str(round(mousepostext[1]*100)/100)+")")
-						ax.relim()
 						fig.canvas.draw()
+						if autoscaleval[0]==1:
+							ax.autoscale_view()
+							ax.autoscale(True)
+						ax.relim()
 					if(time.time()-i[0]>0.3):
 						style = hboxb.get_style_context()
 						if(timecounterb[0]>=0):
@@ -1313,9 +1322,9 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 			def loopcontrol(i,autoscaleval,entrytextselectstyle,rect,mousepos,inside,recttext,mousepostext,winsize,timecounterb,infotext,checkbox,returnedfalse,oldmouseposloopcontrol,val,ax):
 				#GObject.idle_add(desenhagrafico,i,autoscaleval,entrytextselectstyle,rect,mousepos,inside,recttext,mousepostext,winsize,timecounterb)
 				if(returnedfalse[0]==1):
-					GObject.timeout_add(50, desenhagrafico,i,autoscaleval,entrytextselectstyle,rect,mousepos,inside,recttext,mousepostext,winsize,timecounterb,infotext,checkbox,returnedfalse,oldmouseposloopcontrol,val,ax,priority=GObject.PRIORITY_LOW)
+					GObject.timeout_add(50, desenhagrafico,i,autoscaleval,entrytextselectstyle,rect,mousepos,inside,recttext,mousepostext,winsize,timecounterb,infotext,checkbox,returnedfalse,oldmouseposloopcontrol,val,ax,priority=GObject.PRIORITY_DEFAULT_IDLE)
 				return True
-			GObject.timeout_add(350, loopcontrol,i,autoscaleval,entrytextselectstyle,rect,mousepos,inside,recttext,mousepostext,winsize,timecounterb,infotext,checkbox,returnedfalse,oldmouseposloopcontrol,val,ax,priority=GObject.PRIORITY_LOW)
+			GObject.timeout_add(350, loopcontrol,i,autoscaleval,entrytextselectstyle,rect,mousepos,inside,recttext,mousepostext,winsize,timecounterb,infotext,checkbox,returnedfalse,oldmouseposloopcontrol,val,ax,priority=GObject.PRIORITY_DEFAULT_IDLE)
 			toolbarb = Gtk.Toolbar()
 			context = toolbarb.get_style_context()
 			context.add_class(Gtk.STYLE_CLASS_PRIMARY_TOOLBAR)
@@ -1432,6 +1441,7 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 			def devicechanged(hdfghgd):
 				global currentdevice
 				global removedselectitem
+				savecommand.value="False"
 				currentdevice.removeallwidgets(toolbar)
 				if((int(dev_combo.get_model()[dev_combo.get_active_iter()][:2][0]))==1):
 					currentdevice=blank_module
