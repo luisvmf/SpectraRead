@@ -8,28 +8,34 @@ process.argv.forEach(function (val, index, array) {
 });
 var mmap=require("./fastmmapmq");
 var pf=require("./polfiths");
-var datahspeaks=mmap.ConnectMmapSync("spectrareadd","@"+cmdargs);
-while(datahspeaks==-1){
-	datahspeaks=mmap.ConnectMmapSync("spectrareadd","@"+cmdargs);
+var datahspeaksb=mmap.ConnectMmapSync("spectrareadd","@"+cmdargs);
+while(datahspeaksb==-1){
+	datahspeaksb=mmap.ConnectMmapSync("spectrareadd","@"+cmdargs);
 	console.log("Reconnecting on hspeaks.");
 	pf.sleep(0.1);
 }
-function inithspeaksprocess(id,idb){
-	pf.connect(id+""+cmdargs,idb+""+cmdargs);
+function inithspeaksprocess(id,idb,createconnect,sleeptime){
+	pf.sleep(sleeptime);
+	console.log("pc"+id);
+	pf.connect(id+""+cmdargs,idb+""+cmdargs,createconnect);
+	console.log("c"+id);
 	while(true){
-		datapeaks=mmap.GetSharedStringSync(datahspeaks);
-		if(datapeaks!=""){
+		datapeaks=mmap.GetSharedStringSync(datahspeaksb);
+		if(datapeaks.indexOf(",")!=-1){
 			try{
 				datapeaks=eval(datapeaks);
 				if(datapeaks[3]+""=="True"){
-					a=pf.polfit(datapeaks[0],datapeaks[2],datapeaks[1],2);
+					a=pf.polfit(datapeaks[0],datapeaks[2],datapeaks[1],1);
 					if(a<300){
-						pf.sleep(0.08);
+						pf.sleep(0.02);
 					}
 				}else{
 					pf.sleep(0.1);
 				}
 			}catch(e){console.log(e);}
+		}else{
+			pf.sleep(0.1);
+			console.log("invalid string");
 		}
 	}
 }

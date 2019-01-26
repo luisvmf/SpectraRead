@@ -21,14 +21,23 @@ int savespectra;
 float savespectrainterval;
 std::string spectrafilename;
 std::string peaksfilename;
-void connectmappfhs(char *internalconnectid,char *internalconnectidpeaks){
-	mapid=connectmmap("spectrareadd",internalconnectid);
+void connectmappfhs(char *internalconnectid,char *internalconnectidpeaks,int createconnect){
+	mapid=connectmmap("daemon.js",internalconnectid);
 	while(mapid==-1){
-		mapid=connectmmap("spectrareadd",internalconnectid);
+		mapid=connectmmap("daemon.js",internalconnectid);
 		perror("Connection failed, reconnecting...");
-		usleep(1.5*1000000.0);
+		usleep(0.2*1000000.0);
 	}
-	mapidb=createmmap(internalconnectidpeaks,"rwx------");
+	if(createconnect==0){
+		mapidb=createmmap(internalconnectidpeaks,"rwx------");
+	}else{
+		mapidb=connectmmap("spectrareadd",internalconnectidpeaks);
+		while(mapidb==-1){
+			mapidb=connectmmap("spectrareadd",internalconnectidpeaks);
+			perror("Connection failed, reconnecting...");
+			usleep(0.2*1000000.0);
+		}
+	}
 }
 void boxcarint(double *dados,int dadoslen,int loopselect){
 	int contador1=1;
@@ -193,7 +202,6 @@ void fitbaseline(double *y,double *yb, int order,int N){
 		}
 	}
 }
-	char *chartemppeakbuffer=malloc(64);
 int mainproc(std::string internalstringauxreadx,std::string internalstringauxready,int order,int boxcarsizeint,float risingthreshold,float timestamp){
 	std::string internalstring=internalstringauxreadx;
 	std::string internalstring2=internalstringauxready;
@@ -260,25 +268,29 @@ int mainproc(std::string internalstringauxreadx,std::string internalstringauxrea
 			peaks[peakscount]=(-1*adjustsectioncoef[1]/(2*adjustsectioncoef[2]));
 			peakscount=peakscount+1;
 	}
-	snprintf(chartemppeakbuffer,strlen(chartemppeakbuffer),"%f",timestamp);
+	char strdhdhsghdaold[900]="";
+char *chartemppeakbuffer;
+chartemppeakbuffer=strdhdhsghdaold;
+	sprintf(chartemppeakbuffer,"%f",timestamp);
 	writemmap(mapidb,chartemppeakbuffer);
 	writemmap(mapidb,",");
 	for (j=0;j<peakscount;j++){
-		snprintf(chartemppeakbuffer,strlen(chartemppeakbuffer),"%f",peaks[j]);
+		sprintf(chartemppeakbuffer,"%f",peaks[j]);
 		writemmap(mapidb,chartemppeakbuffer);
 		writemmap(mapidb,",");
 	}
 	//free(chartemppeakbuffer);
 	writemmap(mapidb,"\n");
+	//printf("%s",readmmap(mapidb,0));
 	length=oldN+1;
 	currentnruns=currentnruns+1;
 	return 0;
 }
-			char *fastchararrcnt=malloc(90);
-	char *fastchararrb=malloc(10);
-	int alloccountera=10;
-	char *fastchararrc=malloc(10);
-	int alloccounterb=10;
+char *fastchararrcnt=malloc(90);
+char *fastchararrb=malloc(10);
+int alloccountera=10;
+char *fastchararrc=malloc(10);
+int alloccounterb=10;
 int procdatath(std::string internalstringauxread){
 	int countrawstrconvertb=0;
 	int strselect=0;
@@ -286,12 +298,14 @@ int procdatath(std::string internalstringauxread){
 	std::string internalstringauxready="";
 	if(internalstringauxread.length()+10>alloccountera){
 		fastchararrb=realloc(fastchararrb,internalstringauxread.length()+10);
+		alloccountera=alloccountera+1;
 	}
 	//char *fastchararrb=malloc(internalstringauxread.length()+10);
 	int fastchararrbcounter=0;
 	//char *fastchararrc=malloc(internalstringauxread.length()+10);
 	if(internalstringauxread.length()+10>alloccounterb){
 		fastchararrc=realloc(fastchararrc,internalstringauxread.length()+10);
+		alloccounterb=alloccounterb+1;
 	}
 	int fastchararrccounter=0;
 	float thistimestamp=-1;
@@ -342,8 +356,8 @@ int procdatath(std::string internalstringauxread){
 	//free(fastchararrc);
 	return realnspectra;
 }
-		char *fastchararr=malloc(10);
-		int alloccounterc=10;
+char *fastchararr=malloc(10);
+int alloccounterc=10;
 void polfit(const FunctionCallbackInfo<Value>& info) {
 	high_resolution_clock::time_point t1b=high_resolution_clock::now();
 	order=info[0]->NumberValue();
@@ -359,6 +373,9 @@ void polfit(const FunctionCallbackInfo<Value>& info) {
 	while(durationtotalacquisition/1000000<nruns){
 		t2b=high_resolution_clock::now();
 		durationtotalacquisition=duration_cast<microseconds>(t2b-t1b).count();
+		if(readlastinteractionb<1000){
+			usleep(0.01*1000000.0);
+		}
 		if(readlastinteractionb<250){
 			usleep(0.05*1000000.0);
 		}
@@ -381,6 +398,7 @@ void polfit(const FunctionCallbackInfo<Value>& info) {
 		//char *fastchararr=malloc(rawreaddata.length()+10);
 	if(rawreaddata.length()+10>alloccounterc){
 		fastchararr=realloc(fastchararr,rawreaddata.length()+10);
+		alloccounterc=alloccounterc+1;
 	}
 		int fastchararrcounter=0;
 		while(countrawstrconvert<rawreaddata.length()){
@@ -411,7 +429,8 @@ void connect(const FunctionCallbackInfo<Value>& info){
 		std::string internalstringtth = std::string(*param1b);
 		v8::String::Utf8Value param1c(info[1]->ToString());
 		std::string internalstringtthb = std::string(*param1c);
-		connectmappfhs(internalstringtth.c_str(),internalstringtthb.c_str());
+		int createconnect=info[2]->NumberValue();
+		connectmappfhs(internalstringtth.c_str(),internalstringtthb.c_str(),createconnect);
 	}
 }
 NAN_MODULE_INIT(InitAll) {

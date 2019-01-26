@@ -62,9 +62,9 @@ main(int argc, char ** argv, char ** envp){
 						srand(time(NULL));
 						string randomstring;
 						stringstream aaa;
-						aaa << abs(rand()*rand()*rand()*rand()*2/100000);
+						aaa << abs(rand()*rand()*rand()*rand()*2/10000000);
 						stringstream aaab;
-						aaab << abs(getTime()/100000);
+						aaab << abs(getTime()/10000000);
 						randomstring=aaa.str()+aaab.str();
 						int pidb=fork();
 						if ( pidb==0 ){
@@ -198,104 +198,18 @@ main(int argc, char ** argv, char ** envp){
 			std::string execcommandb=path+"spectrareads "+randomstring+"";
 			system(execcommandb.c_str()); //Start splash screen.
 		}else{
-			int pidbsafeb=fork();
-			if(pidbsafeb==0){
-				char arg1[900];
-				char exepath[900] = {0};
-				sprintf( arg1, "/proc/%d/exe", getpid() );
-				readlink( arg1, exepath, 1024 );
-				string ownPth=string(exepath);
-				std::string aux(ownPth);
-				int pos = aux.rfind('/');
-				std::string path = aux.substr(0,pos+1);
-				std::string name = aux.substr(pos+1);
-				int a=chdir(path.c_str());
-				std::string execcommand="GI_TYPELIB_PATH=girepository-1.0 LD_LIBRARY_PATH=atlas-base DISPLAY=':0' PYTHONPATH="+path+"Python/lib/python2.7 PYTHONHOME="+path+"Python/ LD_PRELOAD='"+path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3' "+path+"spectrareadd "+path+"main.js spectrareadcurrentprocid:"+randomstring+"spectrareadprocid spectrareadcmdarggui specreadproc1";
-				system(execcommand.c_str()); //Start splash screen.
-			}else{
-				int pidbsafec=fork();
-				if(pidbsafec==0){
-					int pidbsafed=fork();
-					if(pidbsafed==0){
-						int pidbsafee=fork();
-						if(pidbsafee==0){
-							int pidbsafef=fork();
-							if(pidbsafef==0){
-								//here
-								char arg1[900];
-								char exepath[900] = {0};
-								sprintf( arg1, "/proc/%d/exe", getpid() );
-								readlink( arg1, exepath, 1024 );
-								string ownPth=string(exepath);
-								std::string aux(ownPth);
-								int pos = aux.rfind('/');
-								std::string path = aux.substr(0,pos+1);
-								std::string name = aux.substr(pos+1);
-								int a=chdir(path.c_str());
-								std::string execcommand="GI_TYPELIB_PATH=girepository-1.0 LD_LIBRARY_PATH=atlas-base DISPLAY=':0' PYTHONPATH="+path+"Python/lib/python2.7 PYTHONHOME="+path+"Python/ LD_PRELOAD='"+path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3' "+path+"spectrareadd "+path+"main.js spectrareadcurrentprocid:"+randomstring+"spectrareadprocid spectrareadcmdarggui specreadproc2";
-								system(execcommand.c_str()); //Start splash screen.
-							}else{
-								//here
-								char arg1[900];
-								char exepath[900] = {0};
-								sprintf( arg1, "/proc/%d/exe", getpid() );
-								readlink( arg1, exepath, 1024 );
-								string ownPth=string(exepath);
-								std::string aux(ownPth);
-								int pos = aux.rfind('/');
-								std::string path = aux.substr(0,pos+1);
-								std::string name = aux.substr(pos+1);
-								int a=chdir(path.c_str());
-								std::string execcommand="GI_TYPELIB_PATH=girepository-1.0 LD_LIBRARY_PATH=atlas-base DISPLAY=':0' PYTHONPATH="+path+"Python/lib/python2.7 PYTHONHOME="+path+"Python/ LD_PRELOAD='"+path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3' "+path+"spectrareadd "+path+"main.js spectrareadcurrentprocid:"+randomstring+"spectrareadprocid spectrareadcmdarggui specreadproc3";
-								system(execcommand.c_str()); //Start splash screen.
-							}							
-						}else{
-							//here
-							char arg1[900];
-							char exepath[900] = {0};
-							sprintf( arg1, "/proc/%d/exe", getpid() );
-							readlink( arg1, exepath, 1024 );
-							string ownPth=string(exepath);
-							std::string aux(ownPth);
-							int pos = aux.rfind('/');
-							std::string path = aux.substr(0,pos+1);
-							std::string name = aux.substr(pos+1);
-							int a=chdir(path.c_str());
-							std::string execcommand="GI_TYPELIB_PATH=girepository-1.0 LD_LIBRARY_PATH=atlas-base DISPLAY=':0' PYTHONPATH="+path+"Python/lib/python2.7 PYTHONHOME="+path+"Python/ LD_PRELOAD='"+path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3' "+path+"spectrareadd "+path+"main.js spectrareadcurrentprocid:"+randomstring+"spectrareadprocid spectrareadcmdarggui specreadproc4";
-							system(execcommand.c_str()); //Start splash screen.
-						}
-					}else{
-						//here
-						char arg1[900];
-						char exepath[900] = {0};
-						sprintf( arg1, "/proc/%d/exe", getpid() );
-						readlink( arg1, exepath, 1024 );
-						string ownPth=string(exepath);
-						std::string aux(ownPth);
-						int pos = aux.rfind('/');
-						std::string path = aux.substr(0,pos+1);
-						std::string name = aux.substr(pos+1);
-						int a=chdir(path.c_str());
-						std::string execcommand="GI_TYPELIB_PATH=girepository-1.0 LD_LIBRARY_PATH=atlas-base DISPLAY=':0' PYTHONPATH="+path+"Python/lib/python2.7 PYTHONHOME="+path+"Python/ LD_PRELOAD='"+path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3' "+path+"spectrareadd "+path+"main.js spectrareadcurrentprocid:"+randomstring+"spectrareadprocid spectrareadcmdarggui specreadproc5";
-						system(execcommand.c_str()); //Start splash screen.
-					}
-				}else{
-					//here
-					char arg1[900];
-					char exepath[900] = {0};
-					sprintf( arg1, "/proc/%d/exe", getpid() );
-					readlink( arg1, exepath, 1024 );
-					string ownPth=string(exepath);
-					std::string aux(ownPth);
-					int pos = aux.rfind('/');
-					std::string path = aux.substr(0,pos+1);
-					std::string name = aux.substr(pos+1);
-					int a=chdir(path.c_str());
-					std::string execcommand="GI_TYPELIB_PATH=girepository-1.0 LD_LIBRARY_PATH=atlas-base DISPLAY=':0' PYTHONPATH="+path+"Python/lib/python2.7 PYTHONHOME="+path+"Python/ LD_PRELOAD='"+path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3' "+path+"spectrareadd "+path+"main.js spectrareadcurrentprocid:"+randomstring+"spectrareadprocid spectrareadcmdarggui specreadproc6";
-					system(execcommand.c_str()); //Start splash screen.
-				}
-
-			}
+			char arg1[900];
+			char exepath[900] = {0};
+			sprintf( arg1, "/proc/%d/exe", getpid() );
+			readlink( arg1, exepath, 1024 );
+			string ownPth=string(exepath);
+			std::string aux(ownPth);
+			int pos = aux.rfind('/');
+			std::string path = aux.substr(0,pos+1);
+			std::string name = aux.substr(pos+1);
+			int a=chdir(path.c_str());
+			std::string execcommand="GI_TYPELIB_PATH=girepository-1.0 LD_LIBRARY_PATH=atlas-base DISPLAY=':0' PYTHONPATH="+path+"Python/lib/python2.7 PYTHONHOME="+path+"Python/ LD_PRELOAD='"+path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3' "+path+"spectrareadd "+path+"main.js spectrareadcurrentprocid:"+randomstring+"spectrareadprocid spectrareadcmdarggui";
+			system(execcommand.c_str()); //Start splash screen.
 
 		}
 	//------------------------------------------------
