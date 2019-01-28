@@ -8,17 +8,15 @@ process.argv.forEach(function (val, index, array) {
 });
 var mmap=require("./fastmmapmq");
 var pf=require("./polfiths");
-var datahspeaksb=mmap.ConnectMmapSync("spectrareadd","@"+cmdargs);
-while(datahspeaksb==-1){
-	datahspeaksb=mmap.ConnectMmapSync("spectrareadd","@"+cmdargs);
-	console.log("Reconnecting on hspeaks.");
-	pf.sleep(0.1);
-}
 function inithspeaksprocess(id,idb,createconnect,sleeptime){
+	var datahspeaksb=mmap.ConnectMmapSync("main.js","@"+cmdargs);
+	while(datahspeaksb==-1){
+		datahspeaksb=mmap.ConnectMmapSync("main.js","@"+cmdargs);
+		console.log("Reconnecting on hspeaks.");
+		pf.sleep(0.1);
+	}
 	pf.sleep(sleeptime);
-	console.log("pc"+id);
 	pf.connect(id+""+cmdargs,idb+""+cmdargs,createconnect);
-	console.log("c"+id);
 	while(true){
 		datapeaks=mmap.GetSharedStringSync(datahspeaksb);
 		if(datapeaks.indexOf(",")!=-1){
@@ -35,7 +33,6 @@ function inithspeaksprocess(id,idb,createconnect,sleeptime){
 			}catch(e){console.log(e);}
 		}else{
 			pf.sleep(0.1);
-			console.log("invalid string");
 		}
 	}
 }

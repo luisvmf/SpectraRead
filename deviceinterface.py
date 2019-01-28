@@ -257,8 +257,8 @@ def initp():
 									if(testi==7):
 										if(fastmmap.write(datamaphsa,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
 											dropspec=dropspec+1
-										timestamp=timestamp+1
 										testi=-1
+									timestamp=timestamp+1
 									testi=testi+1
 							if(retv[2]!=""):
 								showerr(retv[2])

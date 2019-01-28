@@ -26,16 +26,16 @@ void connectmappfhs(char *internalconnectid,char *internalconnectidpeaks,int cre
 	while(mapid==-1){
 		mapid=connectmmap("daemon.js",internalconnectid);
 		perror("Connection failed, reconnecting...");
-		usleep(0.2*1000000.0);
+		usleep(0.05*1000000.0);
 	}
 	if(createconnect==0){
 		mapidb=createmmap(internalconnectidpeaks,"rwx------");
 	}else{
-		mapidb=connectmmap("spectrareadd",internalconnectidpeaks);
+		mapidb=connectmmap("peaksworker.js",internalconnectidpeaks);
 		while(mapidb==-1){
-			mapidb=connectmmap("spectrareadd",internalconnectidpeaks);
+			mapidb=connectmmap("peaksworker.js",internalconnectidpeaks);
 			perror("Connection failed, reconnecting...");
-			usleep(0.2*1000000.0);
+			usleep(0.05*1000000.0);
 		}
 	}
 }

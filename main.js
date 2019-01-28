@@ -36,13 +36,13 @@
 		var workerb=cluster.fork();
 		var workergd=cluster.fork();
 		var workerhsh=cluster.fork();
-		var workersgagf=cluster.fork();
-		var workersgagfb=cluster.fork();
-		var workersgagfc=cluster.fork();
-		var workersgagfd=cluster.fork();
-		var workersgagfe=cluster.fork();//
-		var workersgagff=cluster.fork();
-		var workersgagfg=cluster.fork();
+		//var workersgagf=cluster.fork();
+		//var workersgagfb=cluster.fork();
+		//var workersgagfc=cluster.fork();
+		//var workersgagfd=cluster.fork();
+		//var workersgagfe=cluster.fork();//
+		//var workersgagff=cluster.fork();
+		//var workersgagfg=cluster.fork();
 		var mmap=require("./fastmmapmq");
 		var python = require('python.node');
 		var os = python.import('os');
@@ -136,19 +136,6 @@
 		});
 		workerhsh.on('exit', function(aaa,bbb) {
 			console.log("d");
-			exithandler();
-		});
-		workersgagf.on('exit', function(aaa,bbb) {
-			console.log("e");
-			exithandler();
-		});
-		workersgagfb.on('exit', function(aaa,bbb) {
-			exithandler();
-		});
-		workersgagfc.on('exit', function(aaa,bbb) {
-			exithandler();
-		});
-		workersgagfd.on('exit', function(aaa,bbb) {
 			exithandler();
 		});
 		process.on('exit', function () {
@@ -405,28 +392,28 @@
 			time.sleep(0.01);
 			}catch(e){console.log(e);}
 			}
+	//}else if (cluster.worker.id === 3) {
+	//	var peakshs=require("./hspeaks.js");
+	//	peakshs.inithspeaksprocess("[","peak1",0,0.01);
+	//}else if (cluster.worker.id === 4) {
+	//	var peakshs=require("./hspeaks.js");
+	//	peakshs.inithspeaksprocess("{","peak1b",0,0.01);
+	//}else if (cluster.worker.id === 5) {
+	//	var peakshs=require("./hspeaks.js");
+	//	peakshs.inithspeaksprocess("(","peak1c",0,0.02);
+	//}else if (cluster.worker.id === 6) {
+	//	var peakshs=require("./hspeaks.js");
+	//	peakshs.inithspeaksprocess("[","peak2",0,0.01);
+	//}else if (cluster.worker.id === 7) {
+	//	var peakshs=require("./hspeaks.js");
+	//	peakshs.inithspeaksprocess("{","peak2b",0,0.01);
+	//}else if (cluster.worker.id === 8) {
+	//	var peakshs=require("./hspeaks.js");
+	//	peakshs.inithspeaksprocess("(",'peak2c',0,0.01);
+	//}else if (cluster.worker.id === 9) {
+	//	var peakshs=require("./hspeaks.js");
+	//	peakshs.inithspeaksprocess("~","peak2d",0,0.02);
 	}else if (cluster.worker.id === 3) {
-		var peakshs=require("./hspeaks.js");
-		peakshs.inithspeaksprocess("[","peak1",0,0.01);
-	}else if (cluster.worker.id === 4) {
-		var peakshs=require("./hspeaks.js");
-		peakshs.inithspeaksprocess("{","peak1",1,0.1);
-	}else if (cluster.worker.id === 5) {
-		var peakshs=require("./hspeaks.js");
-		peakshs.inithspeaksprocess("(","peak1",1,0.2);
-	}else if (cluster.worker.id === 6) {
-		var peakshs=require("./hspeaks.js");
-		peakshs.inithspeaksprocess("[","peak2",0,0.01);
-	}else if (cluster.worker.id === 7) {
-		var peakshs=require("./hspeaks.js");
-		peakshs.inithspeaksprocess("{","peak2",1,0.1);
-	}else if (cluster.worker.id === 8) {
-		var peakshs=require("./hspeaks.js");
-		peakshs.inithspeaksprocess("(",'peak2',1,0.1);
-	}else if (cluster.worker.id === 9) {
-		var peakshs=require("./hspeaks.js");
-		peakshs.inithspeaksprocess("~","peak2",1,0.2);
-	}else if (cluster.worker.id === 10) {
 		var mmap=require("./fastmmapmq.node");
 		var pf=require("./polfiths");
 		var fs=require("fs");
@@ -444,14 +431,24 @@
 			console.log("Connection failed...Reconnecting");
 			pf.sleep(0.1);
 		}
-		var id=mmap.ConnectMmapSync("spectrareadd","peak1"+cmdargs);
+		var id=mmap.ConnectMmapSync("peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:[","p["+cmdargs);
 		while(id==-1){
-			id=mmap.ConnectMmapSync("spectrareadd","peak1"+cmdargs);
+			id=mmap.ConnectMmapSync("peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:[","p["+cmdargs);
+			pf.sleep(0.3);
+		}
+		var idb=mmap.ConnectMmapSync("peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:~","p~"+cmdargs);
+		while(idb==-1){
+			idb=mmap.ConnectMmapSync("peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:~","p~"+cmdargs);
 			pf.sleep(0.1);
 		}
-		var idb=mmap.ConnectMmapSync("spectrareadd","peak2"+cmdargs);
-		while(idb==-1){
-			idb=mmap.ConnectMmapSync("spectrareadd","peak2"+cmdargs);
+		var idc=mmap.ConnectMmapSync("peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:par","p("+cmdargs);
+		while(idc==-1){
+			idc=mmap.ConnectMmapSync("peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:par","p("+cmdargs);
+			pf.sleep(0.1);
+		}
+		var idd=mmap.ConnectMmapSync("peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:{","p{"+cmdargs);
+		while(idd==-1){
+			idd=mmap.ConnectMmapSync("peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:{","p{"+cmdargs);
 			pf.sleep(0.1);
 		}
 		mmap.WriteSharedStringSync(finishloadjghgh,"ok");
@@ -460,12 +457,14 @@
 			console.log("a");
 			test=mmap.ReadSync(id,0);
 			test=test+mmap.ReadSync(idb,0);
+			test=test+mmap.ReadSync(idc,0);
+			test=test+mmap.ReadSync(idd,0);
 			if(test.indexOf(",")!=-1){
 				fs.appendFileSync("/home/luisvmf/Desktop/testesr.dat", test);
 				//console.log(test);
 			}
 		}
-	}else if (cluster.worker.id === 11) {
+	}else if (cluster.worker.id === 4) {
 		//var peakshs=require("./hspeaks.js");
 		//peakshs.inithspeaksprocess(":","|");
 	}
