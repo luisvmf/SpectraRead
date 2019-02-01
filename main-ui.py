@@ -21,6 +21,9 @@
 #SOFTWARE.
 
 import os
+import pickle
+import codecs
+import subprocess
 try:
 	os.mkdir(os.path.expanduser("~")+"/.spectraread/")
 except:
@@ -841,6 +844,8 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 						dialog.destroy()
 				dialog = Dialog()
 				dialog.run()
+			def openpeaksfit(fsgdfghghgfdgfgfd):
+				subprocess.call([os.getcwd()+"/peaksfit/peaks"])
 			global returna
 			global currentdevice
 			global removedselectitem
@@ -891,11 +896,16 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 			self.add(hbox)
 			menubar = Gtk.MenuBar()
 			menuitem = Gtk.MenuItem(label='File')
+			menuitemtools = Gtk.MenuItem(label='Tools')
 			menuitemhelp = Gtk.MenuItem(label='Help')
 			submenubar = Gtk.Menu()
+			submenubartools = Gtk.Menu()
+			menuitembtools = Gtk.ImageMenuItem(Gtk.STOCK_OPEN,label='Open peaks monitor')
 			menuitemb = Gtk.ImageMenuItem(Gtk.STOCK_SAVE,label='Save single')
 			menuitemb.set_image(Gtk.Image.new_from_icon_name("document-save-as",Gtk.IconSize.BUTTON))
+			menuitembtools.set_image(Gtk.Image.new_from_icon_name("document-open",Gtk.IconSize.BUTTON))
 			menuitemb.set_always_show_image(True)
+			menuitembtools.set_always_show_image(True)
 			menuitemc = Gtk.ImageMenuItem(Gtk.STOCK_SAVE,label='Save multiple')
 			menuitemc.set_image(Gtk.Image.new_from_icon_name("document-save-as",Gtk.IconSize.BUTTON))
 			menuitemc.set_always_show_image(True)
@@ -905,9 +915,12 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 			menuitemc.set_sensitive(False)
 			submenubar.append(menuitemb)
 			submenubar.append(menuitemc)
+			submenubartools.append(menuitembtools)
 			submenubar.append(menuitemd)
 			menuitem.set_submenu(submenubar)
+			menuitemtools.set_submenu(submenubartools)
 			menubar.append(menuitem)
+			menubar.append(menuitemtools)
 			menubar.append(menuitemhelp)
 			submenubarhelp = Gtk.Menu()
 			submenuitemhelpa = Gtk.ImageMenuItem(Gtk.STOCK_HELP,label='Help')
@@ -928,6 +941,7 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 			submenuitema.connect("activate", save_single_spectrum)
 			submenuitemb.connect("activate", save_single_peaks)
 			submenuitemc.connect("activate", save_single_spectrum_peaks)
+			menuitembtools.connect("activate", openpeaksfit)
 			def closewindow(jyrryjryjeyjyj):
 				windowclose.value="closed"
 				self.destroy()
@@ -1543,14 +1557,16 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 	time.sleep(0.1)
 	fastmmap.write(mmap,",11gui loaded")
 	time.sleep(0.2)
-	fastmmap.write(mmap,",10main window load...")
-	time.sleep(0.5)
 	while(readyshoww.value=="False"):
 		time.sleep(0.1)
 	while(readyshowwin.value=="-1"):
 		time.sleep(0.1)
+	fastmmap.write(mmap,",10waiting peaks daemon...")
+	time.sleep(0.5)
 	while(fastmmap.getsharedstring(int(readyshowwin.value))!="ok"):
 		time.sleep(0.1)
+	fastmmap.write(mmap,",10main window load...")
+	time.sleep(0.3)
 	fastmmap.write(mmap,",\2")
 	win.show_all()
 	win.connect("delete-event", Gtk.main_quit)
@@ -1569,7 +1585,7 @@ savecommand.value="False"
 spectrum = managerb.Value(c_char_p, "")
 spectrumx = managerb.Value(c_char_p, "")
 readshowwin = managerb.Value(c_char_p, "-1")
-infotext.value="Peaks:[]          Frequency:0hz             Temperature:--"+u'\xb0'+"C"
+infotext.value="Peaks:[]          Frequency:0hz             "
 startedp2final=0
 p2=Process(target=mainui, args=(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose,uncheck,spectrumx,readyshoww,readshowwin))
 globalpeaks=""
@@ -1577,14 +1593,14 @@ def mainload(processid):
 	global mmap
 	global startedp2final
 	global mmapbutton
-	mmap=fastmmap.connectmmap("spectrareads",""+str(processid))
+	mmap=fastmmap.connectmmap(os.getcwd()+"/spectrareads "+str(processid),""+str(processid))
 	while mmap==-1:
-		mmap=fastmmap.connectmmap("spectrareads",""+str(processid))
+		mmap=fastmmap.connectmmap(os.getcwd()+"/spectrareads "+str(processid),""+str(processid))
 		print("Connection failed on main-ui 1...Reconnecting")
 		time.sleep(0.1)
-	mmapbutton=fastmmap.connectmmap("spectrareadd","L"+str(processid))
+	mmapbutton=fastmmap.connectmmap(os.getcwd()+"/spectrareadd "+os.getcwd()+"/daemon.js spectrareadcurrentprocid:"+str(processid),"L"+str(processid))
 	while mmapbutton==-1:
-		mmapbutton=fastmmap.connectmmap("spectrareadd","L"+str(processid))
+		mmapbutton=fastmmap.connectmmap(os.getcwd()+"/spectrareadd "+os.getcwd()+"/daemon.js spectrareadcurrentprocid:"+str(processid),"L"+str(processid))
 		print("Connection failed on main-ui 2...Reconnecting")
 		time.sleep(0.1)
 	readyshowwin.value=str(mmap)
@@ -1613,16 +1629,19 @@ def updateinfotext(freq,temp,extra):
 	global aaafreq
 	global aaatemp
 	global aaaextra
-	infotext.value="Peaks:["+str(globalpeaks)+"]          Frequency:"+str(freq)+"hz             Temperature:"+str(temp)+""+u'\xb0'+"C"+str(extra)+""
+	try:
+		infotext.value="Peaks:["+str(globalpeaks)+"]          Frequency:"+str(freq)+"hz             "+pickle.loads(codecs.decode((temp.split("\n")[0]).encode(), "base64")).encode('utf-8').strip()+""+str(extra)+""
+		aaatemp=pickle.loads(codecs.decode((temp.split("\n")[0]).encode(), "base64")).encode('utf-8').strip()
+	except:
+		null=None
 	aaafreq=freq
-	aaatemp=temp
 	aaaextra=extra
 def updateinfopeaks(peaksdata):
 	global globalpeaks
 	global aaafreq
 	global aaatemp
 	global aaaextra
-	infotext.value="Peaks:["+str(peaksdata)+"]          Frequency:"+str(aaafreq)+"hz             Temperature:"+str(aaatemp)+""+u'\xb0'+"C"+str(aaaextra)+""
+	infotext.value=u"Peaks:["+str(peaksdata)+"]          Frequency:"+str(aaafreq)+"hz             "+str(aaatemp)+""+str(aaaextra)+""
 	globalpeaks=str(peaksdata)
 def updategraphspectrumvariable(hgfhdjugfhlidfhgaudgf,fghddhsdgfhfg):
 	spectrum.value=fghddhsdgfhfg

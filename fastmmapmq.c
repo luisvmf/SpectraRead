@@ -118,7 +118,7 @@ int isinshm(char *fdlink){
 		if(continueisinshm==0){
 			break;
 		}else{
-			sleep(0.01);
+			usleep(0.05*1000000);
 		}
 	}
 	if(continueisinshm==-1){
@@ -157,6 +157,7 @@ int openfd_connect(char *programlocation,char *id,mode_t permission){
 				DIR *db;
 				struct dirent *dirb;
 				db=opendir(cmdlinefduri);
+				usleep(0.1*1000000);
 				if(db){
 				while((dirb=readdir(db))!=NULL){
 				int tmpnumb = atoi(dirb->d_name);
@@ -179,7 +180,7 @@ int openfd_connect(char *programlocation,char *id,mode_t permission){
 										//printf("found pid:%s, program: %s, file descriptor:%s\n",(dir->d_name),cmdlinefduric,(dirb->d_name));
 										foundfile=1;
 										char* location;
-										location=malloc(strlen(shmpath)+strlen(id)+1);
+										location=malloc(strlen(shmpath)+strlen(id)+1+strlen(cmdlinefduric));
 										strcpy(location, cmdlinefduric);
 										fd[currentcreatedmapindex] = open(location, O_RDWR);
 										if (fd[currentcreatedmapindex] == -1) {
@@ -327,6 +328,10 @@ void creatememmap(void){
 	}
 }
 int startmemmap(int create,char *programlocation,char *id, mode_t permission){
+	if(currentcreatedmapindex>bufferlength-5){
+		perror("Maximum mmap number exceeded");
+		exit(EXIT_FAILURE);
+	}
 	int thismapindex=-1;
 	if(create==1){
 		thismapindex=openfd_create(programlocation,id,permission);
@@ -716,7 +721,7 @@ int createmmap(char *b,char *s) {
 }
 char *listmmaps(char *s){
 	int b=900; //Maximum number of mmaps to return on listmaps("string").
-	char *retval[b];
+	char *retval[b+10];
 	int ilist=0;
 	while(ilist<=b){
 		retval[ilist]=malloc(300);
@@ -724,7 +729,7 @@ char *listmmaps(char *s){
 		ilist=ilist+1;
 	}
 	listmmapsinternal(s,retval,b);
-	char templist[900];
+	char templist[(900+10)*50];
 	char *retvalstr;
 	retvalstr=templist;
 	ilist=0;

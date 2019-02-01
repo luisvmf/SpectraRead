@@ -22,4 +22,4 @@ if(cmdargsid=="par"){
 	cmdargsid="(";
 }
 var peakshs=require("./hspeaks.js");
-peakshs.inithspeaksprocess(cmdargsid,"p"+cmdargsid,cmdargsidb,0.01);
+peakshs.inithspeaksprocess(cmdargsid,"p"+cmdargsid+cmdargsidb,0,0.01);

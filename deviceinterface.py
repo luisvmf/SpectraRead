@@ -59,18 +59,18 @@ def connectm(cmdargs):
 	datamaphsa=fastmmap.createmmap("{"+str(cmdargs),"rwx------")
 	datamaphsb=fastmmap.createmmap("("+str(cmdargs),"rwx------")
 	datamaphsc=fastmmap.createmmap("~"+str(cmdargs),"rwx------")
-	#datamaphsd=fastmmap.createmmap(","+str(cmdargs),"rwx------")
+	datamaphsd=fastmmap.createmmap(","+str(cmdargs),"rwx------")
 	#datamaphse=fastmmap.createmmap("'"+str(cmdargs),"rwx------")
 	#datamaphsf=fastmmap.createmmap("%"+str(cmdargs),"rwx------")
 	#datamaphsg=fastmmap.createmmap("#"+str(cmdargs),"rwx------")
 	#datamaphsh=fastmmap.createmmap(":"+str(cmdargs),"rwx------")
-	errmap=fastmmap.connectmmap("spectrareadd","d"+cmdargs)
+	errmap=fastmmap.connectmmap(os.getcwd()+"/spectrareadd "+os.getcwd()+"/main.js spectrareadcurrentprocid:"+cmdargs,"d"+cmdargs)
 	while(errmap==-1):
-		errmap=fastmmap.connectmmap("spectrareadd","d"+cmdargs)
+		errmap=fastmmap.connectmmap(os.getcwd()+"/spectrareadd "+os.getcwd()+"/main.js spectrareadcurrentprocid:"+cmdargs,"d"+cmdargs)
 		time.sleep(0.1)
-	idinta=fastmmap.connectmmap("spectrareadd","a"+cmdargs)
+	idinta=fastmmap.connectmmap(os.getcwd()+"/spectrareadd "+os.getcwd()+"/main.js spectrareadcurrentprocid:"+cmdargs,"a"+cmdargs)
 	while(idinta==-1):
-		idinta=fastmmap.connectmmap("spectrareadd","a"+cmdargs)
+		idinta=fastmmap.connectmmap(os.getcwd()+"/spectrareadd "+os.getcwd()+"/main.js spectrareadcurrentprocid:"+cmdargs,"a"+cmdargs)
 		time.sleep(0.1)
 	cmdargsb=cmdargs
 def showerr(errdata):
@@ -105,7 +105,7 @@ def pushvalgui(xstring,ystring):
 					fastmmap.writesharedstring(datamapaaab,";buffer:"+str(xstring)+"?"+str(ystring)+"final")
 				else:
 					print "pushval(xstring,ystring) error,\n\txstring.split(" ") and ystring.split(" ") must have the same length."
-				fastmmap.writesharedstring(datamapaaa,";frequency:"+str(globalfreq)+",deviceinfo:      "+str(globaltemp)+"--int-info-seperator--     "+str(globalstat)+" Dropped spectra: "+str(dropspec));
+				fastmmap.writesharedstring(datamapaaa,";frequency:"+str(globalfreq)+",deviceinfo:"+str(globaltemp)+"--int-info-seperator--     "+str(globalstat)+" Dropped spectra: "+str(dropspec));
 def getguistat():
 	global guistata
 	global guistatb
@@ -232,31 +232,44 @@ def initp():
 								if(retv[1]!=""):
 									if(testi==0):
 										if(fastmmap.write(datamaphsa,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
-											dropspec=dropspec+1
+											if(fastmmap.write(datamaphsc,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
+												dropspec=dropspec+1
 									if(testi==1):
 										if(fastmmap.write(datamaphsb,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
-											dropspec=dropspec+1
+											if(fastmmap.write(datamaphs,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
+												dropspec=dropspec+1
 									if(testi==2):
 										if(fastmmap.write(datamaphs,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
-											dropspec=dropspec+1
+											if(fastmmap.write(datamaphsb,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
+												dropspec=dropspec+1
 									if(testi==3):
-										if(fastmmap.write(datamaphsc,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
-											dropspec=dropspec+1
+										if(fastmmap.write(datamaphsd,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
+											if(fastmmap.write(datamaphsb,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
+												dropspec=dropspec+1
 									if(testi==4):
-										if(fastmmap.write(datamaphsb,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
-											dropspec=dropspec+1
-									if(testi==5):
-										if(fastmmap.write(datamaphs,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
-											dropspec=dropspec+1
-									if(testi==6):
 										if(fastmmap.write(datamaphsc,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
-											dropspec=dropspec+1
-									#if(testi==7):
-									#	if(fastmmap.write(datamaphsh,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
-									#		dropspec=dropspec+1
+											if(fastmmap.write(datamaphs,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
+												dropspec=dropspec+1
+									if(testi==5):
+										if(fastmmap.write(datamaphsb,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
+											if(fastmmap.write(datamaphsc,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
+												dropspec=dropspec+1
+									if(testi==6):
+										if(fastmmap.write(datamaphs,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
+											if(fastmmap.write(datamaphsa,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
+												dropspec=dropspec+1
 									if(testi==7):
+										if(fastmmap.write(datamaphsc,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
+											if(fastmmap.write(datamaphsa,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
+												dropspec=dropspec+1
+									if(testi==8):
+										if(fastmmap.write(datamaphsd,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
+											if(fastmmap.write(datamaphsa,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
+												dropspec=dropspec+1
+									if(testi==9):
 										if(fastmmap.write(datamaphsa,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
-											dropspec=dropspec+1
+											if(fastmmap.write(datamaphsb,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
+												dropspec=dropspec+1
 										testi=-1
 									timestamp=timestamp+1
 									testi=testi+1
@@ -266,11 +279,11 @@ def initp():
 								showwarning(retv[3])
 							if(retv[4]!=""):
 								globaltemp=retv[4]
-					freqcont=freqcont+1
-					if(abs(time.time()-timefreqcont)>1):
-						globalfreq=freqcont
-						freqcont=0
-						timefreqcont=time.time()
+						freqcont=freqcont+1
+						if(abs(time.time()-timefreqcont)>1):
+							globalfreq=freqcont
+							freqcont=0
+							timefreqcont=time.time()
 				else:
 					if(currentdeviceinterfacefunctions!=None):
 						if(currentdeviceinterfacefunctions!="None"):

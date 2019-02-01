@@ -1,3 +1,5 @@
+import pickle
+import codecs
 globalxdata=""
 globalydata=""
 globalerrdata=""
@@ -12,9 +14,9 @@ def setydata(y):
 def seterr(err):
 	global globalerrdata
 	globalerrdata=err
-def settemp(temp):
+def setinfo(infoguiapi):
 	global globaltemp
-	globaltemp=temp
+	globaltemp=codecs.encode(pickle.dumps(infoguiapi), "base64").decode()
 def setwarning(warning):
 	global globalwarningdata
 	globalwarningdata=warning

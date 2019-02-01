@@ -36,13 +36,6 @@
 		var workerb=cluster.fork();
 		var workergd=cluster.fork();
 		var workerhsh=cluster.fork();
-		//var workersgagf=cluster.fork();
-		//var workersgagfb=cluster.fork();
-		//var workersgagfc=cluster.fork();
-		//var workersgagfd=cluster.fork();
-		//var workersgagfe=cluster.fork();//
-		//var workersgagff=cluster.fork();
-		//var workersgagfg=cluster.fork();
 		var mmap=require("./fastmmapmq");
 		var python = require('python.node');
 		var os = python.import('os');
@@ -51,9 +44,9 @@
 		var spectrabuffer="";
 		var sys = python.import('sys');
 		var time = python.import('time');
-		var id=mmap.ConnectMmapSync("spectrareads",""+cmdargs);
+		var id=mmap.ConnectMmapSync(process.cwd()+"/spectrareads "+cmdargs,""+cmdargs);
 		while(id==-1){
-			id=mmap.ConnectMmapSync("spectrareads",""+cmdargs);
+			id=mmap.ConnectMmapSync(process.cwd()+"/spectrareads "+cmdargs,""+cmdargs);
 			console.log("Connection failed...Reconnecting");
 			time.sleep(0.1);
 		}
@@ -92,6 +85,23 @@
 			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/main.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdarggui\u0000","SIGKILL",process.pid);
 			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/main.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdarggui\u0000","SIGTERM",process.pid);
 			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/main.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdarggui\u0000","SIGKILL",process.pid);
+			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/peaksworker.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdarggui\u0000specreadprocpeaks:{\u0000spec1\u0000","SIGTERM",process.pid);
+			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/peaksworker.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdarggui\u0000specreadprocpeaks:{\u0000spec1\u0000","SIGKILL",process.pid);
+			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/peaksworker.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdarggui\u0000specreadprocpeaks:par\u0000spec1\u0000","SIGTERM",process.pid);
+			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/peaksworker.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdarggui\u0000specreadprocpeaks:par\u0000spec1\u0000","SIGKILL",process.pid);
+			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/peaksworker.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdarggui\u0000specreadprocpeaks:[\u0000spec1\u0000","SIGTERM",process.pid);
+			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/peaksworker.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdarggui\u0000specreadprocpeaks:[\u0000spec1\u0000","SIGKILL",process.pid);
+			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/peaksworker.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdarggui\u0000specreadprocpeaks:~\u0000spec1\u0000","SIGTERM",process.pid);
+			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/peaksworker.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdarggui\u0000specreadprocpeaks:~\u0000spec1\u0000","SIGKILL",process.pid);
+			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/peaksworker.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdarggui\u0000specreadprocpeaks:{\u0000spec2\u0000","SIGTERM",process.pid);
+			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/peaksworker.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdarggui\u0000specreadprocpeaks:{\u0000spec2\u0000","SIGKILL",process.pid);
+			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/peaksworker.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdarggui\u0000specreadprocpeaks:par\u0000spec2\u0000","SIGTERM",process.pid);
+			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/peaksworker.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdarggui\u0000specreadprocpeaks:par\u0000spec2\u0000","SIGKILL",process.pid);
+			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/peaksworker.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdarggui\u0000specreadprocpeaks:[\u0000spec2\u0000","SIGTERM",process.pid);
+			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/peaksworker.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdarggui\u0000specreadprocpeaks:[\u0000spec2\u0000","SIGKILL",process.pid);
+			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/peaksworker.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdarggui\u0000specreadprocpeaks:~\u0000spec2\u0000","SIGTERM",process.pid);
+			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/peaksworker.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdarggui\u0000specreadprocpeaks:~\u0000spec2\u0000","SIGKILL",process.pid);
+			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/peaksworker.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdarggui\u0000specreadprocpeaks:,\u0000spec1\u0000","SIGKILL",process.pid);
 			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/daemon.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdargdaemon\u0000","SIGTERM",process.pid);
             mmap.WriteSync(id,"\2");
 			process.exit();
@@ -188,19 +198,19 @@
 		var time=python.import("time");
 		var errmessage = python.import('acquisitiondialog');
 		var datahspeaks=mmap.CreateMmapSync("@"+cmdargs,"rwx------");
-		var idintb=mmap.ConnectMmapSync("spectrareadd","b"+cmdargs);
+		var idintb=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/main.js spectrareadcurrentprocid:"+cmdargs,"b"+cmdargs);
 		while(idintb==-1){
-			idintb=mmap.ConnectMmapSync("spectrareadd","b"+cmdargs);
+			idintb=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/main.js spectrareadcurrentprocid:"+cmdargs,"b"+cmdargs);
 			time.sleep(0.1);
 		}
-		var idintdatabs2=mmap.ConnectMmapSync("spectrareadd","p"+cmdargs);
+		var idintdatabs2=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/main.js spectrareadcurrentprocid:"+cmdargs,"p"+cmdargs);
 		while(idintdatabs2==-1){
-			idintdatabs2=mmap.ConnectMmapSync("spectrareadd","p"+cmdargs);
+			idintdatabs2=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/main.js spectrareadcurrentprocid:"+cmdargs,"p"+cmdargs);
 			time.sleep(0.1);
 		}
-		var datamapaaab=mmap.ConnectMmapSync("spectrareadd","?"+cmdargs);
+		var datamapaaab=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/daemon.js spectrareadcurrentprocid:"+cmdargs,"?"+cmdargs);
 		while(datamapaaab==-1){
-			datamapaaab=mmap.ConnectMmapSync("spectrareadd","?"+cmdargs);
+			datamapaaab=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/daemon.js spectrareadcurrentprocid:"+cmdargs,"?"+cmdargs);
 			console.log("Connection failed...Reconnecting");
 			time.sleep(0.1);
 		}
@@ -320,10 +330,8 @@
 				}
 			}
 			try{
-				mmap.WriteSharedStringSync(datahspeaks,"["+datamainguiproc+",'"+iscontmeasactive+"']");
+				mmap.WriteSharedStringSync(datahspeaks,"["+datamainguiproc+",'"+iscontmeasactive+"']--++['"+currentsavecommands[0]+"','"+currentsavecommands[1]+"','"+currentsavecommands[2]+"','"+currentsavecommands[3]+"','"+currentsavecommands[4]+"']");
 				if(currentsavecommands!=""){
-					//console.log(datamainguiproc[0]+","+datamainguiproc[1]+","+datamainguiproc[2]);
-					//console.log(currentsavecommands);
 					if(currentsavecommands[1]!=false){
 						savelocationfinal=currentsavecommands[0]+"/"+currentsavecommands[1];
 						if((time.time()-timefirstsave)>currentsavecommands[3]/1000){
@@ -385,34 +393,12 @@
 						errsavecmd="";
 						showerrmessage=0;
 					}
-					//pb(datamainguiproc[0],datamainguiproc[1],datamainguiproc[2],1,1,0,0.5,"spec","peaks");
 				}else{
 					time.sleep(0.1);
 				}
 			time.sleep(0.01);
 			}catch(e){console.log(e);}
 			}
-	//}else if (cluster.worker.id === 3) {
-	//	var peakshs=require("./hspeaks.js");
-	//	peakshs.inithspeaksprocess("[","peak1",0,0.01);
-	//}else if (cluster.worker.id === 4) {
-	//	var peakshs=require("./hspeaks.js");
-	//	peakshs.inithspeaksprocess("{","peak1b",0,0.01);
-	//}else if (cluster.worker.id === 5) {
-	//	var peakshs=require("./hspeaks.js");
-	//	peakshs.inithspeaksprocess("(","peak1c",0,0.02);
-	//}else if (cluster.worker.id === 6) {
-	//	var peakshs=require("./hspeaks.js");
-	//	peakshs.inithspeaksprocess("[","peak2",0,0.01);
-	//}else if (cluster.worker.id === 7) {
-	//	var peakshs=require("./hspeaks.js");
-	//	peakshs.inithspeaksprocess("{","peak2b",0,0.01);
-	//}else if (cluster.worker.id === 8) {
-	//	var peakshs=require("./hspeaks.js");
-	//	peakshs.inithspeaksprocess("(",'peak2c',0,0.01);
-	//}else if (cluster.worker.id === 9) {
-	//	var peakshs=require("./hspeaks.js");
-	//	peakshs.inithspeaksprocess("~","peak2d",0,0.02);
 	}else if (cluster.worker.id === 3) {
 		var mmap=require("./fastmmapmq.node");
 		var pf=require("./polfiths");
@@ -425,44 +411,98 @@
 				}
 			}
 		});
-		var finishloadjghgh=mmap.ConnectMmapSync("spectrareads",""+cmdargs);
+		var peaksgui=mmap.CreateMmapSync("p&","rwx------");
+		var finishloadjghgh=mmap.ConnectMmapSync(process.cwd()+"/spectrareads "+cmdargs,""+cmdargs);
 		while(finishloadjghgh==-1){
-			finishloadjghgh=mmap.ConnectMmapSync("spectrareads",""+cmdargs);
+			finishloadjghgh=mmap.ConnectMmapSync(process.cwd()+"/spectrareads "+cmdargs,""+cmdargs);
 			console.log("Connection failed...Reconnecting");
 			pf.sleep(0.1);
 		}
-		var id=mmap.ConnectMmapSync("peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:[","p["+cmdargs);
+		var infosaveui=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/main.js spectrareadcurrentprocid:"+cmdargs,"@"+cmdargs);
+		while(infosaveui==-1){
+			infosaveui=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/main.js spectrareadcurrentprocid:"+cmdargs,"@"+cmdargs);
+			console.log("Connection failed...Reconnecting");
+			pf.sleep(0.1);
+		}
+		var id=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:[","p[0"+cmdargs);
 		while(id==-1){
-			id=mmap.ConnectMmapSync("peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:[","p["+cmdargs);
+			id=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:[","p[0"+cmdargs);
 			pf.sleep(0.3);
 		}
-		var idb=mmap.ConnectMmapSync("peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:~","p~"+cmdargs);
+		var idb=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:~","p~0"+cmdargs);
 		while(idb==-1){
-			idb=mmap.ConnectMmapSync("peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:~","p~"+cmdargs);
+			idb=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:~","p~0"+cmdargs);
 			pf.sleep(0.1);
 		}
-		var idc=mmap.ConnectMmapSync("peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:par","p("+cmdargs);
+		var idc=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:par","p(0"+cmdargs);
 		while(idc==-1){
-			idc=mmap.ConnectMmapSync("peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:par","p("+cmdargs);
+			idc=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:par","p(0"+cmdargs);
 			pf.sleep(0.1);
 		}
-		var idd=mmap.ConnectMmapSync("peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:{","p{"+cmdargs);
+		var idd=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:{","p{0"+cmdargs);
 		while(idd==-1){
-			idd=mmap.ConnectMmapSync("peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:{","p{"+cmdargs);
+			idd=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:{","p{0"+cmdargs);
 			pf.sleep(0.1);
 		}
+		var ide=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:,","p,0"+cmdargs);
+		while(ide==-1){
+			ide=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:,","p,0"+cmdargs);
+			pf.sleep(0.1);
+		}
+
+
+		var idf=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:[","p[1"+cmdargs);
+		while(idf==-1){
+			idf=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:[","p[1"+cmdargs);
+			pf.sleep(0.3);
+		}
+		var idg=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:par","p(1"+cmdargs);
+		while(idg==-1){
+			idg=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:par","p(1"+cmdargs);
+			pf.sleep(0.1);
+		}
+		var idh=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:{","p{1"+cmdargs);
+		while(idh==-1){
+			idh=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:{","p{1"+cmdargs);
+			pf.sleep(0.1);
+		}
+
+
+
+
 		mmap.WriteSharedStringSync(finishloadjghgh,"ok");
+		var datapeaks=['undefined','undefined','undefined','undefined','undefined'];
+		var firstsave=0;
 		while(true){
-			pf.sleep(0.2);
-			console.log("a");
-			test=mmap.ReadSync(id,0);
-			test=test+mmap.ReadSync(idb,0);
-			test=test+mmap.ReadSync(idc,0);
-			test=test+mmap.ReadSync(idd,0);
-			if(test.indexOf(",")!=-1){
-				fs.appendFileSync("/home/luisvmf/Desktop/testesr.dat", test);
-				//console.log(test);
+			try{
+				pf.sleep(0.1);
+				test=mmap.ReadSync(id,0);
+				test=test+mmap.ReadSync(idb,0);
+				test=test+mmap.ReadSync(idc,0);
+				test=test+mmap.ReadSync(idd,0);
+				test=test+mmap.ReadSync(ide,0);
+				test=test+mmap.ReadSync(idf,0);
+				test=test+mmap.ReadSync(idg,0);
+				test=test+mmap.ReadSync(idh,0);
+				if(test.indexOf("\n")!=-1){
+					try{
+						datapeaks=eval(mmap.GetSharedStringSync(infosaveui).split("--++")[1]);
+					}catch(e){console.log(e)}
+					if(datapeaks.length!=5){
+						datapeaks=["false","false","false","false","false"];
+					}
+					if(datapeaks[2]!='undefined'){
+						if(firstsave==0){
+							fs.appendFileSync(""+datapeaks[0]+"/"+datapeaks[2]+".dat", " ");
+							firstsave=1;
+						}
+						fs.appendFileSync(""+datapeaks[0]+"/"+datapeaks[2]+".dat", test);
+					}else{
+						firstsave=0;
+					}
+					mmap.WriteSync(peaksgui,test);
 			}
+			}catch(e){console.log(e)}
 		}
 	}else if (cluster.worker.id === 4) {
 		//var peakshs=require("./hspeaks.js");

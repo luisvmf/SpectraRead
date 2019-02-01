@@ -21,5 +21,5 @@ sys.path.append(dirpython+'/Python/lib/python2.7/site-packages');
 sys.path.append(dirpython+'/Python/lib/python2.7/site-packages/numpy');
 var daemonpy=python.import("deviceinterface");
 daemonpy.connectm(cmdargs+"");
-time.sleep(1)
+time.sleep(0.3)
 daemonpy.initp();

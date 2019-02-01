@@ -129,8 +129,14 @@ main(int argc, char ** argv, char ** envp){
 		std::string path = aux.substr(0,pos+1);
 		std::string name = aux.substr(pos+1);
 		int a=chdir(path.c_str());
-		std::string execcommand="GI_TYPELIB_PATH=girepository-1.0 LD_LIBRARY_PATH=atlas-base DISPLAY=':0' PYTHONPATH="+path+"Python/lib/python2.7 PYTHONHOME="+path+"Python/ LD_PRELOAD='"+path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3' "+path+"spectrareadd "+path+"daemon.js spectrareadcurrentprocid:"+randomstring+"spectrareadprocid spectrareadcmdargdaemon";
-		system(execcommand.c_str()); //Start device control daemon.
+		//std::string execcommand="GI_TYPELIB_PATH=girepository-1.0 LD_LIBRARY_PATH=atlas-base DISPLAY=':0' PYTHONPATH="+path+"Python/lib/python2.7 PYTHONHOME="+path+"Python/ LD_PRELOAD='"+path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3' "+path+"spectrareadd "+path+"daemon.js spectrareadcurrentprocid:"+randomstring+"spectrareadprocid spectrareadcmdargdaemon";
+		//system(execcommand.c_str()); //Start device control daemon.
+			   setenv("GI_TYPELIB_PATH", "girepository-1.0", 1);
+			   setenv("LD_LIBRARY_PATH", "atlas-base", 1);
+			   setenv("PYTHONPATH", (path+"Python/lib/python2.7").c_str(), 1);
+			   setenv("PYTHONHOME", (path+"Python/").c_str(), 1);
+			   setenv("LD_PRELOAD", (path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3").c_str(), 1);
+				execl((path+"spectrareadd").c_str(), (path+"spectrareadd").c_str(),(path+"daemon.js").c_str(), ("spectrareadcurrentprocid:"+randomstring+"spectrareadprocid").c_str(), "spectrareadcmdargdaemon", NULL);
 	//HERE STOPS THE MEDIUM DANGER PART FOR PROCESS 1
 	//------------------------------------------------
 	//------------------------------------------------
@@ -195,8 +201,9 @@ main(int argc, char ** argv, char ** envp){
 			std::string path = aux.substr(0,pos+1);
 			std::string name = aux.substr(pos+1);
 			int a=chdir(path.c_str());
-			std::string execcommandb=path+"spectrareads "+randomstring+"";
-			system(execcommandb.c_str()); //Start splash screen.
+			//std::string execcommandb=path+"spectrareads "+randomstring+"";
+			//system(execcommandb.c_str()); //Start splash screen.
+			execl((path+"spectrareads").c_str(), (path+"spectrareads").c_str(), (""+randomstring+"").c_str(), NULL);
 		}else{
 			int pidbsafeb=fork();
 			if(pidbsafeb==0){
@@ -210,8 +217,14 @@ main(int argc, char ** argv, char ** envp){
 				std::string path = aux.substr(0,pos+1);
 				std::string name = aux.substr(pos+1);
 				int a=chdir(path.c_str());
-				std::string execcommand="GI_TYPELIB_PATH=girepository-1.0 LD_LIBRARY_PATH=atlas-base DISPLAY=':0' PYTHONPATH="+path+"Python/lib/python2.7 PYTHONHOME="+path+"Python/ LD_PRELOAD='"+path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3' "+path+"spectrareadd "+path+"main.js spectrareadcurrentprocid:"+randomstring+"spectrareadprocid spectrareadcmdarggui";
-				system(execcommand.c_str()); //Start splash screen.
+				//std::string execcommand="GI_TYPELIB_PATH=girepository-1.0 LD_LIBRARY_PATH=atlas-base DISPLAY=':0' PYTHONPATH="+path+"Python/lib/python2.7 PYTHONHOME="+path+"Python/ LD_PRELOAD='"+path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3' "+path+"spectrareadd "+path+"main.js spectrareadcurrentprocid:"+randomstring+"spectrareadprocid spectrareadcmdarggui";
+				//system(execcommand.c_str()); //Start splash screen.
+			   setenv("GI_TYPELIB_PATH", "girepository-1.0", 1);
+			   setenv("LD_LIBRARY_PATH", "atlas-base", 1);
+			   setenv("PYTHONPATH", (path+"Python/lib/python2.7").c_str(), 1);
+			   setenv("PYTHONHOME", (path+"Python/").c_str(), 1);
+			   setenv("LD_PRELOAD", (path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3").c_str(), 1);
+				execl((path+"spectrareadd").c_str(), (path+"spectrareadd").c_str(),(path+"main.js").c_str(), ("spectrareadcurrentprocid:"+randomstring+"spectrareadprocid").c_str(), "spectrareadcmdarggui", NULL);
 			}else{
 				int pidbsafec=fork();
 				if(pidbsafec==0){
@@ -232,8 +245,17 @@ main(int argc, char ** argv, char ** envp){
 								std::string path = aux.substr(0,pos+1);
 								std::string name = aux.substr(pos+1);
 								int a=chdir(path.c_str());
-								std::string execcommand="GI_TYPELIB_PATH=girepository-1.0 LD_LIBRARY_PATH=atlas-base DISPLAY=':0' PYTHONPATH="+path+"Python/lib/python2.7 PYTHONHOME="+path+"Python/ LD_PRELOAD='"+path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3' "+path+"spectrareadd "+path+"peaksworker.js spectrareadcurrentprocid:"+randomstring+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:[ spec1";
-								system(execcommand.c_str()); //Start splash screen.
+								//std::string execcommand="GI_TYPELIB_PATH=girepository-1.0 LD_LIBRARY_PATH=atlas-base DISPLAY=':0' PYTHONPATH="+path+"Python/lib/python2.7 PYTHONHOME="+path+"Python/ LD_PRELOAD='"+path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3' "+path+"spectrareadd "+path+"peaksworker.js spectrareadcurrentprocid:"+randomstring+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:[ spec1";
+								//system(execcommand.c_str()); //Start splash screen.
+
+			   setenv("GI_TYPELIB_PATH", "girepository-1.0", 1);
+			   setenv("LD_LIBRARY_PATH", "atlas-base", 1);
+			   setenv("PYTHONPATH", (path+"Python/lib/python2.7").c_str(), 1);
+			   setenv("PYTHONHOME", (path+"Python/").c_str(), 1);
+			   setenv("LD_PRELOAD", (path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3").c_str(), 1);
+				execl((path+"spectrareadd").c_str(), (path+"spectrareadd").c_str(),(path+"peaksworker.js").c_str(), ("spectrareadcurrentprocid:"+randomstring+"spectrareadprocid").c_str(), "spectrareadcmdarggui","specreadprocpeaks:[","spec1", NULL);
+
+
 							}else{
 								//here
 								char arg1[900];
@@ -246,8 +268,14 @@ main(int argc, char ** argv, char ** envp){
 								std::string path = aux.substr(0,pos+1);
 								std::string name = aux.substr(pos+1);
 								int a=chdir(path.c_str());
-								std::string execcommand="GI_TYPELIB_PATH=girepository-1.0 LD_LIBRARY_PATH=atlas-base DISPLAY=':0' PYTHONPATH="+path+"Python/lib/python2.7 PYTHONHOME="+path+"Python/ LD_PRELOAD='"+path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3' "+path+"spectrareadd "+path+"peaksworker.js spectrareadcurrentprocid:"+randomstring+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:{ spec1";
-								system(execcommand.c_str()); //Start splash screen.
+								//std::string execcommand="GI_TYPELIB_PATH=girepository-1.0 LD_LIBRARY_PATH=atlas-base DISPLAY=':0' PYTHONPATH="+path+"Python/lib/python2.7 PYTHONHOME="+path+"Python/ LD_PRELOAD='"+path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3' "+path+"spectrareadd "+path+"peaksworker.js spectrareadcurrentprocid:"+randomstring+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:{ spec1";
+								//system(execcommand.c_str()); //Start splash screen.
+			   setenv("GI_TYPELIB_PATH", "girepository-1.0", 1);
+			   setenv("LD_LIBRARY_PATH", "atlas-base", 1);
+			   setenv("PYTHONPATH", (path+"Python/lib/python2.7").c_str(), 1);
+			   setenv("PYTHONHOME", (path+"Python/").c_str(), 1);
+			   setenv("LD_PRELOAD", (path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3").c_str(), 1);
+				execl((path+"spectrareadd").c_str(), (path+"spectrareadd").c_str(),(path+"peaksworker.js").c_str(), ("spectrareadcurrentprocid:"+randomstring+"spectrareadprocid").c_str(), "spectrareadcmdarggui","specreadprocpeaks:{","spec1", NULL);
 							}							
 						}else{
 							//here
@@ -261,8 +289,14 @@ main(int argc, char ** argv, char ** envp){
 							std::string path = aux.substr(0,pos+1);
 							std::string name = aux.substr(pos+1);
 							int a=chdir(path.c_str());
-							std::string execcommand="GI_TYPELIB_PATH=girepository-1.0 LD_LIBRARY_PATH=atlas-base DISPLAY=':0' PYTHONPATH="+path+"Python/lib/python2.7 PYTHONHOME="+path+"Python/ LD_PRELOAD='"+path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3' "+path+"spectrareadd "+path+"peaksworker.js spectrareadcurrentprocid:"+randomstring+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:par spec1";
-							system(execcommand.c_str()); //Start splash screen.
+							//std::string execcommand="GI_TYPELIB_PATH=girepository-1.0 LD_LIBRARY_PATH=atlas-base DISPLAY=':0' PYTHONPATH="+path+"Python/lib/python2.7 PYTHONHOME="+path+"Python/ LD_PRELOAD='"+path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3' "+path+"spectrareadd "+path+"peaksworker.js spectrareadcurrentprocid:"+randomstring+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:par spec1";
+							//system(execcommand.c_str()); //Start splash screen.
+			   setenv("GI_TYPELIB_PATH", "girepository-1.0", 1);
+			   setenv("LD_LIBRARY_PATH", "atlas-base", 1);
+			   setenv("PYTHONPATH", (path+"Python/lib/python2.7").c_str(), 1);
+			   setenv("PYTHONHOME", (path+"Python/").c_str(), 1);
+			   setenv("LD_PRELOAD", (path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3").c_str(), 1);
+				execl((path+"spectrareadd").c_str(), (path+"spectrareadd").c_str(),(path+"peaksworker.js").c_str(), ("spectrareadcurrentprocid:"+randomstring+"spectrareadprocid").c_str(), "spectrareadcmdarggui","specreadprocpeaks:par","spec1", NULL);
 						}
 					}else{
 						//here
@@ -276,8 +310,14 @@ main(int argc, char ** argv, char ** envp){
 						std::string path = aux.substr(0,pos+1);
 						std::string name = aux.substr(pos+1);
 						int a=chdir(path.c_str());
-						std::string execcommand="GI_TYPELIB_PATH=girepository-1.0 LD_LIBRARY_PATH=atlas-base DISPLAY=':0' PYTHONPATH="+path+"Python/lib/python2.7 PYTHONHOME="+path+"Python/ LD_PRELOAD='"+path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3' "+path+"spectrareadd "+path+"peaksworker.js spectrareadcurrentprocid:"+randomstring+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:[ spec2";
-						system(execcommand.c_str()); //Start splash screen.
+						//std::string execcommand="GI_TYPELIB_PATH=girepository-1.0 LD_LIBRARY_PATH=atlas-base DISPLAY=':0' PYTHONPATH="+path+"Python/lib/python2.7 PYTHONHOME="+path+"Python/ LD_PRELOAD='"+path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3' "+path+"spectrareadd "+path+"peaksworker.js spectrareadcurrentprocid:"+randomstring+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:[ spec2";
+						//system(execcommand.c_str()); //Start splash screen.
+			   setenv("GI_TYPELIB_PATH", "girepository-1.0", 1);
+			   setenv("LD_LIBRARY_PATH", "atlas-base", 1);
+			   setenv("PYTHONPATH", (path+"Python/lib/python2.7").c_str(), 1);
+			   setenv("PYTHONHOME", (path+"Python/").c_str(), 1);
+			   setenv("LD_PRELOAD", (path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3").c_str(), 1);
+				execl((path+"spectrareadd").c_str(), (path+"spectrareadd").c_str(),(path+"peaksworker.js").c_str(), ("spectrareadcurrentprocid:"+randomstring+"spectrareadprocid").c_str(), "spectrareadcmdarggui","specreadprocpeaks:[","spec2", NULL);
 					}
 				}else{
 					int pidbsafek=fork();
@@ -293,8 +333,14 @@ main(int argc, char ** argv, char ** envp){
 					std::string path = aux.substr(0,pos+1);
 					std::string name = aux.substr(pos+1);
 					int a=chdir(path.c_str());
-					std::string execcommand="GI_TYPELIB_PATH=girepository-1.0 LD_LIBRARY_PATH=atlas-base DISPLAY=':0' PYTHONPATH="+path+"Python/lib/python2.7 PYTHONHOME="+path+"Python/ LD_PRELOAD='"+path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3' "+path+"spectrareadd "+path+"peaksworker.js spectrareadcurrentprocid:"+randomstring+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:{ spec2";
-					system(execcommand.c_str()); //Start splash screen.
+					//std::string execcommand="GI_TYPELIB_PATH=girepository-1.0 LD_LIBRARY_PATH=atlas-base DISPLAY=':0' PYTHONPATH="+path+"Python/lib/python2.7 PYTHONHOME="+path+"Python/ LD_PRELOAD='"+path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3' "+path+"spectrareadd "+path+"peaksworker.js spectrareadcurrentprocid:"+randomstring+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:{ spec2";
+					//system(execcommand.c_str()); //Start splash screen.
+			   setenv("GI_TYPELIB_PATH", "girepository-1.0", 1);
+			   setenv("LD_LIBRARY_PATH", "atlas-base", 1);
+			   setenv("PYTHONPATH", (path+"Python/lib/python2.7").c_str(), 1);
+			   setenv("PYTHONHOME", (path+"Python/").c_str(), 1);
+			   setenv("LD_PRELOAD", (path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3").c_str(), 1);
+				execl((path+"spectrareadd").c_str(), (path+"spectrareadd").c_str(),(path+"peaksworker.js").c_str(), ("spectrareadcurrentprocid:"+randomstring+"spectrareadprocid").c_str(), "spectrareadcmdarggui","specreadprocpeaks:{","spec2", NULL);
 					}else{
 						int pidbsafel=fork();
 						if(pidbsafel==0){
@@ -309,22 +355,62 @@ main(int argc, char ** argv, char ** envp){
 							std::string path = aux.substr(0,pos+1);
 							std::string name = aux.substr(pos+1);
 							int a=chdir(path.c_str());
-							std::string execcommand="GI_TYPELIB_PATH=girepository-1.0 LD_LIBRARY_PATH=atlas-base DISPLAY=':0' PYTHONPATH="+path+"Python/lib/python2.7 PYTHONHOME="+path+"Python/ LD_PRELOAD='"+path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3' "+path+"spectrareadd "+path+"peaksworker.js spectrareadcurrentprocid:"+randomstring+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:par spec2";
-							system(execcommand.c_str()); //Start splash screen.
+							//std::string execcommand="GI_TYPELIB_PATH=girepository-1.0 LD_LIBRARY_PATH=atlas-base DISPLAY=':0' PYTHONPATH="+path+"Python/lib/python2.7 PYTHONHOME="+path+"Python/ LD_PRELOAD='"+path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3' "+path+"spectrareadd "+path+"peaksworker.js spectrareadcurrentprocid:"+randomstring+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:par spec2";
+							//system(execcommand.c_str()); //Start splash screen.
+			   setenv("GI_TYPELIB_PATH", "girepository-1.0", 1);
+			   setenv("LD_LIBRARY_PATH", "atlas-base", 1);
+			   setenv("PYTHONPATH", (path+"Python/lib/python2.7").c_str(), 1);
+			   setenv("PYTHONHOME", (path+"Python/").c_str(), 1);
+			   setenv("LD_PRELOAD", (path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3").c_str(), 1);
+				execl((path+"spectrareadd").c_str(), (path+"spectrareadd").c_str(),(path+"peaksworker.js").c_str(), ("spectrareadcurrentprocid:"+randomstring+"spectrareadprocid").c_str(), "spectrareadcmdarggui","specreadprocpeaks:par","spec2", NULL);
 						}else{
-							//here
-							char arg1[900];
-							char exepath[900] = {0};
-							sprintf( arg1, "/proc/%d/exe", getpid() );
-							readlink( arg1, exepath, 1024 );
-							string ownPth=string(exepath);
-							std::string aux(ownPth);
-							int pos = aux.rfind('/');
-							std::string path = aux.substr(0,pos+1);
-							std::string name = aux.substr(pos+1);
-							int a=chdir(path.c_str());
-							std::string execcommand="GI_TYPELIB_PATH=girepository-1.0 LD_LIBRARY_PATH=atlas-base DISPLAY=':0' PYTHONPATH="+path+"Python/lib/python2.7 PYTHONHOME="+path+"Python/ LD_PRELOAD='"+path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3' "+path+"spectrareadd "+path+"peaksworker.js spectrareadcurrentprocid:"+randomstring+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:~ spec1";
-							system(execcommand.c_str()); //Start splash screen.
+
+
+
+							int pidbsafebdkdkhjdhkihf=fork();
+							if(pidbsafebdkdkhjdhkihf==0){
+
+								//here
+								char arg1[900];
+								char exepath[900] = {0};
+								sprintf( arg1, "/proc/%d/exe", getpid() );
+								readlink( arg1, exepath, 1024 );
+								string ownPth=string(exepath);
+								std::string aux(ownPth);
+								int pos = aux.rfind('/');
+								std::string path = aux.substr(0,pos+1);
+								std::string name = aux.substr(pos+1);
+								int a=chdir(path.c_str());
+								//std::string execcommand="GI_TYPELIB_PATH=girepository-1.0 LD_LIBRARY_PATH=atlas-base DISPLAY=':0' PYTHONPATH="+path+"Python/lib/python2.7 PYTHONHOME="+path+"Python/ LD_PRELOAD='"+path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3' "+path+"spectrareadd "+path+"peaksworker.js spectrareadcurrentprocid:"+randomstring+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:~ spec1";
+								//system(execcommand.c_str()); //Start splash screen.
+				   setenv("GI_TYPELIB_PATH", "girepository-1.0", 1);
+				   setenv("LD_LIBRARY_PATH", "atlas-base", 1);
+				   setenv("PYTHONPATH", (path+"Python/lib/python2.7").c_str(), 1);
+				   setenv("PYTHONHOME", (path+"Python/").c_str(), 1);
+				   setenv("LD_PRELOAD", (path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3").c_str(), 1);
+					execl((path+"spectrareadd").c_str(), (path+"spectrareadd").c_str(),(path+"peaksworker.js").c_str(), ("spectrareadcurrentprocid:"+randomstring+"spectrareadprocid").c_str(), "spectrareadcmdarggui","specreadprocpeaks:~","spec1", NULL);
+						}else{
+								//here
+								char arg1[900];
+								char exepath[900] = {0};
+								sprintf( arg1, "/proc/%d/exe", getpid() );
+								readlink( arg1, exepath, 1024 );
+								string ownPth=string(exepath);
+								std::string aux(ownPth);
+								int pos = aux.rfind('/');
+								std::string path = aux.substr(0,pos+1);
+								std::string name = aux.substr(pos+1);
+								int a=chdir(path.c_str());
+								//std::string execcommand="GI_TYPELIB_PATH=girepository-1.0 LD_LIBRARY_PATH=atlas-base DISPLAY=':0' PYTHONPATH="+path+"Python/lib/python2.7 PYTHONHOME="+path+"Python/ LD_PRELOAD='"+path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3' "+path+"spectrareadd "+path+"peaksworker.js spectrareadcurrentprocid:"+randomstring+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:~ spec1";
+								//system(execcommand.c_str()); //Start splash screen.
+				   setenv("GI_TYPELIB_PATH", "girepository-1.0", 1);
+				   setenv("LD_LIBRARY_PATH", "atlas-base", 1);
+				   setenv("PYTHONPATH", (path+"Python/lib/python2.7").c_str(), 1);
+				   setenv("PYTHONHOME", (path+"Python/").c_str(), 1);
+				   setenv("LD_PRELOAD", (path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3").c_str(), 1);
+					execl((path+"spectrareadd").c_str(), (path+"spectrareadd").c_str(),(path+"peaksworker.js").c_str(), ("spectrareadcurrentprocid:"+randomstring+"spectrareadprocid").c_str(), "spectrareadcmdarggui","specreadprocpeaks:,","spec1", NULL);
+
+						}
 						}
 
 					}

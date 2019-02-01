@@ -29,7 +29,7 @@
 
 			}
 		});
-		var id=mmap.ConnectMmapSync("spectrareads",""+cmdargs);
+		var id=mmap.ConnectMmapSync(process.cwd()+"/spectrareads "+cmdargs,""+cmdargs);
 		var polfit=require("./polfit.node");
 		mmap.WriteSync(id,",03load ui modules");
 		var processsavedialog=require("./dialoganalysis.js");
@@ -37,21 +37,21 @@
 		var python = require('python.node');
 		var time=python.import("time");
 		while(id==-1){
-			id=mmap.ConnectMmapSync("spectrareads",""+cmdargs);
+			id=mmap.ConnectMmapSync(process.cwd()+"/spectrareads "+cmdargs,""+cmdargs);
 			console.log("Connection failed on nodegui 1...Reconnecting");
 			time.sleep(0.1);
 		}
 		var os = python.import('os');
 		time.sleep(0.2);
-		var idintc=mmap.ConnectMmapSync("spectrareadd","k"+cmdargs);
+		var idintc=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/daemon.js spectrareadcurrentprocid:"+cmdargs,"k"+cmdargs);
 		while(idintc==-1){
-			idintc=mmap.ConnectMmapSync("spectrareadd","k"+cmdargs);
+			idintc=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/daemon.js spectrareadcurrentprocid:"+cmdargs,"k"+cmdargs);
 			console.log("Connection failed nodegui 2...Reconnecting");
 			time.sleep(0.1);
 		}
-		var datamapaaab=mmap.ConnectMmapSync("spectrareadd","?"+cmdargs);
+		var datamapaaab=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/daemon.js spectrareadcurrentprocid:"+cmdargs,"?"+cmdargs);
 		while(datamapaaab==-1){
-			datamapaaab=mmap.ConnectMmapSync("spectrareadd","?"+cmdargs);
+			datamapaaab=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/daemon.js spectrareadcurrentprocid:"+cmdargs,"?"+cmdargs);
 			console.log("Connection failed nodegui 2...Reconnecting");
 			time.sleep(0.1);
 		}
