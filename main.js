@@ -201,17 +201,19 @@
 		var idintb=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/main.js spectrareadcurrentprocid:"+cmdargs,"b"+cmdargs);
 		while(idintb==-1){
 			idintb=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/main.js spectrareadcurrentprocid:"+cmdargs,"b"+cmdargs);
+			console.log("Connection failed on worker 2...Reconnecting");
 			time.sleep(0.1);
 		}
 		var idintdatabs2=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/main.js spectrareadcurrentprocid:"+cmdargs,"p"+cmdargs);
 		while(idintdatabs2==-1){
 			idintdatabs2=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/main.js spectrareadcurrentprocid:"+cmdargs,"p"+cmdargs);
+			console.log("Connection failed on worker 2...Reconnecting");
 			time.sleep(0.1);
 		}
 		var datamapaaab=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/daemon.js spectrareadcurrentprocid:"+cmdargs,"?"+cmdargs);
 		while(datamapaaab==-1){
 			datamapaaab=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/daemon.js spectrareadcurrentprocid:"+cmdargs,"?"+cmdargs);
-			console.log("Connection failed...Reconnecting");
+			console.log("Connection failed on worker 2...Reconnecting");
 			time.sleep(0.1);
 		}
 		var currentsavecommands="";
@@ -412,41 +414,47 @@
 			}
 		});
 		var peaksgui=mmap.CreateMmapSync("p&","rwx------");
+		var peaksguitot=mmap.CreateMmapSync("pfgs","rwx------");
 		var finishloadjghgh=mmap.ConnectMmapSync(process.cwd()+"/spectrareads "+cmdargs,""+cmdargs);
 		while(finishloadjghgh==-1){
 			finishloadjghgh=mmap.ConnectMmapSync(process.cwd()+"/spectrareads "+cmdargs,""+cmdargs);
-			console.log("Connection failed...Reconnecting");
+			console.log("Connection failed on worker 3 1...Reconnecting");
 			pf.sleep(0.1);
 		}
 		var infosaveui=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/main.js spectrareadcurrentprocid:"+cmdargs,"@"+cmdargs);
 		while(infosaveui==-1){
 			infosaveui=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/main.js spectrareadcurrentprocid:"+cmdargs,"@"+cmdargs);
-			console.log("Connection failed...Reconnecting");
+			console.log("Connection failed on worker 3...Reconnecting");
 			pf.sleep(0.1);
 		}
 		var id=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:[","p[0"+cmdargs);
 		while(id==-1){
 			id=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:[","p[0"+cmdargs);
+			console.log("Connection failed on worker 3...Reconnecting");
 			pf.sleep(0.3);
 		}
 		var idb=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:~","p~0"+cmdargs);
 		while(idb==-1){
 			idb=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:~","p~0"+cmdargs);
+			console.log("Connection failed on worker 3...Reconnecting");
 			pf.sleep(0.1);
 		}
 		var idc=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:par","p(0"+cmdargs);
 		while(idc==-1){
 			idc=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:par","p(0"+cmdargs);
+			console.log("Connection failed on worker 3...Reconnecting");
 			pf.sleep(0.1);
 		}
 		var idd=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:{","p{0"+cmdargs);
 		while(idd==-1){
 			idd=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:{","p{0"+cmdargs);
+			console.log("Connection failed on worker 3...Reconnecting");
 			pf.sleep(0.1);
 		}
 		var ide=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:,","p,0"+cmdargs);
 		while(ide==-1){
 			ide=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:,","p,0"+cmdargs);
+			console.log("Connection failed on worker 3...Reconnecting");
 			pf.sleep(0.1);
 		}
 
@@ -454,16 +462,19 @@
 		var idf=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:[","p[1"+cmdargs);
 		while(idf==-1){
 			idf=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:[","p[1"+cmdargs);
+			console.log("Connection failed on worker 3...Reconnecting");
 			pf.sleep(0.3);
 		}
 		var idg=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:par","p(1"+cmdargs);
 		while(idg==-1){
 			idg=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:par","p(1"+cmdargs);
+			console.log("Connection failed on worker 3...Reconnecting");
 			pf.sleep(0.1);
 		}
 		var idh=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:{","p{1"+cmdargs);
 		while(idh==-1){
 			idh=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:{","p{1"+cmdargs);
+			console.log("Connection failed on worker 3...Reconnecting");
 			pf.sleep(0.1);
 		}
 
@@ -473,10 +484,17 @@
 		mmap.WriteSharedStringSync(finishloadjghgh,"ok");
 		var datapeaks=['undefined','undefined','undefined','undefined','undefined'];
 		var firstsave=0;
+		var lastsave=new Date().getTime()/1000;
 		while(true){
 			try{
 				pf.sleep(0.1);
 				test=mmap.ReadSync(id,0);
+				if(test.indexOf("\n")!=-1){
+					if(((new Date().getTime()/1000)-lastsave)>0.1){
+						mmap.WriteSync(peaksgui,test);
+						lastsave=new Date().getTime()/1000;
+					}
+				}
 				test=test+mmap.ReadSync(idb,0);
 				test=test+mmap.ReadSync(idc,0);
 				test=test+mmap.ReadSync(idd,0);
@@ -500,7 +518,7 @@
 					}else{
 						firstsave=0;
 					}
-					mmap.WriteSync(peaksgui,test);
+					mmap.WriteSync(peaksguitot,test);
 			}
 			}catch(e){console.log(e)}
 		}

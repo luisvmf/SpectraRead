@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
-#include "fastmmap.c"
+#include "fastmap.c"
 
 GtkWidget *win;
 GtkWidget *img;
@@ -113,7 +113,7 @@ int main(int argc, char *argv[]){
 		system("./peaks");
 		return 0;
 	}
-	mapid=startmemmap("None",argv[argc-1]);
+	mapid=createmmap(argv[argc-1],"rwx------");
 	char arg1[90];
 	char exepath[90] = {0};
 	sprintf( arg1, "/proc/%d/exe", getpid() );

@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
-#include "fastmmap.c"
+#include "fastmap.c"
 
 GtkWidget *win;
 GtkWidget *img;

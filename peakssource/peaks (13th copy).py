@@ -18,11 +18,6 @@ import warnings
 warnings.filterwarnings("ignore")
 mmap=-1
 def initgui(windowclose,datavar,datavaronlyone,currentshowlength):
-	peaksipcdata=fastmmap.connectmmap("spectrareadd","peaksipc")
-	while mmap==-1:
-		peaksipcdata=fastmmap.connectmmap("spectrareadd","peaksipc")
-		print("Connection failed...Reconnecting")
-		time.sleep(0.1)
 	time.sleep(0.1)
 	fastmmap.write(mmap,",10load np")
 	import numpy as np
@@ -204,7 +199,7 @@ def initgui(windowclose,datavar,datavaronlyone,currentshowlength):
 		totaltimearr.append([0]*0)
 		pointdeleteval.append(0)
 		realtimestampfrompproc1.append([0]*bufferlength)
-		intvara,=ax.plot(np.arange(bufferlength),np.asarray([23]*bufferlength),marker='o', markersize=15,label='',linewidth=0)
+		intvara,=ax.plot(np.arange(bufferlength),np.asarray([23]*bufferlength),label='',linewidth=3)
 		linearr.append(intvara)
 		ax.lines.remove(intvara)
 		currentinitvarlines[0]=currentinitvarlines[0]+1
@@ -548,53 +543,28 @@ def initgui(windowclose,datavar,datavaronlyone,currentshowlength):
 	addedsourcesstruc[2]=[None]*1 #integerid
 	datasourcesupdateinforealname=[None]*0
 	def adddatasources(datavar,listbox,listboxcommandstruc,addedsourcesstruc,currentinitvarlines,datasourcesupdateinforealname):
-		try:
-			#datavara=datavar.value.split("|")
-			datavara=fastmmap.getsharedstring(peaksipcdata).split("|")
-			del datavara[0]
-			for v in datavara:
-				datavarb=v.split(":")
-				datavarname=datavarb[0]
-				if(datavarb[1]!=""):
-					datavarlength=len(datavarb[1].split(" "))
-				else:
-					datavarlength=0
-				isnameadded=0
-				index=-1
-				i=0
-				for vb in addedsourcesstruc[0]:
-					if(vb==datavarname):
-						isnameadded=1
-						index=i
-					i=i+1
-				if(isnameadded==1):
-					if(addedsourcesstruc[1][index]<datavarlength):
-						#add missing elements
-						i=addedsourcesstruc[1][index]+1
-						lastint=addedsourcesstruc[2][index]
-						while(i<=datavarlength):
-							lastint.append(addlistbox(str(datavarname)+" peak:"+str(i),listbox,listboxcommandstruc,currentinitvarlines))
-							datasourcesupdateinforealname.append(str(datavarname)+"|"+str(i))
-							i=i+1
-						addedsourcesstruc[0].append(str(datavarname))
-						addedsourcesstruc[1].append(datavarlength)
-						addedsourcesstruc[2].append(lastint)
-					if(addedsourcesstruc[1][index]>datavarlength):
-						#remove extra elements
-						ndataremove=abs(addedsourcesstruc[1][index]-datavarlength)
-						lastint=addedsourcesstruc[2][index]
-						i=len(lastint)-1
-						while(ndataremove>0):
-							removelistboxrow(listbox,addedsourcesstruc[2][index][i],listboxcommandstruc)
-							del lastint[i]
-							ndataremove=ndataremove-1
-							i=i-1
-						addedsourcesstruc[2][index]=lastint
-						addedsourcesstruc[1][index]=datavarlength
-				else:
-					#add all elements
-					i=1
-					lastint=[None]*1
+		datavara=datavar.value.split("|")
+		del datavara[0]
+		for v in datavara:
+			datavarb=v.split(":")
+			datavarname=datavarb[0]
+			if(datavarb[1]!=""):
+				datavarlength=len(datavarb[1].split(" "))
+			else:
+				datavarlength=0
+			isnameadded=0
+			index=-1
+			i=0
+			for vb in addedsourcesstruc[0]:
+				if(vb==datavarname):
+					isnameadded=1
+					index=i
+				i=i+1
+			if(isnameadded==1):
+				if(addedsourcesstruc[1][index]<datavarlength):
+					#add missing elements
+					i=addedsourcesstruc[1][index]+1
+					lastint=addedsourcesstruc[2][index]
 					while(i<=datavarlength):
 						lastint.append(addlistbox(str(datavarname)+" peak:"+str(i),listbox,listboxcommandstruc,currentinitvarlines))
 						datasourcesupdateinforealname.append(str(datavarname)+"|"+str(i))
@@ -602,89 +572,104 @@ def initgui(windowclose,datavar,datavaronlyone,currentshowlength):
 					addedsourcesstruc[0].append(str(datavarname))
 					addedsourcesstruc[1].append(datavarlength)
 					addedsourcesstruc[2].append(lastint)
-		except:
-			print "err601"
+				if(addedsourcesstruc[1][index]>datavarlength):
+					#remove extra elements
+					ndataremove=abs(addedsourcesstruc[1][index]-datavarlength)
+					lastint=addedsourcesstruc[2][index]
+					i=len(lastint)-1
+					while(ndataremove>0):
+						removelistboxrow(listbox,addedsourcesstruc[2][index][i],listboxcommandstruc)
+						del lastint[i]
+						ndataremove=ndataremove-1
+						i=i-1
+					addedsourcesstruc[2][index]=lastint
+					addedsourcesstruc[1][index]=datavarlength
+			else:
+				#add all elements
+				i=1
+				lastint=[None]*1
+				while(i<=datavarlength):
+					lastint.append(addlistbox(str(datavarname)+" peak:"+str(i),listbox,listboxcommandstruc,currentinitvarlines))
+					datasourcesupdateinforealname.append(str(datavarname)+"|"+str(i))
+					i=i+1
+				addedsourcesstruc[0].append(str(datavarname))
+				addedsourcesstruc[1].append(datavarlength)
+				addedsourcesstruc[2].append(lastint)
 		return True
-	#datavaronlyone.value=datavar.value
-	datavaronlyone.value=fastmmap.getsharedstring(peaksipcdata)
+	datavaronlyone.value=datavar.value
 	lastupdatetime=[time.time()]*1
 	currentpointtime=[0]*1
 	dataupdaterunning=[0]*1
 	def updatedata(datavar,datavaronlyone,currentdataarr,datasourcesupdateinforealname,lastupdatetime,graphtimearray,starttime,pointdeleteval,totaldataarr,currentpointtime,dataupdaterunning,realtimestampfrompproc1):
-		try:
-			newdatavara=fastmmap.getsharedstring(peaksipcdata).split(",")
-			#newdatavara=datavar.value.split(",")
-			#datavar.value=""
-			fastmmap.writesharedstring(peaksipcdata,"")
-			for newdatavarb in newdatavara:
-				if(newdatavarb!=""):
-					datavaronlyone.value=newdatavarb
-					cdataprim=newdatavarb.split("|")
+		newdatavara=datavar.value.split(",")
+		datavar.value=""
+		for newdatavarb in newdatavara:
+			if(newdatavarb!=""):
+				datavaronlyone.value=newdatavarb
+				cdataprim=newdatavarb.split("|")
+				i=0
+				del cdataprim[0]
+				cdataprimnames=newdatavarb.split("|")
+				cdataprimtimes=newdatavarb.split("|")
+				del cdataprimnames[0]
+				del cdataprimtimes[0]
+				while(i<len(cdataprim)):
+					cdataprim[i]=((cdataprim[i]).split(":")[1]).split(" ")
+					cdataprimtimes[i]=((cdataprimtimes[i]).split(":")[1]).split(" ")
+					ncountaaa=0
+					while(ncountaaa<len(cdataprim[i])):
+						cdataprim[i][ncountaaa]=cdataprim[i][ncountaaa].split(";")[0]
+						cdataprimtimes[i][ncountaaa]=cdataprimtimes[i][ncountaaa].split(";")[1]
+						#print cdataprimtimes[i][ncountaaa]
+						ncountaaa=ncountaaa+1
+					cdataprimnames[i]=((cdataprimnames[i]).split(":")[0])
+					i=i+1
+				if(abs(lastupdatetime[0]-time.time())>=0.0):
+					if(1==1):
+						graphtimearray.append(currentpointtime[0])
+						del graphtimearray[0]
 					i=0
-					del cdataprim[0]
-					cdataprimnames=newdatavarb.split("|")
-					cdataprimtimes=newdatavarb.split("|")
-					del cdataprimnames[0]
-					del cdataprimtimes[0]
-					while(i<len(cdataprim)):
-						cdataprim[i]=((cdataprim[i]).split(":")[1]).split(" ")
-						cdataprimtimes[i]=((cdataprimtimes[i]).split(":")[1]).split(" ")
-						ncountaaa=0
-						while(ncountaaa<len(cdataprim[i])):
-							cdataprim[i][ncountaaa]=cdataprim[i][ncountaaa].split(";")[0]
-							cdataprimtimes[i][ncountaaa]=cdataprimtimes[i][ncountaaa].split(";")[1]
-							#print cdataprimtimes[i][ncountaaa]
-							ncountaaa=ncountaaa+1
-						cdataprimnames[i]=((cdataprimnames[i]).split(":")[0])
+					currentpointtime[0]=currentpointtime[0]+1
+					for v in cdataprimnames:
+						j=0
+						cdataprimtimescounter=0
+						for vb in cdataprim[i]:
+							cval=-1
+							kb=0
+							for k in datasourcesupdateinforealname:
+								if(k==v+"|"+str(j+1)):
+									cval=kb
+								kb=kb+1
+							if(cval!=-1):
+								if(1==1):
+									realtimestampfrompproc1[cval].append(float(cdataprimtimes[i][cdataprimtimescounter]))
+									contimearr[cval].append(float(cdataprimtimes[i][cdataprimtimescounter]))
+									totaltimearr[cval].append(float(cdataprimtimes[i][cdataprimtimescounter]))
+									del realtimestampfrompproc1[cval][0]
+									currentdataarr[cval].append(float(vb))
+									del currentdataarr[cval][0]
+									contarray[cval].append(float(vb))
+									totaldataarr[cval].append(float(vb))
+									#-----------------------------------------------------------
+									#------------reduce continuous array size-------------------
+									if(len(contarray[cval])>3000):
+										if(pointdeleteval[cval]<len(contarray[cval])):
+											del contarray[cval][pointdeleteval[cval]]
+											del contimearr[cval][pointdeleteval[cval]]
+											pointdeleteval[cval]=pointdeleteval[cval]+3
+										else:
+											pointdeleteval[cval]=0
+											intdataupdatereducearr=int(len(totaldataarr[cval])/3000.0)
+											contarray[cval]=(np.asarray(totaldataarr[cval])[:len(totaldataarr[cval])/intdataupdatereducearr*intdataupdatereducearr].reshape(-1,intdataupdatereducearr).mean(1)).tolist()
+											contimearr[cval]=(np.asarray(totaltimearr[cval])[:len(totaltimearr[cval])/intdataupdatereducearr*intdataupdatereducearr].reshape(-1,intdataupdatereducearr).mean(1)).tolist()
+									#----------end reduce continuous array size-----------------
+									#-----------------------------------------------------------
+							else:
+								null=None
+							j=j+1
+							cdataprimtimescounter=cdataprimtimescounter+1
 						i=i+1
-					if(abs(lastupdatetime[0]-time.time())>=0.0):
-						if(1==1):
-							graphtimearray.append(currentpointtime[0])
-							del graphtimearray[0]
-						i=0
-						currentpointtime[0]=currentpointtime[0]+1
-						for v in cdataprimnames:
-							j=0
-							cdataprimtimescounter=0
-							for vb in cdataprim[i]:
-								cval=-1
-								kb=0
-								for k in datasourcesupdateinforealname:
-									if(k==v+"|"+str(j+1)):
-										cval=kb
-									kb=kb+1
-								if(cval!=-1):
-									if(1==1):
-										realtimestampfrompproc1[cval].append(float(cdataprimtimes[i][cdataprimtimescounter]))
-										contimearr[cval].append(float(cdataprimtimes[i][cdataprimtimescounter]))
-										totaltimearr[cval].append(float(cdataprimtimes[i][cdataprimtimescounter]))
-										del realtimestampfrompproc1[cval][0]
-										currentdataarr[cval].append(float(vb))
-										del currentdataarr[cval][0]
-										contarray[cval].append(float(vb))
-										totaldataarr[cval].append(float(vb))
-										#-----------------------------------------------------------
-										#------------reduce continuous array size-------------------
-										if(len(contarray[cval])>3000):
-											if(pointdeleteval[cval]<len(contarray[cval])):
-												del contarray[cval][pointdeleteval[cval]]
-												del contimearr[cval][pointdeleteval[cval]]
-												pointdeleteval[cval]=pointdeleteval[cval]+3
-											else:
-												pointdeleteval[cval]=0
-												intdataupdatereducearr=int(len(totaldataarr[cval])/3000.0)
-												contarray[cval]=(np.asarray(totaldataarr[cval])[:len(totaldataarr[cval])/intdataupdatereducearr*intdataupdatereducearr].reshape(-1,intdataupdatereducearr).mean(1)).tolist()
-												contimearr[cval]=(np.asarray(totaltimearr[cval])[:len(totaltimearr[cval])/intdataupdatereducearr*intdataupdatereducearr].reshape(-1,intdataupdatereducearr).mean(1)).tolist()
-										#----------end reduce continuous array size-----------------
-										#-----------------------------------------------------------
-								else:
-									null=None
-								j=j+1
-								cdataprimtimescounter=cdataprimtimescounter+1
-							i=i+1
-						lastupdatetime[0]=time.time()
-		except:
-			print "err675"
+					lastupdatetime[0]=time.time()
 		return True
 	def changeselectedvar(a,b,selecteddatarowstemp):
 		i=0
@@ -817,31 +802,20 @@ def initgui(windowclose,datavar,datavaronlyone,currentshowlength):
 managerb = Manager()
 currentshowlength= managerb.Value(c_int, 200)
 import math
-mmappeaks1=-1
 def mainuiload(processid):
 	global mmap
 	global currentshowlength
 	global managerb
-	global mmappeaks1
 	windowclose = managerb.Value(c_char_p, "opened")
-	datavar = managerb.Value(c_char_p, "")
+	datavar = managerb.Value(c_char_p, "|qimon:1;0 2;0 3;0 4;0 5;0 6;0|spectraread:7;0 8;0 9;0,")
 	datavaronlyone = managerb.Value(c_char_p, "")
 	p2=Process(target=initgui, args=(windowclose,datavar,datavaronlyone,currentshowlength,))
-	peaksipcint=fastmmap.createmmap("peaksipc","rwx------")
 	mmap=fastmmap.connectmmap("peakss",""+str(processid))
 	while mmap==-1:
 		mmap=fastmmap.connectmmap("peakss",""+str(processid))
 		print("Connection failed...Reconnecting")
 		time.sleep(0.1)
-	print "s"
-	mmappeaks1=fastmmap.connectmmap("main.js","p&")
-	print "s"
-	while mmappeaks1==-1:
-		mmappeaks1=fastmmap.connectmmap("/main.js","p&")
-		print("Connection failed...Reconnectingb")
-		time.sleep(0.1)
 	fastmmap.write(mmap,",03starting gui")
-	#datarawreadmmap=fastmmap.read(mmappeaks1,1).split("\n")
 	time.sleep(0.1)
 	p2.start()
 	i=0
@@ -861,49 +835,60 @@ def mainuiload(processid):
 	aaa=0
 	j=0
 	timectn=0
-	kk=0
-	stm=0
 	while(windowclose.value=="opened"):
-			try:
-				predatavarv=""
-				datarawreadmmap=fastmmap.read(mmappeaks1,0).split("\n")
-				#print datarawreadmmap
-				#if(kk==1):
-				#	datarawreadmmap=(" "+str(stm)+" 39 26 34\n "+str(stm)+" 29 17 36\n ").split("\n")
-				#	kk=0
-				#else:
-				#	datarawreadmmap=(" "+str(stm)+" 89 76 54\n "+str(stm)+" 89 67 56\n ").split("\n")
-				#	kk=1
+		if(aaa<200):
+			a=""
+			a=a+"|qimon:"
+			i=0
+			while(i<5):
+				a=a+str(i+random.random())+";"+str(timectn)+" "
+				i=i+1
+			a=a+str(i+random.random())+";"+str(timectn)+""
+			a=a+"|spectraread:"
+			while(i<11):
+				a=a+str(i+random.random())+";"+str(timectn)+" "
+				i=i+1
+			a=a+str(i+random.random())+";"+str(timectn)+""
+			a=a+","
+			datavar.value=datavar.value+a
+			time.sleep(0.01)
+			a=""
+			aaa=aaa+1
+		else:
+			if(aaa<300):
+				a=""
+				a=a+"|qimon:"
 				i=0
-				stm=stm+1
-				del datarawreadmmap[len(datarawreadmmap)-1]
-				for datarawreadmmapb in datarawreadmmap:
-					#print datarawreadmmapb
-					#print datarawreadmmapb
-					datarawreadmmapb=datarawreadmmapb.split(" ")
-					del datarawreadmmapb[0]
-					timestamp=datarawreadmmapb[0]
-					del datarawreadmmapb[0]
-					if(timestamp!=""):
-						if(timestamp!=" "):
-							if(float(timestamp)>1000.0):
-								predatavarv=predatavarv[:-1]
-								predatavarv=predatavarv+"|spectraread:"
-								for datarawreadmmapc in datarawreadmmapb:
-									#print datarawreadmmapc
-									if(datarawreadmmapc!=""):
-										if(datarawreadmmapc!=" "):
-											predatavarv=predatavarv+""+datarawreadmmapc+";"+timestamp+" "
-				predatavarv=predatavarv[:-1]
-				predatavarv=predatavarv+","
-				if(predatavarv!=","):
-					#datavar.value=datavar.value+predatavarv
-					fastmmap.write(peaksipcint,predatavarv)
-					fastmmap.writesharedstring(peaksipcint,predatavarv)
-				time.sleep(0.1)
-				#print predatavarv
-			except:
-				null=None
-				time.sleep(0.1)
+				while(i<2):
+					a=a+str(i+random.random())+";"+str(timectn)+" "
+					i=i+1
+				a=a+str(i+random.random())+";"+str(timectn)+""
+				a=a+"|spectraread:"
+				while(i<3):
+					a=a+str(i+random.random())+";"+str(timectn)+" "
+					i=i+1
+				a=a+str(i+random.random())+";"+str(timectn)+""
+				a=a+","
+				datavar.value=datavar.value+a
+				time.sleep(0.01)
+				aaa=aaa+1
+			else:
+				a=""
+				a=a+"|qimon:"
+				i=0
+				while(i<4):
+					a=a+str(i+23*math.sin(j/20.0))+";"+str(timectn)+" "
+					i=i+1
+				a=a+str(i+random.random())+";"+str(timectn)+""
+				a=a+"|spectraread:"
+				j=j+1
+				while(i<7):
+					a=a+str(i+random.random())+";"+str(timectn)+" "
+					i=i+1
+				a=a+str(i+random.random())+";"+str(timectn)+""
+				a=a+","
+				datavar.value=datavar.value+a
+				time.sleep(0.01)
+		timectn=timectn+1
 	print "terminate"
 	p2.terminate()
