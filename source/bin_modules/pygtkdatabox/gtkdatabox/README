@@ -1,0 +1,22 @@
+
+                            GtkDatabox GTK3
+
+------------------------------------------------------------------
+
+What is it:
+A widget to display large sets of data as dots (or lines). Different data
+sets will have different colors, you may change colors and style of the data
+The widget gives the possibility to zoom into and out of the data and to 
+scroll around. It also offers a grid like on an oscilloscope.
+
+The homepage of the GtkDatabox is
+
+http://sourceforge.net/projects/gtkdatabox/
+
+To install, please read the INSTALL file.
+
+Documentation is in the api/html directory. Look in the Files->Globals->functions for a list of the functions available.
+
+Hope you enjoy using this code ...
+
+The gtkdatabox team. 2012
