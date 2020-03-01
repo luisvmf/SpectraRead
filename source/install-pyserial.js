@@ -1,0 +1,14 @@
+var python = require('python.node');
+var os = python.import('os');
+var path = require('path');
+var sys = python.import('sys');
+var fs = require('fs');
+var path = require('path');
+var dirpython = path.dirname(fs.realpathSync(__filename));
+console.log(dirpython);
+sys.path.append(dirpython);
+sys.path.append(dirpython+'Python/lib');
+sys.path.append(dirpython+'Python/lib/python2.7');
+sys.path.append(dirpython+'Python/lib/python2.7/site-packages');
+sys.path.append(dirpython+'Python/lib/python2.7/site-packages/numpy');
+var install = python.import('install-pyserial');

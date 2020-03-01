@@ -1,0 +1,1 @@
+gcc g++ make gtk3-devel gtk3 gobject-introspection gobject-introspection-devel librsvg2

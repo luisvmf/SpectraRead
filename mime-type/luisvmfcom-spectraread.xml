@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+ <mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>
+   <mime-type type="application/spectrareadluisvmfcom">  
+   <comment>SpectraRead Database</comment>
+         <magic priority="50">
+                <match type="string" value="\x6c\x01\x75\x02\x69\x03\x73\x04\x76\x05\x6d\x06\x66\x07\x2e\x08\x63\x09\x6f\x10\x6d\x11" offset="0"/>
+         </magic>
+  </mime-type>
+ </mime-info>

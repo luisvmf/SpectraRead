@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=SpectraRead
+Exec=xed %U
+MimeType=application/spectrareadluisvmfcom
+Icon=application-spectrareadluisvmfcomapp
+Terminal=false
+Type=Application
+Comment=Measure Spectra
+Categories=Utility;Education;
