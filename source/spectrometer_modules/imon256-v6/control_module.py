@@ -154,7 +154,7 @@ def multiprocessingmainworker(instid):
 							nspectra=0
 							countinit=nspectra
 							while(nspectra<nspectraonerun):
-								imonio.readonespectra()
+								imonio.readonespectra(0)
 								imonio.forcesenddata()
 								nspectra=nspectra+1
 								if(nspectra-countinit>500):
