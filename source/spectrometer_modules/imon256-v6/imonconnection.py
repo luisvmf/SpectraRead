@@ -28,7 +28,7 @@ try:
 	if(isusingimonemulator==1):
 		ser = serial.Serial('/home/luisvmf/Desktop/spectraread-git-workhere/spectraread/imon-decoding-c/imon-new-emulator/imon256', 9210600,timeout=serialrawtimeout,parity=serial.PARITY_NONE,bytesize=serial.EIGHTBITS,stopbits=serial.STOPBITS_ONE, rtscts=True, dsrdtr=True)
 	if(isusingimonemulator==0):
-		ser = serial.Serial('/dev/ttyUSB0', 115200,timeout=serialrawtimeout,parity=serial.PARITY_NONE,bytesize=serial.EIGHTBITS,stopbits=serial.STOPBITS_ONE)
+		ser = serial.Serial('/dev/imon256v6', 115200,timeout=serialrawtimeout,parity=serial.PARITY_NONE,bytesize=serial.EIGHTBITS,stopbits=serial.STOPBITS_ONE)
 except:
 	null=None
 	ser=None
@@ -42,9 +42,9 @@ def open():
 		if(isusingimonemulator==1):
 			ser = serial.Serial('/home/admin/Desktop/spectraread/imon-decoding-c/imon-new-emulator/imon256', 115200,timeout=serialrawtimeout,parity=serial.PARITY_NONE,bytesize=serial.EIGHTBITS,stopbits=serial.STOPBITS_ONE, rtscts=True, dsrdtr=True)
 		if(isusingimonemulator==0):
-			ser = serial.Serial('/dev/ttyUSB0', 115200,timeout=serialrawtimeout,parity=serial.PARITY_NONE,bytesize=serial.EIGHTBITS,stopbits=serial.STOPBITS_ONE)
+			ser = serial.Serial('/dev/imon256v6', 115200,timeout=serialrawtimeout,parity=serial.PARITY_NONE,bytesize=serial.EIGHTBITS,stopbits=serial.STOPBITS_ONE)
 	except Exception as e:
 		null=None
 		ser=None
 		popen=False
-		print e
+		#print e
