@@ -97,6 +97,7 @@ gint TimerCallback(){
 			p=progresspos+0.1;
 		}
 	}
+	free(readdata);
 	return 1;
 }
 int main(int argc, char *argv[]){

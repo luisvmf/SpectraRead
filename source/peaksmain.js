@@ -56,21 +56,33 @@
 			var sys = python.import('sys');
 			var fs = require('fs');
 			var path=require("path");
-			time.sleep(0.05);
+			time.sleep(0.5);
 			mmap.WriteSync(id,",10loading libraries 2");
-			var dirpython = path.dirname(fs.realpathSync(__filename));
-			sys.path.append(dirpython);
-			sys.path.append(dirpython+'/peakssource');
-			sys.path.append(dirpython+'/bin_modules');
-			sys.path.append(dirpython+'/Python/lib');
-			sys.path.append(dirpython+'/Python/lib/python2.7');
-			sys.path.append(dirpython+'/Python/lib/python2.7/site-packages');
+			//var dirpython = path.dirname(fs.realpathSync(__filename));
+			//sys.path.append(dirpython);
+			//sys.path.append(dirpython+'/peakssource');
+			//sys.path.append(dirpython+'/bin_modules');
+			//sys.path.append(dirpython+'/Python/lib');
+			//sys.path.append(dirpython+'/Python/lib/python2.7');
+			//sys.path.append(dirpython+'/Python/lib/python2.7/site-packages');
 			//sys.path.append(dirpython+'/Python/lib/python2.7/site-packages/numpy');
-			time.sleep(0.1);
+			time.sleep(1.1);
 			mmap.WriteSync(id,",10loading libraries 3");
-			time.sleep(0.02);
-			var mainmodule=python.import("peaks");
-			mainmodule.mainuiload(""+cmdargs);
+			time.sleep(0.2);
+			var datasourcesmanager=require("./listpeaksproc");
+			var datasources=datasourcesmanager.datasources();
+			var connectdatasourcescmdlinepeaks="";
+			for(var i=0;i<datasources.length;i++){
+				connectdatasourcescmdlinepeaks=connectdatasourcescmdlinepeaks+" "+datasources[i][0];
+			}
+			console.log(connectdatasourcescmdlinepeaks);
+			//const execb = require("child_process").exec;
+			os.system("bash -c \"cd peakssource;LD_LIBRARY_PATH='../bin_modules/pygtkdatabox/gtkdatabox/install/lib' ./main"+connectdatasourcescmdlinepeaks+" "+cmdargs+"\"");
+			console.log("Peaks util window closed (main terminated)");
+			process.exit();
+			//var mainmodule=python.import("peaks");
+			//mainmodule.mainuiload(""+cmdargs);
 		}else{
-			var peaksproccessingmodule=require('./peaksproccesingmodule');
+			//var peaksproccessingmodule=require('./peaksproccesingmodule');
+			process.exit();
 		}

@@ -82,12 +82,20 @@
 						if(sourceid.type=="fastmmapmq"){
 							var push=1;
 					 		for(var index=0;index<connectedarray.length;index++){
-								if(connectedarray[index]+""==""+[sourceid.name,dataproc[index3]]){
+								var intidvarhghh="";
+								try{
+									intidvarhghh=dataproc[index3].split("spectrareadcurrentprocid:")[1].split("spectrareadprocid")[0];
+								}catch(e){}
+								if(connectedarray[index]+""==""+[sourceid.name+""+intidvarhghh+" "+sourceid.hastimestamp+" '"+dataproc[index3]+"' "+sourceid.key,dataproc[index3]]){
 									push=0;
 								}
 							}
 							if(push==1){
-								connectedarray.push([sourceid.name,dataproc[index3],intvarhj[1][index3]]);
+								var intidvarhghh="";
+								try{
+									intidvarhghh=dataproc[index3].split("spectrareadcurrentprocid:")[1].split("spectrareadprocid")[0];
+								}catch(e){}
+								connectedarray.push([sourceid.name+""+intidvarhghh+" "+sourceid.hastimestamp+" '"+dataproc[index3]+"' "+sourceid.key,dataproc[index3],intvarhj[1][index3]]);
 								if(connectmmap==0){
 									mapsid.push(-1);
 								}else{
@@ -121,6 +129,14 @@
 				}
 			}
 		}
+		function includes(a, obj) {
+			for(var i = 0; i < a.length; i++){
+				if(a[i][2]==obj[2]){
+				    return true;
+				}
+			}
+			return false;
+		}
 		function datasources(){
 			if(started==0){
 				startdaemons();
@@ -135,7 +151,9 @@
 			}
 			var retarray=[];
 			for(var index=0;index<connectedsourcesarray.length;index++){
-				retarray.push([connectedsourcesarray[index][0],mapsidarray[index],connectedsourcesarray[index][1],connectedsourcesarray[index][2]]);
+				if(!includes(retarray,[connectedsourcesarray[index][0],mapsidarray[index],connectedsourcesarray[index][1],connectedsourcesarray[index][2]])){
+					retarray.push([connectedsourcesarray[index][0],mapsidarray[index],connectedsourcesarray[index][1],connectedsourcesarray[index][2]]);
+				}
 			}
 			return retarray;
 		}

@@ -7,5 +7,6 @@ all: $(OBJS)
 	cp --recursive pycairo Python/include/pycairo
 	./buildpyserial.sh
 	cd bin_modules&&make
+	cd peakssource&&make
 clean:
 	echo "Nothing to do."

@@ -86,7 +86,7 @@ It is recommended to install from apt repository as above. To build from source:
 
 ### TODO:
 - Plugins development docs
-- Peaks Gui
+- Peaks Gui only updates data sources on start
 - Not Working if path name of install folder is too big, probably because of fastmmapmq.
 - Generic plugin
 
