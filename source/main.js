@@ -51,6 +51,7 @@
 			time.sleep(0.1);
 		}
 		var idint=mmap.CreateMmapSync("a"+cmdargs,"rwx------");
+		var eventreplacemmap=mmap.CreateMmapSync("eventrep"+cmdargs,"rwx------");
 		var idintdatabs=mmap.CreateMmapSync("p"+cmdargs,"rwx------");
 		var idintdatacs=mmap.CreateMmapSync("I"+cmdargs,"rwx------");
 		var idintb=mmap.CreateMmapSync("b"+cmdargs,"rwx------");
@@ -82,6 +83,7 @@
 			workerb.destroy();
 			workerb.process.kill();
 			kill.killallthreads(current_path+"/spectrareads\u0000"+cmdargs+"\u0000","SIGTERM",process.pid);
+			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/daemon.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdargdaemon\u0000","SIGTERM",process.pid);
 			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/main.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdarggui\u0000","SIGTERM",process.pid);
 			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/main.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdarggui\u0000","SIGTERM",process.pid);
 			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/main.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdarggui\u0000","SIGTERM",process.pid);
@@ -103,61 +105,80 @@
 			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/peaksworker.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdarggui\u0000specreadprocpeaks:~\u0000spec2\u0000","SIGTERM",process.pid);
 			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/peaksworker.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdarggui\u0000specreadprocpeaks:~\u0000spec2\u0000","SIGTERM",process.pid);
 			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/peaksworker.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdarggui\u0000specreadprocpeaks:,\u0000spec1\u0000","SIGTERM",process.pid);
-			kill.killallthreads(current_path+"/spectrareadd"+"\u0000"+current_path+"/daemon.js"+"\u0000spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid\u0000spectrareadcmdargdaemon\u0000","SIGTERM",process.pid);
             mmap.WriteSync(id,"\2");
 			process.exit();
 		}
 		function startexitprocess(){
 		}
 		time.sleep(0.1);
-		//Workers send messages to this thread. Send the messages to other workers.
-		worker.on('message', function(msg) {
-			if(msg.selectedvalues){
-				mmap.WriteSharedStringSync(idint,","+msg.selectedvalues);
-				mmap.WriteSharedStringSync(idintdatabs,","+msg.selectedvalues);
-				mmap.WriteSharedStringSync(idintdatacs,","+msg.selectedvalues);
+		function checkmessageint(){
+			var sharedstring=mmap.ReadSync(eventreplacemmap,0);
+			var messagearr=[];
+			if(sharedstring.indexOf("---datasepevent567567---")>=0){
+				try{
+					messagearr=sharedstring.split("---datasepevent567567---");
+					var iievent=0;
+					while(iievent<messagearr.length){
+						try{
+							messagearr[iievent]=messagearr[iievent].split("---656756datasepintevent---");
+						}catch(e){}
+						iievent=iievent+1;
+					}
+				}catch(e){console.log(e);}
 			}
-			if(msg.savefilecommand){
-				mmap.WriteSharedStringSync(idintb,","+msg.savefilecommand);
+			var iievent=0;
+			while(iievent<messagearr.length){
+				//console.log(messagearr[iievent]+"\n");
+				if(messagearr[iievent][0]=="selectedvalues"){
+					//console.log("main: "+messagearr[iievent][1]);
+					mmap.WriteSharedStringSync(idint,","+messagearr[iievent][1]);
+					mmap.WriteSharedStringSync(idintdatabs,","+messagearr[iievent][1]);
+					mmap.WriteSharedStringSync(idintdatacs,","+messagearr[iievent][1]);
+				}
+				if(messagearr[iievent][0]=="savefilecommand"){
+					//console.log("main: "+messagearr[iievent][1]);
+					mmap.WriteSharedStringSync(idintb,","+messagearr[iievent][1]);
+				}
+				if(messagearr[iievent][0]=="closegui"){
+					console.log('Gui closed gracefully');
+					terminateallworkers();
+				}
+				if(messagearr[iievent][0]=="errorshow"){
+					//console.log("main: "+messagearr[iievent][1]);
+					errmessage.showerrormessage(messagearr[iievent][1]);
+				}
+				iievent=iievent+1;
 			}
-			if(msg.closegui){
-				console.log('Gui closed gracefully');
-				terminateallworkers();
-			}
-			if(msg.errorshow){
-				errmessage.showerrormessage(msg.errorshow);
-			}
-		});
+		}
 		function exithandler(){
 			console.log('Worker died. Starting close process');
 			startexitprocess();
-			//setTimeout(function (){
-				errmessage.showerrormessage("An unexpected exception has happened.\nProgram will close.");
+			errmessage.showerrormessage("An unexpected exception has happened.\nProgram will close.");
+			setTimeout(function (){
 				terminateallworkers();
-			//},2000);
+			},5000);
 		}
 		worker.on('exit', function(aaa,bbb) {
-			console.log("a");
+			console.log("Received worker exit event.");
 			exithandler();
 		});
 		workerb.on('exit', function(aaa,bbb) {
-			console.log("b");
+			console.log("Received workerb exit event.");
 			exithandler();
 		});
 		workergd.on('exit', function(aaa,bbb) {
-			console.log("c");
+			console.log("Received workerc exit event.");
 			exithandler();
 		});
 		workerhsh.on('exit', function(aaa,bbb) {
-			console.log("d");
+			console.log("Received workerd exit event.");
 			exithandler();
 		});
-		//process.on('exit', function () {
-		//	console.log('About to exit');
-		//	startexitprocess();
-		//	terminateallworkers();
-			//process.exit();
-		//});
+		process.on('exit', function () {
+			startexitprocess();
+			terminateallworkers();
+			process.exit();
+		});
 		function checkmessage(){
 			datamessage=mmap.ReadSync(idintd,0);
 			if(datamessage.indexOf("-")!=-1){
@@ -170,6 +191,9 @@
 		}
 		setInterval(function (){
 			checkmessage();
+		},350);
+		setInterval(function (){
+			checkmessageint();
 		},350);
 	}else if (cluster.worker.id === 1) {
 		//Workerb

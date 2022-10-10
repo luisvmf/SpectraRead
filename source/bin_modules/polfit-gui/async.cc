@@ -3,6 +3,7 @@
 #include <iostream>
 #include <chrono>
 #include <math.h>
+#include <unistd.h>
 #include "../peakproc.cc"
 #include <locale.h>
 using namespace std; 
@@ -111,6 +112,10 @@ void getspecsync(const FunctionCallbackInfo<Value>& info) {
 				if(N<5){
 					return;
 				}
+				//if(N>513){
+				//	printf("Error here: N=%i\n",N);
+				//	return;
+				//}
 				double yb[N+50000];
 				double xb[N+50000];
 				if(getvector(N-1,len,str,xb)==-1){
@@ -139,8 +144,12 @@ void getpeakssync(const FunctionCallbackInfo<Value>& info) {
 			}
 			info.GetReturnValue().Set(jsArr);
 }
+void nodesleep(const FunctionCallbackInfo<Value>& info){
+	usleep((float)((info[0]->NumberValue())*1000000.0));
+}
 NAN_MODULE_INIT(InitAll) {
 	NODE_SET_METHOD(target, "getspecsync", getspecsync);
 	NODE_SET_METHOD(target, "getpeakssync", getpeakssync);
+	NODE_SET_METHOD(target, "nodesleep", nodesleep);
 }
 NODE_MODULE(NativeExtension, InitAll)

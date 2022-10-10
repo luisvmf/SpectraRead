@@ -364,7 +364,11 @@ void IncrementalMarking::DeactivateIncrementalWriteBarrier() {
   DeactivateIncrementalWriteBarrierForSpace(heap_->new_space());
 
   LargePage* lop = heap_->lo_space()->first_page();
-  while (lop->is_valid()) {
+//Bug fix by Luis Victor Muller Fabris for spectraread. Fix segfault.
+  while (lop!=nullptr) {
+	if(!lop->is_valid()){
+		break;
+	}
     SetOldSpacePageFlags(lop, false, false);
     lop = lop->next_page();
   }
@@ -396,7 +400,11 @@ void IncrementalMarking::ActivateIncrementalWriteBarrier() {
   ActivateIncrementalWriteBarrier(heap_->new_space());
 
   LargePage* lop = heap_->lo_space()->first_page();
-  while (lop->is_valid()) {
+//Bug fix by Luis Victor Muller Fabris for spectraread. Fix segfault.
+  while (lop!=nullptr) {
+	if(!lop->is_valid()){
+		break;
+	}
     SetOldSpacePageFlags(lop, true, is_compacting_);
     lop = lop->next_page();
   }

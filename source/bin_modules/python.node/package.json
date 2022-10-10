@@ -1,0 +1,42 @@
+{
+  "name": "python.node",
+  "version": "1.0.4",
+  "description": "Call python code from node.js.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jonathonrp/python.node.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jonathonrp/python.node/issues"
+  },
+  "keywords": [
+    "python",
+    "bridge",
+    "async"
+  ],
+  "author": "Reese <jonathonrp@yahoo.com> (https://github.com/jonathonrp)",
+  "contributors": [
+    "monkeycz <monkeycz@hotmail.com> (https://github.com/monkeycz)",
+    "Jean-Sébastien Tremblay <jeansebtr@xpensia.com> (http://blog.jeansebtr.com)",
+    "Chris Dickinson <chris@neversaw.us>"
+  ],
+  "scripts": {
+    "test": "node test/jstest.js",
+    "install": "node os_specific_install.js",
+    "rebuild": "electron-rebuild -f -w python.node"
+  },
+  "license": "BSD",
+  "gypfile": true,
+  "dependencies": {
+    "bindings": "~1.1.1",
+    "electron-rebuild": "^1.6.0"
+  },
+  "homepage": "https://github.com/jonathonrp/python.node",
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {
+    "electron-rebuild": "^1.6.0"
+  }
+}

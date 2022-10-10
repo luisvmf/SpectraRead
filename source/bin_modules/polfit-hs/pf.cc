@@ -245,7 +245,12 @@ void polfit(const FunctionCallbackInfo<Value>& info) {
 			usleep(0.05*1000000.0);
 		}
 		readlastinteractionb=0;
-		std::string rawreaddata=readmmap(mapid,0);
+		char *intchararrtostringtemp=readmmap(mapid,0);
+		if(intchararrtostringtemp==NULL){
+			return;
+		}
+		std::string rawreaddata(intchararrtostringtemp);
+		free(intchararrtostringtemp);
 		int countrawstrconvert=0;
 		while(countrawstrconvert<rawreaddata.length()){
 			if(rawreaddata[countrawstrconvert]==';'){
@@ -256,6 +261,10 @@ void polfit(const FunctionCallbackInfo<Value>& info) {
 		internalstringauxread="";
 		if(rawreaddata.length()+10>alloccounterc){
 			fastchararr=realloc(fastchararr,rawreaddata.length()+10);
+			if(!fastchararr){
+				perror("realloc(fastchararr,rawreaddata.length()+10); failled.\n");
+				return;
+			}
 			alloccounterc=alloccounterc+1;
 		}
 		int fastchararrcounter=0;

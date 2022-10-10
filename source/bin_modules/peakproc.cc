@@ -1,10 +1,8 @@
 #include <math.h>
 using namespace std; 
-//Copyright (c) 2019 Luís Victor Muller Fabris. Apache License.
-
+//Copyright (c) 2022 Luís Victor Muller Fabris. Apache License.
 
 //fit function was unstable on high orders (spectrum baseline was on -2000) why?. Problem was solved by using point index instead of wavelength by changing line 252 from mem.xbb[j]=xb[j]; to mem.xbb[j]=j;.
-
 
 //Lets keep memory allocated across function calls insted of doing malloc/free every time for speed.
 typedef struct{
@@ -31,14 +29,17 @@ allocatedarrays mem;
 
 void boxcarint(double *dados,int dadoslen,int loopselect){
 	int contador1=1;
-	//double dadosb[dadoslen+1000];
 	int N=dadoslen+1000;
 	if(mem.dadosblen<N){
 		if(mem.dadosblen>0){
 			free(mem.dadosb);
-	}
+		}
 	mem.dadosblen=N;
-	mem.dadosb=(double *)malloc((N+500)*sizeof(double));
+	mem.dadosb=(double *)malloc((N+50000)*sizeof(double));
+	}
+	if(mem.dadosb==NULL){
+		perror("Malloc failed");
+		return;
 	}
 	mem.dadosb[0]=(dados[0]+dados[1])/2;
 	if(loopselect==0){
@@ -62,7 +63,6 @@ void boxcarint(double *dados,int dadoslen,int loopselect){
 void boxcar(double *dados, int boxcarsize,int dadoslen){
 	int cnt_boxcar=0;
 	int loopselect=0;
-	//loopselect=1;
 	while(cnt_boxcar<boxcarsize){
 		boxcarint(dados,dadoslen,loopselect);
 		cnt_boxcar=cnt_boxcar+1;
@@ -70,14 +70,17 @@ void boxcar(double *dados, int boxcarsize,int dadoslen){
 }
 void derivada(double *dados,double *dadosx, int ordemderivada,int dadoslen){
 	int contador1=0;
-	//double vetorretornaderivada[dadoslen+300];
 	int N=dadoslen+300;
 	if(mem.vetorretornaderivadalen<N){
 		if(mem.vetorretornaderivadalen>0){
 			free(mem.vetorretornaderivada);
-	}
+		}
 	mem.vetorretornaderivadalen=N;
-	mem.vetorretornaderivada=(double *)malloc((N+500)*sizeof(double));
+	mem.vetorretornaderivada=(double *)malloc((N+50000)*sizeof(double));
+	}
+	if(mem.vetorretornaderivada==NULL){
+		perror("Malloc failed");
+		return;
 	}
 	while(contador1<dadoslen){
 		mem.vetorretornaderivada[contador1]=((dados[contador1+1])-(dados[contador1]))/((dadosx[contador1+1])-(dadosx[contador1]));
@@ -95,14 +98,14 @@ int fit(double* x,double* y,int count,int order, long double* coef){
 		if(mem.countplusorder>0){
 			for(int imat=0;imat<(2*(mem.countplusorder+300));imat++) free(mem.xpower[imat]);
 			free(mem.xpower);
-			for(int imat=0;imat<(mem.countplusorder+300);imat++) free(mem.A[imat]);
+			for(int imat=0;imat<(mem.countplusorder+30000);imat++) free(mem.A[imat]);
 			free(mem.A);
 		}
 		mem.countplusorder=count+order;
-		mem.A = (long double **)malloc((count+order+300)*sizeof(long double*));
-		for(int imat=0;imat<(count+order+300);imat++) mem.A[imat]=(long double *)malloc((count+order+300)*sizeof(long double));
-		mem.xpower = (long double **)malloc((2*(count+order+300))*sizeof(long double*));
-		for(int imat=0;imat<(2*(count+order+300));imat++) mem.xpower[imat]=(long double *)malloc((2*(count+order+300))*sizeof(long double));
+		mem.A = (long double **)malloc((count+order+30000)*sizeof(long double*));
+		for(int imat=0;imat<(count+order+30000);imat++) mem.A[imat]=(long double *)malloc((count+order+30000)*sizeof(long double));
+		mem.xpower = (long double **)malloc((2*(count+order+30000))*sizeof(long double*));
+		for(int imat=0;imat<(2*(count+order+300));imat++) mem.xpower[imat]=(long double *)malloc((2*(count+order+30000))*sizeof(long double));
 	}
 	long double ratio=0;
 	long double aux;
@@ -163,24 +166,17 @@ int fit(double* x,double* y,int count,int order, long double* coef){
 	}
 	return 0;
 }
-
 void fitbaseline(double *y,double *yb, int order,int N){
 	if(order>0){
 		int i=0;
 		int j=0;
 		if(mem.alloccoefbaseline==-1){
-			mem.coefbaseline=(long double *)malloc(500*sizeof(long double));
+			mem.coefbaseline=(long double *)malloc(50000*sizeof(long double));
 			mem.alloccoefbaseline=0;
 		}
-		//double coef[order+300];
 		int res=fit(y,yb,N,order,mem.coefbaseline);
-		//if(res==-1){
-		//	perror("Fit failed.");
-		//}
-		//printf("%i %i %i %Lf %Lf %Lf %Lf %Lf %Lf %Lf %Lf %Lf\n",res,order,N,mem.coefbaseline[0],mem.coefbaseline[1],mem.coefbaseline[2],mem.coefbaseline[3],mem.coefbaseline[4],mem.coefbaseline[5],mem.coefbaseline[6],mem.coefbaseline[7],mem.coefbaseline[8]);
 		double aux=0;
 		double auxb=0;
-		//printf("...\n");
 		for (i=0;i<=N;i++){
 			aux=0;
 			auxb=1;
@@ -188,36 +184,28 @@ void fitbaseline(double *y,double *yb, int order,int N){
 				aux=aux+auxb*mem.coefbaseline[j];
 				auxb=auxb*y[i];
 			}
-			//printf("%f %f\n",yb[i],aux);
 			yb[i]=yb[i]-aux;
 		}
 	}
 }
-
-
-				//	double *adjustsection=(double *)malloc((3+500)*sizeof(double));
-				//	double *adjustsectionx=(double *)malloc((3+500)*sizeof(double));
-				//	double *adjustsectioncoef=(double *)malloc((3+500)*sizeof(double));
-					//int *zeroderivativepoints=(int *)malloc((256+5000)*sizeof(int));
-
 int processpeaks(double* xb, double* yb, double* peaksng ,int order, int N, int boxcarsizeint,float risingthreshold){
 				if(xb==NULL){
 					perror("Error.xb points to NULL.");
-					exit(-1);return 0;
+					return 0;
 				}
 				if(yb==NULL){
 					perror("Error.yb points to NULL.");
-					exit(-1);return 0;
+					return 0;
 				}
 				if(peaksng==NULL){
 					perror("Error.peaksng points to NULL.");
-					exit(-1);return 0;
+					return 0;
 				}
 				if(mem.allocinit==-1){
-					mem.adjustsection=(double *)malloc((3+500)*sizeof(double));
-					mem.adjustsectionx=(double *)malloc((3+500)*sizeof(double));
-					mem.adjustsectioncoef=(double *)malloc((3+500)*sizeof(double));
-					mem.zeroderivativepoints=(int *)malloc((256+500)*sizeof(int));
+					mem.adjustsection=(double *)malloc((3+50000)*sizeof(double));
+					mem.adjustsectionx=(double *)malloc((3+50000)*sizeof(double));
+					mem.adjustsectioncoef=(double *)malloc((3+50000)*sizeof(double));
+					mem.zeroderivativepoints=(int *)malloc((256+50000)*sizeof(int));
 					if(mem.zeroderivativepoints==NULL)
 						return 0;
 					if(mem.adjustsectioncoef==NULL)
@@ -228,10 +216,6 @@ int processpeaks(double* xb, double* yb, double* peaksng ,int order, int N, int 
 						return 0;
 					mem.allocinit=0;
 				}
-				//double *adjustsection=mem.adjustsection;
-				//double *adjustsectionx=mem.adjustsectionx;
-				//double *adjustsectioncoef=mem.adjustsectioncoef;
-				//int *zeroderivativepoints=mem.zeroderivativepoints;
 				int j=0;
 				int oldN=N-1;
 				if(mem.lastN<N){
@@ -240,8 +224,8 @@ int processpeaks(double* xb, double* yb, double* peaksng ,int order, int N, int 
 						free(mem.ybb);
 					}
 					mem.lastN=N;
-					mem.xbb=(double *)malloc((N+500)*sizeof(double));
-					mem.ybb=(double *)malloc((N+500)*sizeof(double));
+					mem.xbb=(double *)malloc((N+50000)*sizeof(double));
+					mem.ybb=(double *)malloc((N+50000)*sizeof(double));
 					if(mem.ybb==NULL)
 						return 0;
 					if(mem.xbb==NULL)
@@ -251,8 +235,8 @@ int processpeaks(double* xb, double* yb, double* peaksng ,int order, int N, int 
 					mem.ybb[j]=yb[j];
 					mem.xbb[j]=j;
 				}
-				fitbaseline(mem.xbb,yb,order,N-1);
 				boxcar(yb,boxcarsizeint,oldN);
+				fitbaseline(mem.xbb,yb,order,N-1);
 				double valmaxderivada=yb[0];
 				//-------------------------------------------
 				//-------------------------------------------
@@ -261,8 +245,6 @@ int processpeaks(double* xb, double* yb, double* peaksng ,int order, int N, int 
 					mem.ybb[j]=yb[j];
 					mem.xbb[j]=xb[j];
 				}
-
-
 				//-------------------------------------------
 				//-------------------------------------------
 				derivada(mem.ybb,mem.xbb,1,oldN);
@@ -370,7 +352,5 @@ double c=mem.adjustsection[0]-a*mem.adjustsectionx[0]*mem.adjustsectionx[0]-b*me
 						peakscountng=peakscountng+1;
 				}
 				peakscountng=peakscountng-subtractpeakcount;
-				//printf("%f %f %f %i %i %f\n",peaksng[0],peaksng[1],peaksng[2],peakscountng,order,risingthreshold);
-				//printf("%f\n",4./5.);
 				return peakscountng;
 }

@@ -1,7 +1,6 @@
 #include <Python.h>
 #include <pygobject.h>
 #include <stdio.h>
-
 #include <gtk/gtk.h>
 #include "gtkdatabox/install/include/gtkdatabox.h"
 #include "gtkdatabox/install/include/gtkdatabox_points.h"
@@ -15,10 +14,13 @@
 #include "fft.c"
 
 
-#define POINTS 5900 //This is the maximum number of points that can be shown in the graph.
+#define POINTS 999999 //This is the maximum number of points that can be shown in the graph.
 
 
 #define  FRAME_RATE        7 //This is the minimum frame rate. The graph is also drawn on idle (g_idle_add_full).
+						 	  // If this is set to high the window may not appear/ the graph can freeze.
+
+#define  FRAME_RATEb        7 //This is the minimum frame rate. The graph is also drawn on idle (g_idle_add_full).
 						 	  // If this is set to high the window may not appear/ the graph can freeze.
 
 #define resizepercentage 1.0 //This is how much percent the scale must be off in relation to graph to trigger a resize.
@@ -29,12 +31,18 @@
 
 #define popuptime 1.0 //In seconds.
 
+int logscale=0;
+int oldislogscale=0;
 int drawpoints=0;
 int drawpointspeaks=0;
 static gfloat *X = NULL;
 static gfloat *Y = NULL;
 static gfloat *Xpeaks = NULL;
 static gfloat *Ypeaks = NULL;
+double *X_old = NULL;
+double *Y_old = NULL;
+double *Xpeaks_old = NULL;
+double *Ypeaks_old = NULL;
 static gfloat *Xreg = NULL;
 static gfloat *Yreg = NULL;
 static gfloat *Yregb = NULL;
@@ -63,11 +71,88 @@ int lastmouseypos=0;
 long long int lastmouseinsidetime=0;
 int setlimnext=0;
 int hasupdated=1;
-GtkDataboxGraph *graphb;
-GtkDataboxGraph *graph;
-GtkDataboxGraph *graphpeaks;
+int showtooltip=0;
 GtkDataboxGraph *graphgrid;
 GtkDataboxGraph *graphregionbox;
+GtkDataboxGraph *graphbrangea;
+GtkDataboxGraph *graphrangea;
+GtkDataboxGraph *graphpeaksrangea;
+GtkDataboxGraph *graphbrangeb;
+GtkDataboxGraph *graphrangeb;
+GtkDataboxGraph *graphpeaksrangeb;
+GtkDataboxGraph *graphbrangec;
+GtkDataboxGraph *graphrangec;
+GtkDataboxGraph *graphpeaksrangec;
+GtkDataboxGraph *graphbranged;
+GtkDataboxGraph *graphranged;
+GtkDataboxGraph *graphpeaksranged;
+//Performance optimization, number of points drawn on graph according with data provided, not POINTS defined above.
+void enablegraphnpoints(int n){
+	if(n<500){
+		showtooltip=1;
+		gtk_databox_graph_set_hide(graphpeaksrangea,FALSE);
+		gtk_databox_graph_set_hide(graphpeaksrangeb,TRUE);
+		gtk_databox_graph_set_hide(graphpeaksrangec,TRUE);
+		gtk_databox_graph_set_hide(graphpeaksranged,TRUE);
+		gtk_databox_graph_set_hide(graphbrangea,FALSE);
+		gtk_databox_graph_set_hide(graphbrangeb,TRUE);
+		gtk_databox_graph_set_hide(graphbrangec,TRUE);
+		gtk_databox_graph_set_hide(graphbranged,TRUE);
+		gtk_databox_graph_set_hide(graphrangea,FALSE);
+		gtk_databox_graph_set_hide(graphrangeb,TRUE);
+		gtk_databox_graph_set_hide(graphrangec,TRUE);
+		gtk_databox_graph_set_hide(graphranged,TRUE);
+	}
+	if(n>=500){
+		if(n<3000){
+			showtooltip=1;
+			gtk_databox_graph_set_hide(graphpeaksrangea,TRUE);
+			gtk_databox_graph_set_hide(graphpeaksrangeb,FALSE);
+			gtk_databox_graph_set_hide(graphpeaksrangec,TRUE);
+			gtk_databox_graph_set_hide(graphpeaksranged,TRUE);
+			gtk_databox_graph_set_hide(graphbrangea,TRUE);
+			gtk_databox_graph_set_hide(graphbrangeb,FALSE);
+			gtk_databox_graph_set_hide(graphbrangec,TRUE);
+			gtk_databox_graph_set_hide(graphbranged,TRUE);
+			gtk_databox_graph_set_hide(graphrangea,TRUE);
+			gtk_databox_graph_set_hide(graphrangeb,FALSE);
+			gtk_databox_graph_set_hide(graphrangec,TRUE);
+			gtk_databox_graph_set_hide(graphranged,TRUE);
+		}
+	}
+	if(n>=3000){
+		if(n<9000){
+			showtooltip=1;
+			gtk_databox_graph_set_hide(graphpeaksrangea,TRUE);
+			gtk_databox_graph_set_hide(graphpeaksrangeb,TRUE);
+			gtk_databox_graph_set_hide(graphpeaksrangec,FALSE);
+			gtk_databox_graph_set_hide(graphpeaksranged,TRUE);
+			gtk_databox_graph_set_hide(graphbrangea,TRUE);
+			gtk_databox_graph_set_hide(graphbrangeb,TRUE);
+			gtk_databox_graph_set_hide(graphbrangec,FALSE);
+			gtk_databox_graph_set_hide(graphbranged,TRUE);
+			gtk_databox_graph_set_hide(graphrangea,TRUE);
+			gtk_databox_graph_set_hide(graphrangeb,TRUE);
+			gtk_databox_graph_set_hide(graphrangec,FALSE);
+			gtk_databox_graph_set_hide(graphranged,TRUE);
+		}
+	}
+	if(n>=9000){
+		showtooltip=0;
+		gtk_databox_graph_set_hide(graphpeaksrangea,TRUE);
+		gtk_databox_graph_set_hide(graphpeaksrangeb,TRUE);
+		gtk_databox_graph_set_hide(graphpeaksrangec,TRUE);
+		gtk_databox_graph_set_hide(graphpeaksranged,FALSE);
+		gtk_databox_graph_set_hide(graphbrangea,TRUE);
+		gtk_databox_graph_set_hide(graphbrangeb,TRUE);
+		gtk_databox_graph_set_hide(graphbrangec,TRUE);
+		gtk_databox_graph_set_hide(graphbranged,FALSE);
+		gtk_databox_graph_set_hide(graphrangea,TRUE);
+		gtk_databox_graph_set_hide(graphrangeb,TRUE);
+		gtk_databox_graph_set_hide(graphrangec,TRUE);
+		gtk_databox_graph_set_hide(graphranged,FALSE);
+	}
+}
 float absolute(float x){
 	if(x<0)
 		x=x*(-1);
@@ -97,7 +182,6 @@ static gint handle_signal_selection_finalized(GtkDatabox * box,GtkDataboxValueRe
 	}
    return 0;
 }
-
 static gint handle_signal_selection_started(GtkDatabox * box ){
 	if(mode==1){
 		hasupdated=1;
@@ -167,11 +251,13 @@ static gint handle_signal_click(GtkDatabox * box ,GdkEventButton * event){
 	}
    return 0;
 }
-
-
 static gint motion_notify(GtkDatabox * boxb, GdkEventButton * event ){
-	if(update==0)
+	if(showtooltip==0){
+		return 0;
+	}
+	if(update==0){
 		hasupdated=1;
+	}
 	lastmousexpos=event->x;
 	lastmouseypos=event->y;
 	time_t starttime;
@@ -183,9 +269,6 @@ static gint motion_notify(GtkDatabox * boxb, GdkEventButton * event ){
 	}
    return 0;
 }
-
-
-
 void updateinfobox(void){
 	if(!GTK_IS_DATABOX(box))
 		return;
@@ -214,9 +297,11 @@ void updateinfobox(void){
 		gtk_databox_markers_set_label(GTK_DATABOX_MARKERS(marker),0,GTK_DATABOX_MARKERS_TEXT_E,label,FALSE);
 	}
 }
-
-
 static gboolean refresh_label_timeout(void){
+	if(hasupdated==0){
+		usleep(1000);
+		return FALSE;
+	}
 	updateinfobox();
 	if(!GTK_IS_DATABOX(box))
 		return FALSE;
@@ -224,19 +309,28 @@ static gboolean refresh_label_timeout(void){
 		gtk_widget_queue_draw (GTK_WIDGET (box));
 	return FALSE;
 }
-
 PyObject *obj;
 PyObject *objb;
 PyObject *iter;
 PyObject *iterb;
 PyObject *next;
-
-
-
 static gboolean update_graph (void){
+	if(logscale==1){
+		if(oldislogscale!=1){
+	  		gtk_databox_set_scale_type_y (GTK_DATABOX (box), GTK_DATABOX_SCALE_LOG);
+			oldislogscale=1;
+		}
+	}
+	if(logscale==0){
+		if(oldislogscale!=0){
+	  		gtk_databox_set_scale_type_y (GTK_DATABOX (box), GTK_DATABOX_SCALE_LINEAR);
+			oldislogscale=0;
+		}
+	}
    gint i;
    if (!GTK_IS_DATABOX (box))
       return FALSE;
+	enablegraphnpoints(drawpoints);
 	if(hasupdated==0){
 		usleep(1000);
 		return FALSE;
@@ -269,8 +363,7 @@ static gboolean update_graph (void){
 		float xmin=X[0];
 		float xmax=X[0];
 		float ymin=Y[0];
-		float ymax=Y[0];
-		
+		float ymax=Y[0];	
   		 for (i = 0; i < drawpoints; i++){
 			if(X[i]>xmax)
 				xmax=X[i];
@@ -285,8 +378,9 @@ static gboolean update_graph (void){
 			xmin=0;
 		if(isnan(xmax))
 			xmax=xmin+0.5;
-		if(isnan(ymin))
+		if(isnan(ymin)){
 			ymin=0;
+		}
 		if(isnan(ymax))
 			ymax=ymin+0.5;
 		if(xmax<=xmin)
@@ -303,6 +397,11 @@ static gboolean update_graph (void){
 		Yregb[0]=ymin-(20.0/100.0)*absolute(ymin-ymax);
 		Yreg[1]=ymax+(20.0/100.0)*absolute(ymin-ymax);
 		Yregb[1]=ymin-(20.0/100.0)*absolute(ymin-ymax);
+		if(logscale==1){
+			if(ymin<0.0000000000000001){
+				ymin=0.0000000000000001;
+			}
+		}
 		xyxy[0]=xmin;
 		xyxy[2]=xmax;
 		xyxy[1]=ymax;
@@ -384,9 +483,7 @@ static gboolean update_graph (void){
 	}
    return FALSE;
 }
-
 static PyObject *updategraph(PyObject*self,PyObject*args){
-	hasupdated=1;
 	int pupdate=0;
 	if(!PyArg_ParseTuple(args,"OOi",&obj,&objb,&pupdate)){
 		goto err;
@@ -411,7 +508,11 @@ static PyObject *updategraph(PyObject*self,PyObject*args){
 		}
 		double foo=PyFloat_AsDouble(next);
 		Py_DECREF(next);// Prevent memory leak.
-		X[i]=foo;
+		if(X_old[i]!=foo){
+			X[i]=foo;
+			X_old[i]=foo;
+			hasupdated=1;
+		}
 		i=i+1;
 	}
 	i=0;
@@ -425,7 +526,11 @@ static PyObject *updategraph(PyObject*self,PyObject*args){
 		}
 		double foo=PyFloat_AsDouble(next);
   		Py_DECREF(next);// Prevent memory leak.
-		Y[i]=foo;
+		if(Y_old[i]!=foo){
+			Y[i]=foo;
+			Y_old[i]=foo;
+			hasupdated=1;
+		}
 		i=i+1;
 	}
  	Py_DECREF(obj);// Prevent memory leak.
@@ -433,27 +538,18 @@ static PyObject *updategraph(PyObject*self,PyObject*args){
 	Py_DECREF(iter);// Prevent memory leak.
  	Py_DECREF(iterb);// Prevent memory leak.
    timeoutid = g_timeout_add (1000/FRAME_RATE,(GSourceFunc)update_graph, NULL);
-   timeoutidb = g_timeout_add (1000.0/20.0,(GSourceFunc)refresh_label_timeout, NULL);
+   timeoutidb = g_timeout_add (1000.0/FRAME_RATEb,(GSourceFunc)refresh_label_timeout, NULL);
 	return Py_BuildValue("s","");
 	err:
 		PyErr_SetString(PyExc_TypeError,"Error on update");
 		return NULL;
 }
-
 static PyObject *refresh_graph(PyObject*self,PyObject*args){
    timeoutid = g_timeout_add (1000/FRAME_RATE,(GSourceFunc)update_graph, NULL);
-   timeoutidb = g_timeout_add (1000.0/20.0,(GSourceFunc)refresh_label_timeout, NULL);
+   timeoutidb = g_timeout_add (1000.0/FRAME_RATEb,(GSourceFunc)refresh_label_timeout, NULL);
 	return Py_BuildValue("s","");
 }
-
-
-
-
-
-
-
 static PyObject *update_peaks(PyObject*self,PyObject*args){
-	hasupdated=1;
 	int pupdate=0;
 	if(!PyArg_ParseTuple(args,"OOi",&obj,&objb,&pupdate)){
 		goto err;
@@ -487,7 +583,11 @@ static PyObject *update_peaks(PyObject*self,PyObject*args){
 		}
 		double foo=PyFloat_AsDouble(next);
 		Py_DECREF(next);// Prevent memory leak.
-		Xpeaks[i]=foo;
+		if(Xpeaks_old[i]!=foo){
+			Xpeaks[i]=foo;
+			Xpeaks_old[i]=foo;
+			hasupdated=1;
+		}
 		i=i+1;
 	}
 	i=0;
@@ -501,7 +601,11 @@ static PyObject *update_peaks(PyObject*self,PyObject*args){
 		}
 		double foo=PyFloat_AsDouble(next);
   		Py_DECREF(next);// Prevent memory leak.
-		Ypeaks[i]=foo;
+		if(Ypeaks_old[i]!=foo){
+			Ypeaks[i]=foo;
+			Ypeaks_old[i]=foo;
+			hasupdated=1;
+		}
 		i=i+1;
 	}
 	for (i = drawpointspeaks; i < POINTS; i++){
@@ -517,18 +621,6 @@ static PyObject *update_peaks(PyObject*self,PyObject*args){
 		PyErr_SetString(PyExc_TypeError,"Error on update");
 		return NULL;
 }
-
-
-
-
-
-
-
-
-
-
-
-
 static void create_graph (GtkWidget *box1,float *linecolor, float *pointcolor,float *textcolor,int darktheme){
    GtkWidget *table;
    GtkDataboxGraph *graphlim;
@@ -550,11 +642,19 @@ static void create_graph (GtkWidget *box1,float *linecolor, float *pointcolor,fl
    Y = g_new0 (gfloat, POINTS);
    Xpeaks = g_new0 (gfloat, POINTS);
    Ypeaks = g_new0 (gfloat, POINTS);
+   X_old = (double *)malloc(POINTS*sizeof(double));
+   Y_old =(double *)malloc(POINTS*sizeof(double));
+   Xpeaks_old = (double *)malloc(POINTS*sizeof(double));
+   Ypeaks_old =(double *)malloc(POINTS*sizeof(double));
 	for (int i = 0; i < POINTS; i++){
 		X[i]=i;
 		Y[i]=0;
 		Xpeaks[i]=i;
 		Ypeaks[i]=0;
+		X_old[i]=i;
+		Y_old[i]=0;
+		Xpeaks_old[i]=i;
+		Ypeaks_old[i]=0;
 	}
    Xlim = g_new0 (gfloat, 2);
    Ylim = g_new0 (gfloat, 2);
@@ -562,7 +662,6 @@ static void create_graph (GtkWidget *box1,float *linecolor, float *pointcolor,fl
 	Ylim[0]=0;
 	Xlim[1]=0;
 	Ylim[1]=0;
-   graph = gtk_databox_points_new (POINTS, X, Y, &color, 3);
    color.red = 0;
    color.green = 0;
    color.blue = 0;
@@ -572,15 +671,34 @@ static void create_graph (GtkWidget *box1,float *linecolor, float *pointcolor,fl
    color.green = linecolor[1];
    color.blue = linecolor[2];
    color.alpha = 1;
-   graphb = gtk_databox_lines_new (POINTS, X, Y, &color, 1);
+   graphrangea = gtk_databox_points_new (600, X, Y, &color, 3);
+   graphbrangea = gtk_databox_lines_new (600, X, Y, &color, 1);
+   graphrangeb = gtk_databox_points_new (4000, X, Y, &color, 3);
+   graphbrangeb = gtk_databox_lines_new (4000, X, Y, &color, 1);
+   graphrangec = gtk_databox_points_new (10000, X, Y, &color, 3);
+   graphbrangec = gtk_databox_lines_new (10000, X, Y, &color, 1);
+   graphranged = gtk_databox_points_new (POINTS, X, Y, &color, 3);
+   graphbranged = gtk_databox_lines_new (POINTS, X, Y, &color, 1);
    color.red = pointcolor[0];
    color.green = pointcolor[1];
    color.blue = pointcolor[2];
    color.alpha = 1;
-   graphpeaks = gtk_databox_points_new (POINTS, Xpeaks, Ypeaks, &color, 9);
-	gtk_databox_graph_add (GTK_DATABOX (box), graphpeaks);
-   gtk_databox_graph_add (GTK_DATABOX (box), graph);
-   gtk_databox_graph_add (GTK_DATABOX (box), graphb);
+   graphpeaksrangea = gtk_databox_points_new (600, Xpeaks, Ypeaks, &color, 5);
+   graphpeaksrangeb = gtk_databox_points_new (4000, Xpeaks, Ypeaks, &color, 5);
+   graphpeaksrangec = gtk_databox_points_new (10000, Xpeaks, Ypeaks, &color, 5);
+   graphpeaksranged = gtk_databox_points_new (POINTS, Xpeaks, Ypeaks, &color, 5);
+	gtk_databox_graph_add (GTK_DATABOX (box), graphpeaksrangea);
+   gtk_databox_graph_add (GTK_DATABOX (box), graphrangea);
+   gtk_databox_graph_add (GTK_DATABOX (box), graphbrangea);
+	gtk_databox_graph_add (GTK_DATABOX (box), graphpeaksrangeb);
+   gtk_databox_graph_add (GTK_DATABOX (box), graphrangeb);
+   gtk_databox_graph_add (GTK_DATABOX (box), graphbrangeb);
+	gtk_databox_graph_add (GTK_DATABOX (box), graphpeaksrangec);
+   gtk_databox_graph_add (GTK_DATABOX (box), graphrangec);
+   gtk_databox_graph_add (GTK_DATABOX (box), graphbrangec);
+	gtk_databox_graph_add (GTK_DATABOX (box), graphpeaksranged);
+   gtk_databox_graph_add (GTK_DATABOX (box), graphranged);
+   gtk_databox_graph_add (GTK_DATABOX (box), graphbranged);
    gtk_databox_graph_add (GTK_DATABOX (box), graphlim);
 	color.red = textcolor[0];
 	color.green = textcolor[1];
@@ -644,6 +762,7 @@ static void create_graph (GtkWidget *box1,float *linecolor, float *pointcolor,fl
    g_signal_connect_swapped (G_OBJECT (box),"motion_notify_event", G_CALLBACK (motion_notify), NULL);
 }
 GtkWidget *tb1b;
+GtkWidget *tblogscale;
 GtkWidget *tb2b;
 static gint toogle1_click(GtkWidget *button ){
 	setlimnext=1;
@@ -677,6 +796,21 @@ static gint toogle2_click(GtkWidget *button ){
 	}
    return 0;
 }
+
+
+
+static gint toogle3_click(GtkWidget *button ){
+	setlimnext=1;
+	hasupdated=1;
+	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tblogscale))==0){
+		logscale=0;
+	}else{
+		logscale=1;
+	}
+   return 0;
+}
+
+
 float oldlinecolor[3];
 float oldpointcolor[3];
 float oldtextcolor[3];
@@ -686,7 +820,6 @@ static PyObject *update_graph_colors(PyObject*self,PyObject*args){
 	float pointcolor[3];
 	float textcolor[3];
 	int darktheme=0;
-	hasupdated=1;
 	if(!PyArg_ParseTuple(args,"fffffffffi",&linecolor[0],&linecolor[1],&linecolor[2],&pointcolor[0],&pointcolor[1],&pointcolor[2],&textcolor[0],&textcolor[1],&textcolor[2],&darktheme))
 		return NULL;
 	if ((oldlinecolor[0]==linecolor[0]) && (oldlinecolor[1]==linecolor[1]) && (oldlinecolor[2]==linecolor[2]) && (oldpointcolor[0]==pointcolor[0]) && (oldpointcolor[1]==pointcolor[1]) && (oldpointcolor[2]==pointcolor[2]) && (oldtextcolor[0]==textcolor[0]) && (oldtextcolor[1]==textcolor[1]) && (oldtextcolor[2]==textcolor[2]) && (olddarktheme==darktheme)){
@@ -694,6 +827,7 @@ static PyObject *update_graph_colors(PyObject*self,PyObject*args){
 	}
 	if(!PyArg_ParseTuple(args,"fffffffffi",&oldlinecolor[0],&oldlinecolor[1],&oldlinecolor[2],&oldpointcolor[0],&oldpointcolor[1],&oldpointcolor[2],&oldtextcolor[0],&oldtextcolor[1],&oldtextcolor[2],&olddarktheme))
 		return NULL;
+	hasupdated=1;
 	GdkRGBA color;
 	if(linecolor[0]>1)
 		linecolor[0]=1;
@@ -713,24 +847,51 @@ static PyObject *update_graph_colors(PyObject*self,PyObject*args){
 		textcolor[1]=1;
 	if(textcolor[2]>1)
 		textcolor[2]=1;
+	color.red = pointcolor[0];
+	color.green = pointcolor[1];
+	color.blue = pointcolor[2];
+	color.alpha = 1;
+	gtk_databox_graph_remove (GTK_DATABOX (box), graphpeaksrangea);
+	gtk_databox_graph_remove (GTK_DATABOX (box), graphpeaksrangeb);
+	gtk_databox_graph_remove (GTK_DATABOX (box), graphpeaksrangec);
+	gtk_databox_graph_remove (GTK_DATABOX (box), graphpeaksranged);
+   graphpeaksrangea = gtk_databox_points_new (600, Xpeaks, Ypeaks, &color, 5);
+   graphpeaksrangeb = gtk_databox_points_new (4000, Xpeaks, Ypeaks, &color, 5);
+   graphpeaksrangec = gtk_databox_points_new (10000, Xpeaks, Ypeaks, &color, 5);
+   graphpeaksranged = gtk_databox_points_new (POINTS, Xpeaks, Ypeaks, &color, 5);
+	gtk_databox_graph_add (GTK_DATABOX (box), graphpeaksrangea);
+	gtk_databox_graph_add (GTK_DATABOX (box), graphpeaksrangeb);
+	gtk_databox_graph_add (GTK_DATABOX (box), graphpeaksrangec);
+	gtk_databox_graph_add (GTK_DATABOX (box), graphpeaksranged);
 	color.red = linecolor[0];
 	color.green = linecolor[1];
 	color.blue = linecolor[2];
 	color.alpha = 1;
 	gtk_databox_graph_remove (GTK_DATABOX (box), graphregionbox);
-	gtk_databox_graph_remove (GTK_DATABOX (box), graph);
-	graph = gtk_databox_points_new (POINTS, X, Y, &color, 3);
-	gtk_databox_graph_add (GTK_DATABOX (box), graph);
-	gtk_databox_graph_remove (GTK_DATABOX (box), graphb);
-	graphb = gtk_databox_lines_new (POINTS, X, Y, &color, 1);
-	gtk_databox_graph_add (GTK_DATABOX (box), graphb);
-	color.red = pointcolor[0];
-	color.green = pointcolor[1];
-	color.blue = pointcolor[2];
-	color.alpha = 1;
-	gtk_databox_graph_remove (GTK_DATABOX (box), graphpeaks);
-	graphpeaks = gtk_databox_points_new (POINTS, Xpeaks, Ypeaks, &color, 5);
-	gtk_databox_graph_add (GTK_DATABOX (box), graphpeaks);
+	gtk_databox_graph_remove (GTK_DATABOX (box), graphrangea);
+	gtk_databox_graph_remove (GTK_DATABOX (box), graphrangeb);
+	gtk_databox_graph_remove (GTK_DATABOX (box), graphrangec);
+	gtk_databox_graph_remove (GTK_DATABOX (box), graphranged);
+	gtk_databox_graph_remove (GTK_DATABOX (box), graphbrangea);
+	gtk_databox_graph_remove (GTK_DATABOX (box), graphbrangeb);
+	gtk_databox_graph_remove (GTK_DATABOX (box), graphbrangec);
+	gtk_databox_graph_remove (GTK_DATABOX (box), graphbranged);
+   graphrangea = gtk_databox_points_new (600, X, Y, &color, 3);
+   graphbrangea = gtk_databox_lines_new (600, X, Y, &color, 1);
+   graphrangeb = gtk_databox_points_new (4000, X, Y, &color, 3);
+   graphbrangeb = gtk_databox_lines_new (4000, X, Y, &color, 1);
+   graphrangec = gtk_databox_points_new (10000, X, Y, &color, 3);
+   graphbrangec = gtk_databox_lines_new (10000, X, Y, &color, 1);
+   graphranged = gtk_databox_points_new (POINTS, X, Y, &color, 3);
+   graphbranged = gtk_databox_lines_new (POINTS, X, Y, &color, 1);
+   gtk_databox_graph_add (GTK_DATABOX (box), graphrangea);
+   gtk_databox_graph_add (GTK_DATABOX (box), graphbrangea);
+   gtk_databox_graph_add (GTK_DATABOX (box), graphrangeb);
+   gtk_databox_graph_add (GTK_DATABOX (box), graphbrangeb);
+   gtk_databox_graph_add (GTK_DATABOX (box), graphrangec);
+   gtk_databox_graph_add (GTK_DATABOX (box), graphbrangec);
+   gtk_databox_graph_add (GTK_DATABOX (box), graphranged);
+   gtk_databox_graph_add (GTK_DATABOX (box), graphbranged);
 	color.red = textcolor[0];
 	color.green = textcolor[1];
 	color.blue = textcolor[2];
@@ -820,8 +981,26 @@ static PyObject *export_graph(PyObject*self,PyObject*args){
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tb1b),1);
    g_signal_connect (GTK_TOGGLE_BUTTON(tb1b), "toggled",G_CALLBACK (toogle1_click), NULL);
    g_signal_connect (GTK_TOGGLE_BUTTON(tb2b), "toggled",G_CALLBACK (toogle2_click), NULL);
+
+	GtkToolItem *tblogscaleti;
+	tblogscaleti=gtk_tool_item_new();
+ 	tblogscale = gtk_toggle_button_new();
+
+
 	gtk_container_add (GTK_CONTAINER(tb2),tb2b);
 	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), tb2, -1);
+
+		GtkToolItem *sepghgfdgf;	
+		sepghgfdgf=gtk_separator_tool_item_new();
+	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), sepghgfdgf, -1);
+
+	gtk_button_set_label(GTK_BUTTON(tblogscale),"LOG");
+
+	gtk_container_add (GTK_CONTAINER(tblogscaleti),tblogscale);
+	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), tblogscaleti, -1);
+
+   g_signal_connect (GTK_TOGGLE_BUTTON(tblogscale), "toggled",G_CALLBACK (toogle3_click), NULL);
+
    gtk_box_pack_start (GTK_BOX (box3), toolbar, FALSE, FALSE, 0);
    separator = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
    gtk_box_pack_start (GTK_BOX (box1), separator, FALSE, FALSE, 0);
