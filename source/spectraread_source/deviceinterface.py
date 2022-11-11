@@ -13,7 +13,7 @@ loaded_spectrometer_names=[None]*1
 import_counter=0
 import json
 import re
-print os.popen("groups").read()
+#print os.popen("groups").read()
 spectrometer_modules_dir = "spectrometer_modules"
 for child in os.listdir(spectrometer_modules_dir):
 	current_spectrometer_module = os.path.join(spectrometer_modules_dir, child)
@@ -40,6 +40,8 @@ globalstat=""
 timelastspec=time.time()
 aaa=1
 datamaphs=-1
+globalxlabelaaa=""
+globalylabelaaa=""
 def connectm(cmdargs):
 	global errmap
 	global datamapaaa
@@ -97,7 +99,7 @@ def showwarning(errdata):
 		if(errmap!=-1):
 			if(idinta!=-1):
 				fastmmap.write(errmap,"-"+errdata+"_");
-def pushvalgui(xstring,ystring):
+def pushvalgui(trypush,xstring,ystring):
 	global globalfreq
 	global globaltemp
 	global globalstat
@@ -105,16 +107,19 @@ def pushvalgui(xstring,ystring):
 	global datamapaaa
 	global datamapaaab
 	global idinta
+	global globalxlabelaaa
+	global globalylabelaaa
 	if(datamapaaa!=-1):
 		if(errmap!=-1):
 			if(idinta!=-1):
-				if(len(xstring.split(" "))==len(ystring.split(" "))):
-					fastmmap.writesharedstring(datamapaaab,";buffer:"+str(xstring)+"?"+str(ystring)+"final")
-				else:
-					#print xstring
-					#print ystring
-					print "pushval(xstring,ystring) error,\n\txstring.split(" ") and ystring.split(" ") must have the same length."
-				fastmmap.writesharedstring(datamapaaa,";frequency:"+str(globalfreq)+",deviceinfo:"+str(globaltemp)+"--int-info-seperator--     "+str(globalstat)+" Dropped spectra: "+str(dropspec));
+				if(trypush==True):
+					if(len(xstring.split(" "))==len(ystring.split(" "))):
+						fastmmap.writesharedstring(datamapaaab,";buffer:"+str(xstring)+"?"+str(ystring)+"final")
+					else:
+						#print xstring
+						#print ystring
+						print "pushval(xstring,ystring) error,\n\txstring.split(" ") and ystring.split(" ") must have the same length."
+				fastmmap.writesharedstring(datamapaaa,";frequency:"+str(globalfreq)+",deviceinfo:"+str(globaltemp)+"--spectrareadsepinfoxylabel--"+globalxlabelaaa+"--intlabelsepgfhggf--"+globalylabelaaa+"--int-info-seperator--     "+str(globalstat)+" Dropped spectra: "+str(dropspec));
 def getguistat():
 	global guistata
 	global guistatb
@@ -173,7 +178,11 @@ def closeunloadevent(null,nullb):
 signal.signal(signal.SIGTERM, closeunloadevent)
 testi=0
 lastdevid=""
+oldxlabelvaldsf=""
 def initp():
+	global globalxlabelaaa
+	global oldxlabelvaldsf
+	global globalylabelaaa
 	global freqcont
 	global timefreqcont
 	global timelastspec
@@ -238,46 +247,46 @@ def initp():
 							if(abs(timelastspec-time.time())>0.01):
 								if(retv[0]!=""):
 									if(retv[1]!=""):
-										pushvalgui(retv[0],retv[1])
+										pushvalgui(True,retv[0],retv[1])
 										timelastspec=time.time()
 							if(retv[0]!=""):
 								if(retv[1]!=""):
 									if(testi==0):
 										if(fastmmap.write(datamaphsa,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
 											if(fastmmap.write(datamaphsc,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
-												dropspec=dropspec+1
+												testi=testi+1
 									if(testi==1):
 										if(fastmmap.write(datamaphsb,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
 											if(fastmmap.write(datamaphs,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
-												dropspec=dropspec+1
+												testi=testi+1
 									if(testi==2):
 										if(fastmmap.write(datamaphs,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
 											if(fastmmap.write(datamaphsb,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
-												dropspec=dropspec+1
+												testi=testi+1
 									if(testi==3):
 										if(fastmmap.write(datamaphsd,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
 											if(fastmmap.write(datamaphsb,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
-												dropspec=dropspec+1
+												testi=testi+1
 									if(testi==4):
 										if(fastmmap.write(datamaphsc,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
 											if(fastmmap.write(datamaphs,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
-												dropspec=dropspec+1
+												testi=testi+1
 									if(testi==5):
 										if(fastmmap.write(datamaphsb,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
 											if(fastmmap.write(datamaphsc,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
-												dropspec=dropspec+1
+												testi=testi+1
 									if(testi==6):
 										if(fastmmap.write(datamaphs,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
 											if(fastmmap.write(datamaphsa,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
-												dropspec=dropspec+1
+												testi=testi+1
 									if(testi==7):
 										if(fastmmap.write(datamaphsc,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
 											if(fastmmap.write(datamaphsa,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
-												dropspec=dropspec+1
+												testi=testi+1
 									if(testi==8):
 										if(fastmmap.write(datamaphsd,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
 											if(fastmmap.write(datamaphsa,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
-												dropspec=dropspec+1
+												testi=testi+1
 									if(testi==9):
 										if(fastmmap.write(datamaphsa,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
 											if(fastmmap.write(datamaphsb,";"+str(retv[0])+"?"+str(timestamp)+"?"+str(retv[1])+";")==-1):
@@ -292,6 +301,13 @@ def initp():
 								showwarning(retv[3])
 							if(retv[4]!=""):
 								globaltemp=retv[4]
+							if(retv[5]!=""):
+								globalxlabelaaa=retv[5]
+							if(retv[6]!=""):
+								globalylabelaaa=retv[6]
+							if((retv[5]+retv[6])!=oldxlabelvaldsf):
+								oldxlabelvaldsf=retv[5]+retv[6]
+								pushvalgui(False,"","")
 							if(abs(time.time()-timefreqcont)>1):
 								globalfreq=freqcont
 								freqcont=0

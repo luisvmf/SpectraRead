@@ -27,18 +27,43 @@ globalydata=""
 globalerrdata=""
 globalwarningdata=""
 globaltemp=""
+globalxlabelinta=""
+globalylabelinta=""
+notset=False
+lastinfoint=""
 def setxdata(x):
 	global globalxdata
+	global notset
+	notset=False
 	globalxdata=x
+def setxlabel(x):
+	global globalxlabelinta
+	global notset
+	notset=False
+	globalxlabelinta=x
+def setylabel(y):
+	global globalylabelinta
+	global notset
+	notset=False
+	globalylabelinta=y
 def setydata(y):
 	global globalydata
+	global notset
+	notset=False
 	globalydata=y
 def seterr(err):
 	global globalerrdata
+	global notset
+	notset=False
 	globalerrdata=err
 def setinfo(infoguiapi):
 	global globaltemp
-	globaltemp=codecs.encode(pickle.dumps(infoguiapi), "base64").decode()
+	global notset
+	global lastinfoint
+	notset=False
+	if(lastinfoint!=infoguiapi):
+		globaltemp=codecs.encode(pickle.dumps(infoguiapi), "base64").decode()
+		lastinfoint=infoguiapi
 def setwarning(warning):
 	global globalwarningdata
 	globalwarningdata=warning
@@ -52,4 +77,20 @@ def pushval():
 	globalwarningdata=""
 	intglobalerrdata=globalerrdata
 	globalerrdata=""
-	return [globalxdata,globalydata,intglobalerrdata,intglobalwarningdata,globaltemp]
+	return [globalxdata,globalydata,intglobalerrdata,intglobalwarningdata,globaltemp,globalxlabelinta,globalylabelinta]
+def npushval():
+	global notset
+	global globalxdata
+	global globalydata
+	global globalerrdata
+	global globalwarningdata
+	global globaltemp
+	if(notset==False):
+		notset=True
+		intglobalwarningdata=globalwarningdata
+		globalwarningdata=""
+		intglobalerrdata=globalerrdata
+		globalerrdata=""
+		return ["","",intglobalerrdata,intglobalwarningdata,globaltemp,globalxlabelinta,globalylabelinta]
+	else:
+		return False

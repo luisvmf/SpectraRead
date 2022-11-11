@@ -11,10 +11,9 @@
 #include "gtkdatabox/install/include/gtkdatabox_markers.h"
 #include <math.h>
 #include <time.h>
-#include "fft.c"
+#include "../FastMmapMQ/cmodule.c"
 
-
-#define POINTS 999999 //This is the maximum number of points that can be shown in the graph.
+#define POINTS 99999 //This is the maximum number of points that can be shown in the graph.
 
 
 #define  FRAME_RATE        7 //This is the minimum frame rate. The graph is also drawn on idle (g_idle_add_full).
@@ -37,12 +36,15 @@ int drawpoints=0;
 int drawpointspeaks=0;
 static gfloat *X = NULL;
 static gfloat *Y = NULL;
+static gfloat *Y_notlogoffset = NULL;
 static gfloat *Xpeaks = NULL;
 static gfloat *Ypeaks = NULL;
+static gfloat *Ypeaks_notlogoffset = NULL;
 double *X_old = NULL;
 double *Y_old = NULL;
 double *Xpeaks_old = NULL;
 double *Ypeaks_old = NULL;
+int isselecting=0;
 static gfloat *Xreg = NULL;
 static gfloat *Yreg = NULL;
 static gfloat *Yregb = NULL;
@@ -68,10 +70,12 @@ float xmaxprev=0;
 float ymaxprev=0;
 int lastmousexpos=0;
 int lastmouseypos=0;
+float peaksaddlog=0;
 long long int lastmouseinsidetime=0;
 int setlimnext=0;
 int hasupdated=1;
 int showtooltip=0;
+int oldnsdf=-1;
 GtkDataboxGraph *graphgrid;
 GtkDataboxGraph *graphregionbox;
 GtkDataboxGraph *graphbrangea;
@@ -88,6 +92,7 @@ GtkDataboxGraph *graphranged;
 GtkDataboxGraph *graphpeaksranged;
 //Performance optimization, number of points drawn on graph according with data provided, not POINTS defined above.
 void enablegraphnpoints(int n){
+	oldnsdf=n;
 	if(n<500){
 		showtooltip=1;
 		gtk_databox_graph_set_hide(graphpeaksrangea,FALSE);
@@ -179,6 +184,7 @@ static gint handle_signal_selection_finalized(GtkDatabox * box,GtkDataboxValueRe
 		gtk_databox_ruler_set_draw_position(gtk_databox_get_ruler_x(GTK_DATABOX(box)),FALSE);
 		gtk_databox_ruler_set_draw_position(gtk_databox_get_ruler_y(GTK_DATABOX(box)),FALSE);
 		update=1;
+		isselecting=0;
 	}
    return 0;
 }
@@ -192,6 +198,7 @@ static gint handle_signal_selection_started(GtkDatabox * box ){
 		gtk_databox_ruler_set_draw_position(gtk_databox_get_ruler_x(GTK_DATABOX(box)),TRUE);
 		gtk_databox_ruler_set_draw_position(gtk_databox_get_ruler_y(GTK_DATABOX(box)),TRUE);
 		update=0;
+		isselecting=1;
 	}
    return 0;
 }
@@ -201,6 +208,7 @@ static gint handle_signal_selection_canceled(GtkDatabox * box ){
 		gtk_databox_ruler_set_draw_position(gtk_databox_get_ruler_x(GTK_DATABOX(box)),FALSE);
 		gtk_databox_ruler_set_draw_position(gtk_databox_get_ruler_y(GTK_DATABOX(box)),FALSE);
 		update=1;
+		isselecting=0;
 	}
    return 0;
 }
@@ -252,11 +260,15 @@ static gint handle_signal_click(GtkDatabox * box ,GdkEventButton * event){
    return 0;
 }
 static gint motion_notify(GtkDatabox * boxb, GdkEventButton * event ){
+	if(isselecting)
+		return 0;
 	if(showtooltip==0){
 		return 0;
 	}
 	if(update==0){
 		hasupdated=1;
+		if(!isselecting)
+			update=1;
 	}
 	lastmousexpos=event->x;
 	lastmouseypos=event->y;
@@ -270,6 +282,8 @@ static gint motion_notify(GtkDatabox * boxb, GdkEventButton * event ){
    return 0;
 }
 void updateinfobox(void){
+	if(isselecting)
+		return;
 	if(!GTK_IS_DATABOX(box))
 		return;
 	double realxpos=gtk_databox_pixel_to_value_x (GTK_DATABOX(box),lastmousexpos);
@@ -298,6 +312,8 @@ void updateinfobox(void){
 	}
 }
 static gboolean refresh_label_timeout(void){
+	if(isselecting)
+		return FALSE;
 	if(hasupdated==0){
 		usleep(1000);
 		return FALSE;
@@ -315,16 +331,31 @@ PyObject *iter;
 PyObject *iterb;
 PyObject *next;
 static gboolean update_graph (void){
+	if(isselecting)
+		return FALSE;
+	time_t starttimeb;
+	time(&starttimeb);
+	long long int internaltime=starttimeb;
+	if(absolute(internaltime-lastmouseinsidetime)>popuptime){
+		if(showtooltip){
+			updateinfobox();
+			gtk_widget_queue_draw (GTK_WIDGET (box));
+		}
+	}
 	if(logscale==1){
 		if(oldislogscale!=1){
 	  		gtk_databox_set_scale_type_y (GTK_DATABOX (box), GTK_DATABOX_SCALE_LOG);
 			oldislogscale=1;
+			hasupdated=1;
+			update=1;
 		}
 	}
 	if(logscale==0){
 		if(oldislogscale!=0){
 	  		gtk_databox_set_scale_type_y (GTK_DATABOX (box), GTK_DATABOX_SCALE_LINEAR);
 			oldislogscale=0;
+			hasupdated=1;
+			update=1;
 		}
 	}
    gint i;
@@ -335,26 +366,10 @@ static gboolean update_graph (void){
 		usleep(1000);
 		return FALSE;
 	}
+	setlightdarkbuttonenabled();
 	hasupdated=0;
 	if(update==1){
-//	double real[POINTS*2];
-//	double img[POINTS*2];
- //  for (i = 0; i < POINTS*2; i++){
-//		real[i] = 100.0*sin(0.001*counter*i)+100.0*sin(0.002*counter*i)+100.0*sin(0.003*counter*i)+100.0*sin(0.01*counter*i+counter/100.0)+(rand()/RAND_MAX)*1000.0;
-//		img[i]=0;
-//	}
-//	Fft_transform(real,img, POINTS*2-2);
-	//double max=0;
-  // for (i = 0; i < POINTS; i++)
- //  {
-  //    X[i] = i;
-  //    Y[i] = sqrt(pow(real[i],2)+pow(img[i],2));
-	//	if(Y[i]>max)
-	//		max=Y[i];
-  // }
-  // for (i = 0; i < POINTS; i++){
-	//	Y[i]=Y[i]/max/(counter+1.0);
-	//}
+		update=0;//XXX TODO
 	for (i = drawpoints; i < POINTS; i++){
 		X[i]=X[drawpoints-1];
 		Y[i]=Y[drawpoints-1];
@@ -364,7 +379,7 @@ static gboolean update_graph (void){
 		float xmax=X[0];
 		float ymin=Y[0];
 		float ymax=Y[0];	
-  		 for (i = 0; i < drawpoints; i++){
+  		for (i = 0; i < drawpoints; i++){
 			if(X[i]>xmax)
 				xmax=X[i];
 			if(X[i]<xmin)
@@ -398,8 +413,11 @@ static gboolean update_graph (void){
 		Yreg[1]=ymax+(20.0/100.0)*absolute(ymin-ymax);
 		Yregb[1]=ymin-(20.0/100.0)*absolute(ymin-ymax);
 		if(logscale==1){
-			if(ymin<0.0000000000000001){
-				ymin=0.0000000000000001;
+			if(ymin<1){
+				ymin=1;
+			}
+			if(ymax<=1){
+				ymax=2;
 			}
 		}
 		xyxy[0]=xmin;
@@ -411,7 +429,6 @@ static gboolean update_graph (void){
 		Ylim[0]=xyxy[1];
 		Ylim[1]=xyxy[3];
 		if(firstup==0){
-			//gtk_databox_get_total_limits(GTK_DATABOX(box),&xyxy[0],&xyxy[2],&xyxy[1],&xyxy[3]);
 			xminprev=xmin;
 			yminprev=ymin;
 			xmaxprev=xmax;
@@ -457,6 +474,16 @@ static gboolean update_graph (void){
 		xmax=xyxy[2];
 		ymax=xyxy[1];
 		ymin=xyxy[3];
+		if(logscale==1){
+			if(ymin<1){
+				ymin=1;
+				xyxy[3]=1;
+			}
+			if(ymax<=1){
+				ymax=2;
+				xyxy[1]=2;
+			}
+		}
 		Xreg[0]=xmin-(20.0/100.0)*absolute(xmin-xmax);
 		Xreg[1]=xmax+(20.0/100.0)*absolute(xmin-xmax);
 		Yreg[0]=ymax+(20.0/100.0)*absolute(ymin-ymax);
@@ -483,12 +510,18 @@ static gboolean update_graph (void){
 	}
    return FALSE;
 }
+int aqmodethisspecfromnode=-1;
 static PyObject *updategraph(PyObject*self,PyObject*args){
 	int pupdate=0;
-	if(!PyArg_ParseTuple(args,"OOi",&obj,&objb,&pupdate)){
+	int aqmodethisspecfromnodeinternal=-1;
+	if(!PyArg_ParseTuple(args,"OOii",&obj,&objb,&pupdate,&aqmodethisspecfromnodeinternal)){
 		goto err;
 	}
+	aqmodethisspecfromnode=aqmodethisspecfromnodeinternal;
+	setlightdarkbuttonenabled();
 	drawpoints=pupdate;
+	if(drawpoints+1>=POINTS)
+		drawpoints=POINTS-1;
 	iter=PyObject_GetIter(obj);
 	iterb=PyObject_GetIter(objb);
 	if(!iter){
@@ -503,16 +536,20 @@ static PyObject *updategraph(PyObject*self,PyObject*args){
 		if(!next){
 			break;
 		}
-		if(!PyFloat_Check(next)){
-			//break;
-		}
+		//if(!PyFloat_Check(next)){
+		//	break;//XXX
+		//}
+		if(i>drawpoints)
+			break;
 		double foo=PyFloat_AsDouble(next);
 		Py_DECREF(next);// Prevent memory leak.
-		if(X_old[i]!=foo){
+		if(roundf(10*X_old[i])/10.0!=roundf(10*foo)/10.0){
 			X[i]=foo;
 			X_old[i]=foo;
 			hasupdated=1;
+			update=1;
 		}
+		aqmodethisspecfromnode=aqmodethisspecfromnodeinternal;
 		i=i+1;
 	}
 	i=0;
@@ -521,17 +558,58 @@ static PyObject *updategraph(PyObject*self,PyObject*args){
 		if(!next){
 			break;
 		}
-		if(!PyFloat_Check(next)){
-			//break;
-		}
+		//if(!PyFloat_Check(next)){
+		//	break;//XXX
+		//}
+		if(i>drawpoints)
+			break;
 		double foo=PyFloat_AsDouble(next);
   		Py_DECREF(next);// Prevent memory leak.
-		if(Y_old[i]!=foo){
+		if(roundf(10*Y_notlogoffset[i])/10.0!=roundf(10*foo)/10.0){
 			Y[i]=foo;
 			Y_old[i]=foo;
+			Y_notlogoffset[i]=foo;
+			update=1;
 			hasupdated=1;
 		}
+		aqmodethisspecfromnode=aqmodethisspecfromnodeinternal;
 		i=i+1;
+	}
+	for (i = drawpoints; i < POINTS; i++){
+		X[i]=X[drawpoints-1];
+		Y[i]=Y[drawpoints-1];
+	}
+	if(hasupdated==1){
+		if(logscale==1){
+			//Check graph min y value.
+			float yminbuplog=Y[0];
+	  		for (i = 0; i <= drawpoints; i++){
+				if(Y_notlogoffset[i]<yminbuplog)
+					yminbuplog=Y_notlogoffset[i];
+			}
+			//Add offset to graph if it has parts below zero.
+			if(yminbuplog<=0){
+				peaksaddlog=-yminbuplog+1;
+		  		for (i = 0; i <= drawpoints; i++){
+					if(Y[i]!=(Y_notlogoffset[i]-yminbuplog+1))
+						update=1;
+					Y[i]=Y_notlogoffset[i]-yminbuplog+1;	
+				}
+			}else{
+				peaksaddlog=1;
+		  		for (i = 0; i <= drawpoints; i++){
+					if(Y[i]!=(Y_notlogoffset[i]+1))
+						update=1;
+					Y[i]=Y_notlogoffset[i]+1;	
+				}
+			}
+		}else{
+			peaksaddlog=0;
+		}
+	}
+	for (i = drawpoints; i < POINTS; i++){
+		X[i]=X[drawpoints-1];
+		Y[i]=Y[drawpoints-1];
 	}
  	Py_DECREF(obj);// Prevent memory leak.
  	Py_DECREF(objb);// Prevent memory leak.
@@ -564,6 +642,8 @@ static PyObject *update_peaks(PyObject*self,PyObject*args){
 		return Py_BuildValue("s","");
 	}
 	drawpointspeaks=pupdate;
+	if(drawpointspeaks+1>=POINTS)
+		drawpointspeaks=POINTS-1;
 	iter=PyObject_GetIter(obj);
 	iterb=PyObject_GetIter(objb);
 	if(!iter){
@@ -578,15 +658,20 @@ static PyObject *update_peaks(PyObject*self,PyObject*args){
 		if(!next){
 			break;
 		}
-		if(!PyFloat_Check(next)){
-			//break;
-		}
+		//if(!PyFloat_Check(next)){
+			//break;//XXX
+		//}
+		if(i>=pupdate)
+			break;
 		double foo=PyFloat_AsDouble(next);
 		Py_DECREF(next);// Prevent memory leak.
-		if(Xpeaks_old[i]!=foo){
+		if(roundf(100*Xpeaks[i])/100.0!=roundf(100*foo)/100.0){
 			Xpeaks[i]=foo;
 			Xpeaks_old[i]=foo;
 			hasupdated=1;
+			if(foo!=0){
+				update=1;
+			}
 		}
 		i=i+1;
 	}
@@ -596,21 +681,30 @@ static PyObject *update_peaks(PyObject*self,PyObject*args){
 		if(!next){
 			break;
 		}
-		if(!PyFloat_Check(next)){
-			//break;
-		}
+		//if(!PyFloat_Check(next)){
+			//break;//XXX
+		//}
+		if(i>=pupdate)
+			break;
 		double foo=PyFloat_AsDouble(next);
   		Py_DECREF(next);// Prevent memory leak.
-		if(Ypeaks_old[i]!=foo){
-			Ypeaks[i]=foo;
-			Ypeaks_old[i]=foo;
+		if(roundf(100*Ypeaks[i])/100.0!=roundf(100*(foo+peaksaddlog))/100.0){
+			if(foo!=0){
+				update=1;
+			}
+			Ypeaks[i]=foo+peaksaddlog;
+			Ypeaks_notlogoffset[i]=foo;
+			Ypeaks_old[i]=foo+peaksaddlog;
 			hasupdated=1;
 		}
 		i=i+1;
 	}
 	for (i = drawpointspeaks; i < POINTS; i++){
 		Xpeaks[i]=Xpeaks[drawpointspeaks-1];
+		Xpeaks_old[i]=Xpeaks_old[drawpointspeaks-1];
 		Ypeaks[i]=Ypeaks[drawpointspeaks-1];
+		Ypeaks_old[i]=Ypeaks_old[drawpointspeaks-1];
+		Ypeaks_notlogoffset[i]=Ypeaks_notlogoffset[drawpointspeaks-1];
 	}
  	Py_DECREF(obj);// Prevent memory leak.
  	Py_DECREF(objb);// Prevent memory leak.
@@ -618,7 +712,7 @@ static PyObject *update_peaks(PyObject*self,PyObject*args){
  	Py_DECREF(iterb);// Prevent memory leak.
 	return Py_BuildValue("s","");
 	err:
-		PyErr_SetString(PyExc_TypeError,"Error on update");
+		PyErr_SetString(PyExc_TypeError,"Error on updatep");
 		return NULL;
 }
 static void create_graph (GtkWidget *box1,float *linecolor, float *pointcolor,float *textcolor,int darktheme){
@@ -646,6 +740,8 @@ static void create_graph (GtkWidget *box1,float *linecolor, float *pointcolor,fl
    Y_old =(double *)malloc(POINTS*sizeof(double));
    Xpeaks_old = (double *)malloc(POINTS*sizeof(double));
    Ypeaks_old =(double *)malloc(POINTS*sizeof(double));
+   Ypeaks_notlogoffset =(double *)malloc(POINTS*sizeof(double));
+	Y_notlogoffset= g_new0 (gfloat, POINTS);
 	for (int i = 0; i < POINTS; i++){
 		X[i]=i;
 		Y[i]=0;
@@ -655,6 +751,8 @@ static void create_graph (GtkWidget *box1,float *linecolor, float *pointcolor,fl
 		Y_old[i]=0;
 		Xpeaks_old[i]=i;
 		Ypeaks_old[i]=0;
+		 Ypeaks_notlogoffset[i]=0;
+		Y_notlogoffset[i]=0;
 	}
    Xlim = g_new0 (gfloat, 2);
    Ylim = g_new0 (gfloat, 2);
@@ -752,9 +850,6 @@ static void create_graph (GtkWidget *box1,float *linecolor, float *pointcolor,fl
    gtk_databox_graph_add (GTK_DATABOX (box), graphregionbox);
    gtk_databox_graph_add (GTK_DATABOX (box), marker);
    gtk_databox_auto_rescale (GTK_DATABOX (box), 0.05);
-   //timeoutid = g_timeout_add (1000/FRAME_RATE,(GSourceFunc)update_graph, NULL);
-	//g_idle_add_full(G_PRIORITY_DEFAULT_IDLE,(GSourceFunc)update_graph, NULL,NULL);
-  // timeoutidb = g_timeout_add (1000.0/20.0,(GSourceFunc)refresh_label_timeout, NULL);
    g_signal_connect (G_OBJECT (box), "selection-started", G_CALLBACK (handle_signal_selection_started), NULL);
    g_signal_connect (G_OBJECT (box), "selection-finalized",G_CALLBACK (handle_signal_selection_finalized), NULL);
    g_signal_connect (G_OBJECT (box), "selection-canceled", G_CALLBACK (handle_signal_selection_canceled), NULL);
@@ -764,6 +859,12 @@ static void create_graph (GtkWidget *box1,float *linecolor, float *pointcolor,fl
 GtkWidget *tb1b;
 GtkWidget *tblogscale;
 GtkWidget *tb2b;
+GtkWidget *buttonlightb;
+GtkWidget *buttonlightc;
+GtkWidget *buttonlightd;
+GtkWidget *buttonlighta;
+GtkWidget *buttonlight;
+int mapdatadarkid=-1;
 static gint toogle1_click(GtkWidget *button ){
 	setlimnext=1;
 	hasupdated=1;
@@ -780,9 +881,161 @@ static gint toogle1_click(GtkWidget *button ){
 	}
    return 0;
 }
+int mapdatadarkidbdhdf=-1;
+static gint take_light(GtkWidget *button, GdkEventButton *event){
+	if(event->type==GDK_BUTTON_PRESS && event->button==1){
+		while(mapdatadarkidbdhdf==-1){
+			mapdatadarkidbdhdf=fastmmapmq_connectmmap("spectrareadd","scoperef");//XXX XXX XXX TODO
+			printf("Connecting fastmmap pygtkdatabox...\n");
+		}
+		char *intdarkspec=fastmmapmq_getsharedstring_withsize(mapdatadarkidbdhdf,POINTS*sizeof(float)/sizeof(char));
+		float *auxbuf=(float *)intdarkspec;
+		printf("Take light\n");
+		for(int i=1;i<POINTS+1;i++){
+			auxbuf[i]=Y_notlogoffset[i-1];
+		}
+		gtk_widget_set_sensitive(GTK_WIDGET(buttonlightb),TRUE);
+		gtk_widget_set_sensitive(GTK_WIDGET(buttonlightc),TRUE);
+		gtk_widget_set_sensitive(GTK_WIDGET(buttonlightd),TRUE);
+		fastmmapmq_writesharedstring_withsize(mapdatadarkidbdhdf,intdarkspec,POINTS*sizeof(float)/sizeof(char));
+		free(intdarkspec);
+	}
+}
+int aqmode=1;
+
+static gint dark_toggle(GtkWidget *button){
+	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button))==1){
+		while(mapdatadarkid==-1){
+			mapdatadarkid=fastmmapmq_connectmmap("spectrareadd","darkref");//XXX XXX XXX TODO
+			printf("Connecting fastmmap pygtkdatabox...\n");
+		}
+		char *intdarkspec=(char *)malloc(POINTS*sizeof(float));
+		float *auxbuf=(float *)intdarkspec;
+		printf("Take dark\n");
+		for(int i=0;i<POINTS;i++){
+			auxbuf[i]=Y_notlogoffset[i];
+		}
+		fastmmapmq_writesharedstring_withsize(mapdatadarkid,intdarkspec,POINTS*sizeof(float)/sizeof(char));
+		free(intdarkspec);
+	}else{
+		while(mapdatadarkid==-1){
+			mapdatadarkid=fastmmapmq_connectmmap("spectrareadd","darkref");//XXX XXX XXX TODO
+			printf("Connecting fastmmap pygtkdatabox...\n");
+		}
+		char *intdarkspec=(char *)malloc(POINTS*sizeof(float));
+		float *auxbuf=(float *)intdarkspec;
+		printf("Remove dark\n");
+		for(int i=0;i<POINTS;i++){
+			auxbuf[i]= 0;
+		}
+		fastmmapmq_writesharedstring_withsize(mapdatadarkid,intdarkspec,POINTS*sizeof(float)/sizeof(char));
+		free(intdarkspec);
+	}
+	return 0;
+}
+void changespecmode(int mode){
+	while(mapdatadarkidbdhdf==-1){
+		mapdatadarkidbdhdf=fastmmapmq_connectmmap("spectrareadd","scoperef");//XXX XXX XXX TODO
+		printf("Connecting fastmmap pygtkdatabox...\n");
+	}
+	char *intdarkspec=fastmmapmq_getsharedstring_withsize(mapdatadarkidbdhdf,(POINTS+1)*sizeof(float)/sizeof(char));
+	float *auxbuf=(float *)intdarkspec;
+	auxbuf[0]=mode;
+	fastmmapmq_writesharedstring_withsize(mapdatadarkidbdhdf,intdarkspec,(POINTS+1)*sizeof(float)/sizeof(char));
+	free(intdarkspec);
+}
+int oldmode=-3;
+void setlightdarkbuttonenabled(){
+	if(oldmode==aqmodethisspecfromnode)
+		return;
+	oldmode=aqmodethisspecfromnode;
+	if(aqmodethisspecfromnode==0){
+		printf("enable\n");
+		gtk_widget_set_sensitive(GTK_TOGGLE_BUTTON(buttonlighta),TRUE);
+		gtk_widget_set_sensitive(GTK_TOGGLE_BUTTON(buttonlight),TRUE);
+	}else{
+		printf("disabled\n");
+		gtk_widget_set_sensitive(GTK_TOGGLE_BUTTON(buttonlighta),FALSE);
+		gtk_widget_set_sensitive(GTK_TOGGLE_BUTTON(buttonlight),FALSE);
+	}
+}
+static PyObject *getspecmode(PyObject*self,PyObject*args){
+	return Py_BuildValue("i",aqmode);
+}
+//XXX XXX
+static PyObject *resetscopedark(PyObject*self,PyObject*args){
+	mapdatadarkid=fastmmapmq_connectmmap("spectrareadd","darkref");//XXX XXX XXX TODO
+	mapdatadarkidbdhdf=fastmmapmq_connectmmap("spectrareadd","scoperef");//XXX XXX XXX TODO
+	if(mapdatadarkid==-1)
+		return Py_BuildValue("i",0);
+	//printf("Reset\n");
+	if(mapdatadarkidbdhdf==-1)
+		return Py_BuildValue("i",0);
+	//printf("Resetb\n");
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(buttonlighta),0);//Dark off.
+	gtk_widget_set_sensitive(GTK_WIDGET(buttonlightb),FALSE);
+	gtk_widget_set_sensitive(GTK_WIDGET(buttonlightc),FALSE);
+	gtk_widget_set_sensitive(GTK_WIDGET(buttonlightd),FALSE);
+	changespecmode(1);
+	aqmode=1;
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(buttonlightb),1);//Scope mode
+	aqmode=1;
+	return Py_BuildValue("i",0);;
+}
+
+static gint toggle_mode(GtkWidget *button, GdkEventButton *event){
+		if(GTK_BUTTON(button)==GTK_BUTTON(buttonlightb)){
+			if( (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(buttonlightb))==0) && (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(buttonlightc))==0) && (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(buttonlightd))==0)){
+					gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(buttonlightb),1);
+					return 0;
+			}
+			if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(buttonlightc))==1) 
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(buttonlightc),0);
+			if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(buttonlightd))==1) 
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(buttonlightd),0);
+			if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(buttonlightb))==1){
+				changespecmode(1);
+				aqmode=1;
+				//gtk_widget_set_sensitive(GTK_TOGGLE_BUTTON(buttonlighta),TRUE);
+			}
+		}
+		if(GTK_BUTTON(button)==GTK_BUTTON(buttonlightd)){
+			if( (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(buttonlightb))==0) && (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(buttonlightc))==0) && (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(buttonlightd))==0)){
+					gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(buttonlightd),1);
+					return 0;
+			}
+			if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(buttonlightb))==1) 
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(buttonlightb),0);
+			if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(buttonlightc))==1) 
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(buttonlightc),0);
+			if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(buttonlightd))==1){
+				//gtk_widget_set_sensitive(GTK_TOGGLE_BUTTON(buttonlighta),FALSE);
+				changespecmode(2);
+				aqmode=2;
+			}
+		}
+		if(GTK_BUTTON(button)==GTK_BUTTON(buttonlightc)){
+			if( (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(buttonlightb))==0) && (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(buttonlightc))==0) && (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(buttonlightd))==0)){
+					gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(buttonlightc),1);
+					return 0;
+			}
+			if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(buttonlightb))==1) 
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(buttonlightb),0);
+			if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(buttonlightd))==1) 
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(buttonlightd),0);
+			if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(buttonlightc))==1){
+				//gtk_widget_set_sensitive(GTK_TOGGLE_BUTTON(buttonlighta),FALSE);
+				changespecmode(3);
+				aqmode=3;
+			}
+		}
+	return 0;
+}
+
 static gint toogle2_click(GtkWidget *button ){
 	setlimnext=1;
 	hasupdated=1;
+	update=1;
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tb2b))==0){
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tb1b))==0){
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tb2b),1);
@@ -796,21 +1049,58 @@ static gint toogle2_click(GtkWidget *button ){
 	}
    return 0;
 }
-
-
-
 static gint toogle3_click(GtkWidget *button ){
 	setlimnext=1;
 	hasupdated=1;
+	update=1;
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tblogscale))==0){
 		logscale=0;
 	}else{
 		logscale=1;
 	}
+	int i;
+	for (i = drawpoints; i < POINTS; i++){
+		X[i]=X[drawpoints-1];
+		Y[i]=Y[drawpoints-1];
+	}
+	if(hasupdated==1){
+		if(logscale==1){
+			//Check graph min y value.
+			float yminbuplog=Y[0];
+	  		for (i = 0; i <= drawpoints; i++){
+				if(Y[i]<yminbuplog)
+					yminbuplog=Y[i];
+			}
+			//Add offset to graph if it has parts below zero.
+			if(yminbuplog<=0){
+				peaksaddlog=-yminbuplog+1;
+		  		for (i = 0; i <= drawpoints; i++){
+					Y[i]=Y[i]-yminbuplog+1;	
+				}
+			}else{
+				peaksaddlog=1;
+		  		for (i = 0; i <= drawpoints; i++){
+					Y[i]=Y[i]+1;	
+				}
+			}
+		}else{
+			for (i = 0; i < POINTS; i++){
+				Y[i]=Y[i]-peaksaddlog;
+			}
+			peaksaddlog=0;
+		}
+	}
+	for (i = drawpoints; i < POINTS; i++){
+		X[i]=X[drawpoints-1];
+		Y[i]=Y[drawpoints-1];
+	}
+	for (i = 0; i < POINTS; i++){
+		Ypeaks[i]=Ypeaks_notlogoffset[i]+peaksaddlog;
+		Ypeaks_old[i]=Ypeaks_notlogoffset[i]+peaksaddlog;
+	}
+	gboolean nullup=update_graph();
    return 0;
 }
-
-
 float oldlinecolor[3];
 float oldpointcolor[3];
 float oldtextcolor[3];
@@ -1000,7 +1290,54 @@ static PyObject *export_graph(PyObject*self,PyObject*args){
 	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), tblogscaleti, -1);
 
    g_signal_connect (GTK_TOGGLE_BUTTON(tblogscale), "toggled",G_CALLBACK (toogle3_click), NULL);
-
+	//-----
+	//-----
+	//-----
+	//Buttons
+	//-----
+	//Put expandable separator to make the buttons added in sequence align at toolbar end.
+	GtkToolItem *fgdsgff=gtk_separator_tool_item_new();
+	GValue aghg = G_VALUE_INIT;
+	g_value_init (&aghg, G_TYPE_BOOLEAN);
+	g_value_set_boolean (&aghg, 1);
+	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), fgdsgff, -1);
+	gtk_container_child_set_property (GTK_CONTAINER(toolbar), GTK_WIDGET(fgdsgff), (const gchar*) "expand", &aghg);
+	GtkToolItem *gfdgfsdrsfa=gtk_tool_item_new();
+	GtkWidget *imagelighta=gtk_image_new_from_file("resources/dark.svg");
+	buttonlighta=gtk_toggle_button_new();
+	gtk_button_set_image(GTK_BUTTON(buttonlighta),imagelighta);
+	gtk_container_add (GTK_CONTAINER(gfdgfsdrsfa),buttonlighta);
+	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), gfdgfsdrsfa, -1);
+	g_signal_connect (GTK_TOGGLE_BUTTON(buttonlighta), "toggled",G_CALLBACK (dark_toggle), NULL);
+	GtkToolItem *gfdgfsdrsf=gtk_tool_item_new();
+	GtkWidget *imagelight=gtk_image_new_from_file("resources/light.svg");
+	buttonlight=gtk_button_new();
+	gtk_button_set_image(GTK_BUTTON(buttonlight),imagelight);
+	gtk_container_add (GTK_CONTAINER(gfdgfsdrsf),buttonlight);
+	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), gfdgfsdrsf, -1);
+	g_signal_connect (GTK_BUTTON(buttonlight), "button-press-event",G_CALLBACK (take_light), NULL);
+	GtkToolItem *gfdgfsdrsfb=gtk_tool_item_new();
+	buttonlightb=gtk_toggle_button_new();
+	gtk_button_set_label(GTK_BUTTON(buttonlightb),"S");
+	gtk_container_add (GTK_CONTAINER(gfdgfsdrsfb),buttonlightb);
+	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), gfdgfsdrsfb, -1);
+	gtk_widget_set_sensitive(GTK_WIDGET(buttonlightb),TRUE);
+	GtkToolItem *gfdgfsdrsfc=gtk_tool_item_new();
+	buttonlightc=gtk_toggle_button_new();
+	gtk_button_set_label(GTK_BUTTON(buttonlightc),"T");
+	gtk_container_add (GTK_CONTAINER(gfdgfsdrsfc),buttonlightc);
+	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), gfdgfsdrsfc, -1);
+	gtk_widget_set_sensitive(GTK_WIDGET(buttonlightc),FALSE);
+	GtkToolItem *gfdgfsdrsfd=gtk_tool_item_new();
+	buttonlightd=gtk_toggle_button_new();
+	gtk_button_set_label(GTK_BUTTON(buttonlightd),"A");
+	gtk_container_add (GTK_CONTAINER(gfdgfsdrsfd),buttonlightd);
+	gtk_toolbar_insert(GTK_TOOLBAR(toolbar), gfdgfsdrsfd, -1);
+	gtk_widget_set_sensitive(GTK_WIDGET(buttonlightd),FALSE);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(buttonlightb),1);
+	g_signal_connect (GTK_TOGGLE_BUTTON(buttonlightd), "toggled",G_CALLBACK (toggle_mode), NULL);
+	g_signal_connect (GTK_TOGGLE_BUTTON(buttonlightc), "toggled",G_CALLBACK (toggle_mode), NULL);
+	g_signal_connect (GTK_TOGGLE_BUTTON(buttonlightb), "toggled",G_CALLBACK (toggle_mode), NULL);
    gtk_box_pack_start (GTK_BOX (box3), toolbar, FALSE, FALSE, 0);
    separator = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
    gtk_box_pack_start (GTK_BOX (box1), separator, FALSE, FALSE, 0);
@@ -1023,6 +1360,8 @@ static PyMethodDef methods[]={
 	{"update_peaks",update_peaks,METH_VARARGS,""},
 	{"update_graph_colors",update_graph_colors,METH_VARARGS,""},
 	{"refresh_graph",refresh_graph,METH_VARARGS,""},
+	{"getspecmode",getspecmode,METH_VARARGS,""},
+	{"resetscopedark",resetscopedark,METH_VARARGS,""},
 	{NULL,NULL,0,NULL}
 };
 PyMODINIT_FUNC initpygtkdatabox(void){

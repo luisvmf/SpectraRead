@@ -4,7 +4,9 @@
 #include <chrono>
 #include <math.h>
 #include <unistd.h>
+int statlastnode=0;
 #include "../peakproc.cc"
+#include "../FastMmapMQ/cmodule.c"
 #include <locale.h>
 using namespace std; 
 //Copyright (c) 2018 Luís Victor Muller Fabris. Apache License.
@@ -26,6 +28,8 @@ using namespace std::chrono;
 double peaks[TEMPDATASIZE+9000];
 int peakscount=0;
 int lastsetlocaleint=0;
+int mapidb=-1;
+int mapidba=-1;
 int getN(int len, std::string str){
 	if(lastsetlocaleint==0){
 		setlocale(LC_ALL,"C");
@@ -85,6 +89,14 @@ int getvector(int N,int len, std::string str,double *yb){
 }
 
 void getspecsync(const FunctionCallbackInfo<Value>& info) {
+				if(mapidb==-1)
+					mapidb=fastmmapmq_createmmap("darkref","rwx------");
+				if(mapidba==-1)
+					mapidba=fastmmapmq_createmmap("scoperef","rwx------");
+				char *darkcharpointer=fastmmapmq_getsharedstring_withsize(mapidb,99999*sizeof(float)/sizeof(char));
+				float *darkfloatpointer=(float *)darkcharpointer;
+				char *scopecharpointer=fastmmapmq_getsharedstring_withsize(mapidba,99999*sizeof(float)/sizeof(char));
+				float *scopefloatpointer=(float *)scopecharpointer;
 				double estimate=0;
 				double returnarray[TEMPDATASIZE+900];
 				int currint;
@@ -116,15 +128,17 @@ void getspecsync(const FunctionCallbackInfo<Value>& info) {
 				//	printf("Error here: N=%i\n",N);
 				//	return;
 				//}
-				double yb[N+50000];
-				double xb[N+50000];
+				//////double yb[N+50000];
+				//////double xb[N+50000];
+				double *xb=(double *)malloc((N+50000)*sizeof(double));
+				double *yb=(double *)malloc((N+50000)*sizeof(double));
 				if(getvector(N-1,len,str,xb)==-1){
 					return;
 				}
 				if(getvector(N-1,lenb,strb,yb)==-1){
 					return;
 				}
-				peakscount=processpeaks(xb, yb,peaks, order, N, boxcarsizeint, risingthreshold);
+				peakscount=processpeaks(xb, yb,peaks, order, N, boxcarsizeint, risingthreshold,darkfloatpointer,scopefloatpointer);
 				for (j=0;j<=N-1;j++){
 					returnarray[j]=yb[j];
 				}
@@ -135,6 +149,10 @@ void getspecsync(const FunctionCallbackInfo<Value>& info) {
 					Nan::Set(jsArr, j, Nan::New(returnarray[j]));
 				}
 				info.GetReturnValue().Set(jsArr);
+				free(darkcharpointer);
+				free(scopecharpointer);
+				free(xb);
+				free(yb);
 }
 void getpeakssync(const FunctionCallbackInfo<Value>& info) {
 			int j=0;
@@ -144,6 +162,20 @@ void getpeakssync(const FunctionCallbackInfo<Value>& info) {
 			}
 			info.GetReturnValue().Set(jsArr);
 }
+void getstat(const FunctionCallbackInfo<Value>& info) {
+			int j=0;
+			v8::Local<v8::Array> jsArr = Nan::New<v8::Array>(1);
+			Nan::Set(jsArr, 0, Nan::New(statlastnode));
+			info.GetReturnValue().Set(jsArr);
+}
+
+void initmmap(const FunctionCallbackInfo<Value>& info) {
+	if(mapidb==-1)
+		mapidb=fastmmapmq_createmmap("darkref","rwx------");
+	if(mapidba==-1)
+		mapidba=fastmmapmq_createmmap("scoperef","rwx------");
+}
+
 void nodesleep(const FunctionCallbackInfo<Value>& info){
 	usleep((float)((info[0]->NumberValue())*1000000.0));
 }
@@ -151,5 +183,7 @@ NAN_MODULE_INIT(InitAll) {
 	NODE_SET_METHOD(target, "getspecsync", getspecsync);
 	NODE_SET_METHOD(target, "getpeakssync", getpeakssync);
 	NODE_SET_METHOD(target, "nodesleep", nodesleep);
+	NODE_SET_METHOD(target, "getstat", getstat);
+	NODE_SET_METHOD(target, "initmmap", initmmap);
 }
 NODE_MODULE(NativeExtension, InitAll)

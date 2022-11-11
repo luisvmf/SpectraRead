@@ -197,9 +197,6 @@ gtk_databox_regions_real_draw (GtkDataboxGraph * graph,
    g_return_if_fail (GTK_DATABOX_IS_REGIONS (regions));
    g_return_if_fail (GTK_IS_DATABOX (box));
 
-   if (gtk_databox_get_scale_type_y (box) == GTK_DATABOX_SCALE_LOG)
-      g_warning
-	 ("gtk_databox_regions do not work well with logarithmic scale in Y axis");
 
    len = gtk_databox_xyyc_graph_get_length (GTK_DATABOX_XYYC_GRAPH (graph));
    maxlen = gtk_databox_xyyc_graph_get_maxlen (GTK_DATABOX_XYYC_GRAPH (graph));

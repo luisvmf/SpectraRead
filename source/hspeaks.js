@@ -37,7 +37,7 @@ function inithspeaksprocess(id,idb,createconnect,sleeptime){
 		pf.sleep(0.1);
 	}
 	pf.sleep(sleeptime);
-	pf.connect(id+""+cmdargs,idb+""+cmdargs,createconnect);
+	pf.connect(id+""+cmdargs,idb+""+cmdargs,createconnect,process.cwd()+"/spectrareadd "+process.cwd()+"/main.js spectrareadcurrentprocid:"+cmdargs);
 	while(true){
 		datapeaks=mmap.GetSharedStringSync(datahspeaksb);
 		if(datapeaks.indexOf(",")!=-1){

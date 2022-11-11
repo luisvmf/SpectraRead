@@ -31,10 +31,11 @@
 		});
 		var id=mmap.ConnectMmapSync(process.cwd()+"/spectrareads "+cmdargs,""+cmdargs);
 		var polfit=require("./bin_modules/polfit.node");
+		polfit.initmmap();
 		mmap.WriteSync(id,",03load ui modules");
 		var processsavedialog=require("./dialoganalysis.js");
 		var fileio=require("./fileio.js");
-		var python = require('./bin_modules/py.node');
+		var python = require('python.node');
 		var messagesend=require("./sendmessage.js");
 		//XXX var time=python.import("time");
 		while(id==-1){
@@ -89,6 +90,7 @@
 		var closewarningok=1;
 		mmap.WriteSync(id,",05loading main ui (02)");
 		var testshfhg = python.import('main-uiproc');
+		testshfhg.loadinta(cmdargs);
 		var tests=require("./nodegui-helperuicom.js");
 		tests.mainload(cmdargs);
 		var selectedvaluesintsha1sum="";
@@ -108,6 +110,7 @@
 					if(gettime(t0)>multiplefilesavefor*1000){
 						//Stop continuous acquisition data saving.
 						tests.clearsavecommand();
+						//console.log("c3");
 						messagesend.sendmessage("savefilecommand",tests.getsavecommand());
 						multiplefilesavefor=0;
 						acquisitionsaving=0;
@@ -153,11 +156,13 @@
 			}
 			if(savecomands[3]==false){
 				if(savecomands[4]==false){
-					tests.clearsavecommand();
+					//tests.clearsavecommand();
+					//console.log("c2");
 					if(savecomands[1]==true){
 						if(savecomands[2]==false){
 							try{
 								fileio.savesinglespectrum(currentspectrabuffer,""+savecomands[0]);
+								tests.clearsavecommand();
 							}catch(e){
 								messagesend.sendmessage("errorshow","Error on saving file:\n"+e.message+"");
 							}
@@ -167,6 +172,7 @@
 						if(savecomands[1]==false){
 							try{
 								fileio.savesinglepeaks(currrentpeaksbuffer,""+savecomands[0]);
+								tests.clearsavecommand();
 							}catch(e){
 								messagesend.sendmessage("errorshow", "Error on saving file:\n"+e.message+"");
 							}
@@ -175,13 +181,15 @@
 					if(savecomands[1]!=false){
 						if(savecomands[2]!=false){
 							try{
-							fileio.savesinglespectrumpeaks(currentspectrabuffer,currrentpeaksbuffer,""+savecomands[0]+"/"+savecomands[1],""+savecomands[0]+"/"+savecomands[2]);
+								fileio.savesinglespectrumpeaks(currentspectrabuffer,currrentpeaksbuffer,""+savecomands[0]+"/"+savecomands[1],""+savecomands[0]+"/"+savecomands[2]);
+								tests.clearsavecommand();
 							}catch(e){
 								messagesend.sendmessage("errorshow:","Error on saving file:\n"+e.message+"");
 							}
 						}
 					}
-					tests.clearsavecommand();
+					//tests.clearsavecommand();
+					//console.log("c1");
 				}
 			}
 			//Here we control continuous acquisition data saving and send the message to workerc to save data.
@@ -303,7 +311,7 @@
 													datapeaks=polfit.getpeakssync();
 	//console.log(Number(selectedvaluesintsha1sum.split(";")[1]));
 													//console.log("polfit.getspecsync("+xdataintpeaks+" ,"+dataintupdateui[i].split("buffer:")[1].split("?")[1].split("final")[0]+" ,"+Number(selectedvaluesintsha1sum.split(";")[0])+","+Number(selectedvaluesintsha1sum.split(";")[3])+","+Number(selectedvaluesintsha1sum.split(";")[1])+");");
-													tests.updategraphspectrumvariable(xdataintpeaks,(data+"").replace("[","").replace("]","").replace(new RegExp(",", 'g'), " "));
+													tests.updategraphspectrumvariable(xdataintpeaks,(data+"").replace("[","").replace("]","").replace(new RegExp(",", 'g'), " "),polfit.getstat()[0]);//aquisition mode is the last argument.
 													k=0;
 													intvecx=xdataintpeaks.split(" ");
 													if(uiupdatedlastinteraction<9){
@@ -370,6 +378,7 @@
 			getvalues();
 			if(uiupdatedlastinteraction>0){
 				polfit.nodesleep(0.01);
+				tests.upui();
 			}else{
 				polfit.nodesleep(0.1);
 			}

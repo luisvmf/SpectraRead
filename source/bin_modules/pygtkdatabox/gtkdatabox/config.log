@@ -89,8 +89,6 @@ configure:3387: checking how to print strings
 configure:3414: result: printf
 configure:3439: checking whether make supports the include directive
 configure:3454: make -f confmf.GNU && cat confinc.out
-make[1]: Entering directory '/home/luisvmf/Desktop/spectraread/SpectraRead/source/bin_modules/pygtkdatabox/gtkdatabox'
-make[1]: Leaving directory '/home/luisvmf/Desktop/spectraread/SpectraRead/source/bin_modules/pygtkdatabox/gtkdatabox'
 this is the am__doit target
 configure:3457: $? = 0
 configure:3476: result: yes (GNU style)
@@ -472,19 +470,13 @@ config.status:1118: creating config.h
 config.status:1299: config.h is unchanged
 config.status:1347: executing depfiles commands
 config.status:1424: cd gtk       && sed -e '/# am--include-marker/d' Makefile         | make -f - am--depfiles
-make[1]: Entering directory '/home/luisvmf/Desktop/spectraread/SpectraRead/source/bin_modules/pygtkdatabox/gtkdatabox/gtk'
-make[1]: Nothing to be done for 'am--depfiles'.
-make[1]: Leaving directory '/home/luisvmf/Desktop/spectraread/SpectraRead/source/bin_modules/pygtkdatabox/gtkdatabox/gtk'
+make: Nothing to be done for 'am--depfiles'.
 config.status:1429: $? = 0
 config.status:1424: cd glade       && sed -e '/# am--include-marker/d' Makefile         | make -f - am--depfiles
-make[1]: Entering directory '/home/luisvmf/Desktop/spectraread/SpectraRead/source/bin_modules/pygtkdatabox/gtkdatabox/glade'
-make[1]: Nothing to be done for 'am--depfiles'.
-make[1]: Leaving directory '/home/luisvmf/Desktop/spectraread/SpectraRead/source/bin_modules/pygtkdatabox/gtkdatabox/glade'
+make: Nothing to be done for 'am--depfiles'.
 config.status:1429: $? = 0
 config.status:1424: cd examples       && sed -e '/# am--include-marker/d' Makefile         | make -f - am--depfiles
-make[1]: Entering directory '/home/luisvmf/Desktop/spectraread/SpectraRead/source/bin_modules/pygtkdatabox/gtkdatabox/examples'
-make[1]: Nothing to be done for 'am--depfiles'.
-make[1]: Leaving directory '/home/luisvmf/Desktop/spectraread/SpectraRead/source/bin_modules/pygtkdatabox/gtkdatabox/examples'
+make: Nothing to be done for 'am--depfiles'.
 config.status:1429: $? = 0
 config.status:1347: executing libtool commands
 configure:12505: result:

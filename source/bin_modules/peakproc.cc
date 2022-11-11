@@ -94,18 +94,18 @@ void derivada(double *dados,double *dadosx, int ordemderivada,int dadoslen){
 	}
 }
 int fit(double* x,double* y,int count,int order, long double* coef){
-	if(mem.countplusorder!=(count+order)){
+	if(mem.countplusorder<(count+order)){
 		if(mem.countplusorder>0){
 			for(int imat=0;imat<(2*(mem.countplusorder+300));imat++) free(mem.xpower[imat]);
 			free(mem.xpower);
-			for(int imat=0;imat<(mem.countplusorder+30000);imat++) free(mem.A[imat]);
+			for(int imat=0;imat<(mem.countplusorder+300);imat++) free(mem.A[imat]);
 			free(mem.A);
 		}
 		mem.countplusorder=count+order;
-		mem.A = (long double **)malloc((count+order+30000)*sizeof(long double*));
-		for(int imat=0;imat<(count+order+30000);imat++) mem.A[imat]=(long double *)malloc((count+order+30000)*sizeof(long double));
-		mem.xpower = (long double **)malloc((2*(count+order+30000))*sizeof(long double*));
-		for(int imat=0;imat<(2*(count+order+300));imat++) mem.xpower[imat]=(long double *)malloc((2*(count+order+30000))*sizeof(long double));
+		mem.A = (long double **)malloc((count+order+300)*sizeof(long double*));
+		for(int imat=0;imat<(count+order+300);imat++) mem.A[imat]=(long double *)malloc(2*(count+order+300)*sizeof(long double));
+		mem.xpower = (long double **)malloc((2*(count+order+300))*sizeof(long double*));
+		for(int imat=0;imat<(2*(count+order+300));imat++) mem.xpower[imat]=(long double *)malloc((2*(count+order+300))*sizeof(long double));
 	}
 	long double ratio=0;
 	long double aux;
@@ -188,7 +188,36 @@ void fitbaseline(double *y,double *yb, int order,int N){
 		}
 	}
 }
-int processpeaks(double* xb, double* yb, double* peaksng ,int order, int N, int boxcarsizeint,float risingthreshold){
+//Sort sort_x and sort_y in ascending order using sort_x as index. Both sort_x and sort_y start at index zero and must have the same size. N_shell is the size of this arrays.
+void shellsort(double *sort_x, double *sort_y, int N_shell){
+    int i, j, k;
+	float aux_shell;
+    for (i = N_shell / 2; i > 0; i = i / 2){
+        for (j = i; j < N_shell; j++){
+            for(k = j - i; k >= 0; k = k - i){
+				if(k<0)
+					return;
+				if(k>=N_shell)
+					return;
+				if((k+i)<0)
+					return;
+				if((k+i)>=N_shell)
+					return;
+                if (sort_x[k+i] >= sort_x[k]){
+                    break;
+                }else{
+                    aux_shell = sort_x[k];
+                    sort_x[k] = sort_x[k+i];
+                    sort_x[k+i] = aux_shell;
+                    aux_shell = sort_y[k];
+                    sort_y[k] = sort_y[k+i];
+                    sort_y[k+i] = aux_shell;
+                }
+            }
+        }
+    }
+}
+int processpeaks(double* xb, double* yb, double* peaksng ,int order, int N, int boxcarsizeint,float risingthreshold, float *datasubdark, float *datascope){
 				if(xb==NULL){
 					perror("Error.xb points to NULL.");
 					return 0;
@@ -216,6 +245,7 @@ int processpeaks(double* xb, double* yb, double* peaksng ,int order, int N, int 
 						return 0;
 					mem.allocinit=0;
 				}
+				shellsort(xb,yb,N);
 				int j=0;
 				int oldN=N-1;
 				if(mem.lastN<N){
@@ -237,6 +267,40 @@ int processpeaks(double* xb, double* yb, double* peaksng ,int order, int N, int 
 				}
 				boxcar(yb,boxcarsizeint,oldN);
 				fitbaseline(mem.xbb,yb,order,N-1);
+				for(int i=0;i<N;i++){
+					yb[i]=(float)yb[i]-datasubdark[i];
+				}
+				int auxokhgfu;
+				if(datascope[0]==1){
+					statlastnode=0;
+				}		
+				if(datascope[0]==2){
+					statlastnode=1;
+					for(int i=0;i<N;i++){
+						auxokhgfu=0;
+						if((datascope[i+1]-datasubdark[i])!=0){
+							if((float)yb[i]!=0){
+								if((datascope[i+1]-datasubdark[i])/((float)yb[i])>0){
+									yb[i]=log((datascope[i+1]-datasubdark[i])/((float)yb[i]));
+									auxokhgfu=1;
+								}
+							}
+						}
+						if(auxokhgfu==0){
+							yb[i]=0;
+						}
+					}
+				}
+				if(datascope[0]==3){
+					statlastnode=1;
+					for(int i=0;i<N;i++){
+						if((datascope[i+1]-datasubdark[i])!=0){
+							yb[i]=100*((float)yb[i])/(datascope[i+1]-datasubdark[i]);
+						}else{
+							yb[i]=100;
+						}
+					}
+				}
 				double valmaxderivada=yb[0];
 				//-------------------------------------------
 				//-------------------------------------------

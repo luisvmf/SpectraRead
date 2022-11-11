@@ -45,9 +45,9 @@ def mainloop(meas,single,par):
 	global mmaperror
 	global errorcurrent
 	global i
-	setinfo("Temperature: 25"+u" \u00B0C")
-	setxlabel("Wavelength (nm)")
-	setylabel("Intensity (u.a)")
+	setinfo("Temperature: 35"+u" \u00B0C")
+	setxlabel("W (nm)")
+	setylabel("I (u.a)")
 	#print "meas:"+str(meas)+" single:"+str(single)+" par:"+str(par)
 	if(meas==True) or (single==True):
 		setxdata(xdata[0])
@@ -55,7 +55,7 @@ def mainloop(meas,single,par):
 		i=i+1
 		if(i>9):
 			i=0
-		time.sleep(0.0001)
+		time.sleep(0.00005)
 		return pushval()
 	else:
 		time.sleep(0.3)

@@ -4,8 +4,9 @@
 #include <fstream>
 #include <chrono>
 #include <stdio.h>
-#include "../fastmmapmq.c"
+#include "../FastMmapMQ/cmodule.c"
 #include <sstream>
+int statlastnode=0;
 #include "../peakproc.cc"
 #include <locale.h>
 //Copyright (c) 2019 Luís Victor Muller Fabris. Apache License.
@@ -23,8 +24,21 @@ int savespectra;
 float savespectrainterval;
 std::string spectrafilename;
 std::string peaksfilename;
-void connectmappfhs(char *internalconnectid,char *internalconnectidpeaks,int createconnect){
+int mapidbn=-1;
+int mapidban=-1;
+
+void connectmappfhs(char *internalconnectid,char *internalconnectidpeaks,int createconnect, char *cmdargsscope){
 	setlocale(LC_ALL,"C");
+	while(mapidbn==-1){
+		mapidbn=fastmmapmq_connectmmap(cmdargsscope,"darkref");
+		printf("Connection failed to darkref on polfit-hs/pf.cc, reconnecting...\n");
+		usleep(0.5*1000000.0);
+	}
+	while(mapidban==-1){
+		mapidban=fastmmapmq_connectmmap(cmdargsscope,"scoperef");
+		printf("Connection failed to scoperef on polfit-hs/pf.cc, reconnecting...\n");
+		usleep(0.5*1000000.0);
+	}
 	mapid=connectmmap("daemon.js",internalconnectid);
 	while(mapid==-1){
 		mapid=connectmmap("daemon.js",internalconnectid);
@@ -86,10 +100,21 @@ int getvector(int N,int len, std::string str,double *yb){
 	}
 	return 0;
 }
+float absolute(float x){
+	if(x<0)
+		x=x*(-1);
+	return x;
+}
 int mainproclastN=-3;
 double *yb=NULL;
 double *xb=NULL;
 char *chartemppeakbuffer=(char *)malloc(9000*sizeof(char));
+long long int internaltimecheckscope;
+char *darkcharpointer;
+float *darkfloatpointer=(float *)darkcharpointer;
+char *scopecharpointer;
+float *scopefloatpointer=(float *)scopecharpointer;
+int alocatedscope=0;
 int mainproc(std::string internalstringauxreadx,std::string internalstringauxready,int order,int boxcarsizeint,float risingthreshold,float timestamp){
 	std::string internalstring=internalstringauxreadx;
 	std::string internalstring2=internalstringauxready;
@@ -135,7 +160,29 @@ int mainproc(std::string internalstringauxreadx,std::string internalstringauxrea
 	if(getvector(N-1,lenb,strb,yb)==-1){
 		return -1;
 	}
-	peakscount=processpeaks(xb, yb,peaks, order, N, boxcarsizeint, risingthreshold);
+	time_t starttime;
+	time(&starttime);
+	if(alocatedscope==0){
+		alocatedscope=1;
+		darkcharpointer=fastmmapmq_getsharedstring_withsize(mapidbn,99999*sizeof(float)/sizeof(char));
+		darkfloatpointer=(float *)darkcharpointer;
+		scopecharpointer=fastmmapmq_getsharedstring_withsize(mapidban,99999*sizeof(float)/sizeof(char));
+		scopefloatpointer=(float *)scopecharpointer;
+	}
+	long long int internaltimecheckscopeb=starttime;;
+	if(absolute(internaltimecheckscopeb-internaltimecheckscope)>0.3){//In seconds
+		internaltimecheckscope=starttime;
+		if(alocatedscope==1){
+			free(darkcharpointer);
+			free(scopecharpointer);
+		}
+		alocatedscope=1;
+		darkcharpointer=fastmmapmq_getsharedstring_withsize(mapidbn,99999*sizeof(float)/sizeof(char));
+		darkfloatpointer=(float *)darkcharpointer;
+		scopecharpointer=fastmmapmq_getsharedstring_withsize(mapidban,99999*sizeof(float)/sizeof(char));
+		scopefloatpointer=(float *)scopecharpointer;
+	}
+	peakscount=processpeaks(xb, yb,peaks, order, N, boxcarsizeint, risingthreshold,darkfloatpointer,scopefloatpointer);
 	//char strdhdhsghdaold[9000]="";
 	//chartemppeakbuffer=strdhdhsghdaold;
 	sprintf(chartemppeakbuffer,"%f ",timestamp);
@@ -160,12 +207,12 @@ int procdatath(std::string internalstringauxread){
 	std::string internalstringauxready="";
 	if(internalstringauxread.length()+10>alloccountera){
 		fastchararrb=realloc(fastchararrb,internalstringauxread.length()+10);
-		alloccountera=alloccountera+1;
+		alloccountera=internalstringauxread.length()+10;
 	}
 	int fastchararrbcounter=0;
 	if(internalstringauxread.length()+10>alloccounterb){
 		fastchararrc=realloc(fastchararrc,internalstringauxread.length()+10);
-		alloccounterb=alloccounterb+1;
+		alloccounterb=internalstringauxread.length()+10;
 	}
 	int fastchararrccounter=0;
 	float thistimestamp=-1;
@@ -233,10 +280,10 @@ void polfit(const FunctionCallbackInfo<Value>& info) {
 		t2b=high_resolution_clock::now();
 		durationtotalacquisition=duration_cast<microseconds>(t2b-t1b).count();
 		if(readlastinteractionb<1000){
-			usleep(0.01*1000000.0);
+			//usleep(0.01*1000000.0);
 		}
 		if(readlastinteractionb<250){
-			usleep(0.05*1000000.0);
+			//usleep(0.05*1000000.0);
 		}
 		if(readlastinteractionb<550){
 			usleep(0.05*1000000.0);
@@ -265,7 +312,7 @@ void polfit(const FunctionCallbackInfo<Value>& info) {
 				perror("realloc(fastchararr,rawreaddata.length()+10); failled.\n");
 				return;
 			}
-			alloccounterc=alloccounterc+1;
+			alloccounterc=rawreaddata.length()+10;
 		}
 		int fastchararrcounter=0;
 		while(countrawstrconvert<rawreaddata.length()){
@@ -295,8 +342,10 @@ void connect(const FunctionCallbackInfo<Value>& info){
 		std::string internalstringtth = std::string(*param1b);
 		v8::String::Utf8Value param1c(info[1]->ToString());
 		std::string internalstringtthb = std::string(*param1c);
+		v8::String::Utf8Value param1caa(info[3]->ToString());
+		std::string internalstringtthbaa = std::string(*param1caa);
 		int createconnect=info[2]->NumberValue();
-		connectmappfhs(internalstringtth.c_str(),internalstringtthb.c_str(),createconnect);
+		connectmappfhs(internalstringtth.c_str(),internalstringtthb.c_str(),createconnect,internalstringtthbaa.c_str());
 	}
 }
 NAN_MODULE_INIT(InitAll) {

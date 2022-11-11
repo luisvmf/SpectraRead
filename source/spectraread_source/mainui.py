@@ -90,7 +90,7 @@ if not hasattr(sys, 'argv'):
 
 mmap=-1
 mmapbutton=-1
-def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose,uncheck,spectrumx,readyshoww,readshowwin,idspectraread):
+def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose,uncheck,spectrumx,readyshoww,readshowwin,idspectraread,xydatalabel,oldtexthjgh,oldvaluesentryresetscope):
 	import pygtkdatabox
 	print "load gi"
 	import gi
@@ -184,6 +184,7 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 										canreplace=True
 									if(canreplace==True):
 										savecommand.value="/ssghhgdjhdfsdgihidghiughdfghdihdighidgihhigoighihgghidehidfs:::..."+rreplace(rreplace(dialogb.get_filename()+"",".dat","",1)+"",".txt","",1)+".dat"
+										print savecommand.value
 								if(str(fileextcombo.get_model()[fileextcombo.get_active_iter()][:2][0])+""=="2"):
 									if(os.path.exists(rreplace(rreplace(dialogb.get_filename()+"",".dat","",1)+"",".txt","",1)+".txt")==True):
 										canreplace=askreplace()
@@ -191,6 +192,7 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 										canreplace=True
 									if(canreplace==True):
 										savecommand.value="/ssghhgdjhdfsdgihidghiughdfghdihdighidgihhigoighihgghidehidfs:::..."+rreplace(rreplace(dialogb.get_filename()+"",".dat","",1)+"",".txt","",1)+".txt"
+										print savecommand.value
 							else:
 								canreplace=True
 						dialogb.destroy()
@@ -1080,7 +1082,7 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 						firstloadmodule=firstloadmodulec
 					internalcounterloadedmodulesincombobox=internalcounterloadedmodulesincombobox+1
 			Gtk.Window.__init__(self,title="SpectraRead v1.5.9")
-			self.set_size_request(900, 500)
+			self.set_size_request(950, 550)
 			self.set_default_icon_from_file("resources/icon.svg")
 			hbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
 			fgje=fastmmap.connectmmap(os.getcwd()+"/spectrareadd "+os.getcwd()+"/main.js spectrareadcurrentprocid:"+str(idspectraread.value),"id+"+str(idspectraread.value))
@@ -1200,6 +1202,7 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 				if(len(fastmmap.getsharedstring(fgjeb).split(" "))!=len(fastmmap.getsharedstring(fgje).split(" "))):
 					updateddatatryexcept=0
 				vpeaksnum=[]
+				auxintaaajaqmode=-1
 				if(updateddatatryexcept==1):
 					try:
 						vpeaks=infotext.value.split("Peaks:[")[1].split("]")[0].split(" ")
@@ -1213,17 +1216,21 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 						null=None
 					i=0
 					for v in intveclistx:
-						xarray[i]=v
+						if(i!=0):
+							xarray[i-1]=v
 						i=i+1
 					i=0
 					for v in intveclist:
-						yarray[i]=v
+						if(i!=0):
+							yarray[i-1]=v
+						else:
+							auxintaaajaqmode=v
 						i=i+1
 					j=0
 					for v in vpeaksnum:
 						peaksarray[j]=v
 						j=j+1
-				return [i,j]
+				return [[i-1,j],auxintaaajaqmode]
 			#-------------------------------------------------------------------------------------------
 			#-------------------------------------------------------------------------------------------
 			xarray=[0]*0
@@ -1296,16 +1303,40 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 			view = pygtkdatabox.export_graph(windowdatabox,(selectcolor[2]+adda[0])/diva[0],(selectcolor[1]+adda[1])/diva[1],(selectcolor[0]+adda[2])/diva[2],(selectcolor[2]+addb[0])/divb[0],(selectcolor[1]+addb[1])/divb[1],(selectcolor[0]+addb[2])/divb[2],fg_color[0],fg_color[2],fg_color[2],darkbackground)
 			if(len(xarray)==len(yarray)):
 				#TODO:PYGTKDATABOX crashes if passing array from variable, why??? XXX
-				pygtkdatabox.update([num for num in xarray],[num for num in yarray],10)
+				pygtkdatabox.update([num for num in xarray],[num for num in yarray],10,-1)
 			pygtkdatabox.update_peaks([0,0],[0,0],1)
 			#windowdataboxb.add(view)
 			iupcounter=[1]
 			iupcounter[0]=51
+			databoxxlabel=Gtk.Label("X")
+			databoxylabel=Gtk.Label("Y")
 			def update(iupcounter,entrytextselectstyle,window,buttonback,canvasdatabox,retvalcontrol):
 				a=[0]*500
 				i=0
+				xlabelintup="X"
+				ylabelintup="Y"
+				if(oldtexthjgh.value!=xydatalabel.value+str(pygtkdatabox.getspecmode())):
+					oldtexthjgh.value=xydatalabel.value+str(pygtkdatabox.getspecmode())
+					try:
+						xlabelintup=xydatalabel.value.split("--intlabelsepgfhggf--")[0]
+						ylabelintup=xydatalabel.value.split("--intlabelsepgfhggf--")[1]
+					except:
+						xlabelintup="X"
+						ylabelintup="Y"
+					if(xlabelintup==""):
+						xlabelintup="X"
+					if(ylabelintup==""):
+						ylabelintup="Y"
+					databoxxlabel.set_text(xlabelintup)
+					databoxylabel.set_text(ylabelintup)
+					if(pygtkdatabox.getspecmode()==3):
+						databoxylabel.set_text("Transmitance (%)")
+					if(pygtkdatabox.getspecmode()==2):
+						databoxylabel.set_text("Extinction (O.D)")
 				oldyarray=[num for num in yarray]
-				arrreallen=updatedataarray(xarray,yarray,peaksarray)
+				auxaintmode=updatedataarray(xarray,yarray,peaksarray)
+				arrreallen=auxaintmode[0]
+				aquisitionmodethisgraph=int(auxaintmode[1])
 				def isequal(lista,listb):
 					i=0
 					for v in lista:
@@ -1328,19 +1359,19 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 					#TODO:PYGTKDATABOX crashes if passing array from variable, why??? XXX
 					i=0
 					if(arrreallen>0):
-						pygtkdatabox.update([num for num in xarray][0:arrreallen],[num for num in yarray][0:arrreallen],arrreallen)
+						pygtkdatabox.update([num for num in xarray][0:arrreallen],[num for num in yarray][0:arrreallen],arrreallen,aquisitionmodethisgraph)
 						null=None
 					if(peakslen>0):
 						try:
 							ypeaksarray=[0]*0
 							i=0
+							k=0 #TODO moved to outside of for to prevent UI hang, but spectrum and peaks must be sorted in ascending order.
 							for v in peaksarray:
 								if(i>peakslen):
 									break
 								if(v==0):
 									break
 								i=i+1
-								k=0
 								lastabs=abs(v-xarray[k])
 								while(abs(v-xarray[k])<=lastabs):
 									lastabs=abs(v-xarray[k])
@@ -1381,7 +1412,7 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 					iupcounter[0]=time.time()
 				if(retvalcontrol[0]<=0):
 					return False
-				GObject.timeout_add(1, updategtk)
+				GObject.timeout_add(20, updategtk)
 				return True
 			retvalcontrol=[0]*2
 			mmaphaltonerror=fastmmap.createmmap("errpd"+str(idspectraread.value),"rwx------")
@@ -1395,14 +1426,12 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 				if(retvalcontrol[0]<=0):
 					#print "add"
 					pygtkdatabox.refresh_graph()
-					GObject.timeout_add(10, updategtk)
-					GObject.timeout_add(10,update,iupcounter,entrytextselectstyle,windowdatabox,buttonback,canvasdatabox,retvalcontrol)
+					GObject.timeout_add(20, updategtk)
+					GObject.timeout_add(20,update,iupcounter,entrytextselectstyle,windowdatabox,buttonback,canvasdatabox,retvalcontrol)
 				#else:
 				#	print "running"
 				return True
-			GObject.timeout_add(250,adduptimeout,update,iupcounter,entrytextselectstyle,windowdatabox,buttonback,canvasdatabox,retvalcontrol)
-			databoxxlabel=Gtk.Label("Wavelength (nm)")
-			databoxylabel=Gtk.Label("Intensity (u.a)")
+			GObject.timeout_add(150,adduptimeout,update,iupcounter,entrytextselectstyle,windowdatabox,buttonback,canvasdatabox,retvalcontrol)#Changed timeout from 250 to 150.
 			databoxylabel.set_angle(90)
 			hboxdataboxlabel = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
 			hboxdataboxlabel.pack_start(databoxylabel, False, False, 0)
@@ -1975,6 +2004,9 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 				entry_botton_a.set_value(float(vsettings))
 			configfile.close()
 			def update(hfff):
+				if(oldvaluesentryresetscope.value!=str(entry_botton_b.get_value())+";"+str(entry_botton_h.get_value())+";"+str(entry_botton_a.get_value())+";"):
+					pygtkdatabox.resetscopedark()
+					oldvaluesentryresetscope.value=str(entry_botton_b.get_value())+";"+str(entry_botton_h.get_value())+";"+str(entry_botton_a.get_value())+";"
 				try:
 					global returna
 					if (checkbox.get_active()==True):
@@ -1982,6 +2014,7 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 					if (checkbox.get_active()==False):
 						menuitemc.set_sensitive(False)
 						savecommand.value="False"
+						#print "resetsave"
 					devselectfoldername="None"
 					if(int(dev_combo.get_model()[dev_combo.get_active_iter()][:2][0])!=1):
 						devselectfoldername=str(dev[(dev_combo.get_model()[dev_combo.get_active_iter()][:2][0])-2][:][1])
@@ -2034,6 +2067,7 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 				global currentdevice
 				global removedselectitem
 				savecommand.value="False"
+				#print "resetsaveb"
 				currentdevice.removeallwidgets(toolbar)
 				if((int(dev_combo.get_model()[dev_combo.get_active_iter()][:2][0]))==1):
 					currentdevice=blank_module
@@ -2228,16 +2262,19 @@ uncheck = managerb.Value(c_char_p, "False")
 readyshoww = managerb.Value(c_char_p, "False")
 gtkcolorsfromnode = managerb.Value(c_char_p, "")
 infotext = managerb.Value(c_char_p, "")
+xydatalabel = managerb.Value(c_char_p, "")
 savecommand = managerb.Value(c_char_p, "")
+oldtexthjgh = managerb.Value(c_char_p, "")
 windowclose = managerb.Value(c_char_p, "opened")
 savecommand.value="False"
 spectrum = managerb.Value(c_char_p, "")
 spectrumx = managerb.Value(c_char_p, "")
+oldvaluesentryresetscope = managerb.Value(c_char_p, "")
 readshowwin = managerb.Value(c_char_p, "-1")
 idspectraread = managerb.Value(c_char_p, "-1")
 infotext.value="Peaks:[]          Frequency:0hz             "
 startedp2final=0
-p2=Process(target=mainui, args=(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose,uncheck,spectrumx,readyshoww,readshowwin,idspectraread))
+p2=Process(target=mainui, args=(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose,uncheck,spectrumx,readyshoww,readshowwin,idspectraread,xydatalabel,oldtexthjgh,oldvaluesentryresetscope,))
 globalpeaks=""
 fgje=-1
 fgjeb=-1
@@ -2281,7 +2318,8 @@ def getsavecommand():
 	return savecommand.value
 def clearsavecommand():
 	savecommand.value="False"
-def updateinfotext(freq,temp,extra):
+	#print "resetsavec"
+def updateinfotext(freq,temp,extra,xylabel):
 	global globalpeaks
 	global aaafreq
 	global aaatemp
@@ -2289,6 +2327,7 @@ def updateinfotext(freq,temp,extra):
 	try:
 		infotext.value="Peaks:["+str(globalpeaks)+"]          Frequency:"+str(freq)+"hz             "+pickle.loads(codecs.decode((temp.split("\n")[0]).encode(), "base64")).encode('utf-8').strip()+""+str(extra)+""
 		aaatemp=pickle.loads(codecs.decode((temp.split("\n")[0]).encode(), "base64")).encode('utf-8').strip()
+		xydatalabel.value=xylabel
 	except:
 		null=None
 	aaafreq=freq

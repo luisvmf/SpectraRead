@@ -22,6 +22,7 @@
 	var fs = require('fs');
 	function savesinglespectrum(data,speclocation){
 		fs.writeFileSync(""+speclocation,""+data);
+		console.log("save"+speclocation);
 	}
 	function savesinglepeaks(data,peakslocation){
 		fs.writeFileSync(""+peakslocation,""+data);

@@ -20,7 +20,7 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-isusingimonemulator=0
+isusingimonemulator=1
 serialrawtimeout=0.1 #timeout in seconds, to wait for avaliable amount of bytes while reading spectra or ack byte \x06 when initiating acquisition.
 waitforspectimeout=3 #timeout in seconds to abort aquisition if a full spectrum is unavaliable
 debuglevel=2 #Debug level:
