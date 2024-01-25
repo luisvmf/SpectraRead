@@ -22,4 +22,5 @@ if(cmdargsid=="par"){
 	cmdargsid="(";
 }
 var peakshs=require("./hspeaks.js");
+console.log("Initializing hspeaks."+cmdargsid+cmdargsidb+cmdargs);
 peakshs.inithspeaksprocess(cmdargsid,"p"+cmdargsid+cmdargsidb,0,0.01);

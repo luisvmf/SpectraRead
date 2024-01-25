@@ -1,20 +1,96 @@
-# SpectraRead
-![alt tag](https://img.shields.io/badge/build-fail-brightred.svg)
+# ***SpectraRead***
+![alt tag](https://img.shields.io/badge/build-pass-green.svg)
+SpectraRead is a program for data acquisition of devices that generate XY data, ex spectrometers, osciloscopes... It has peak detection and baseline removal algorithms. It can be used for high speed acquisitions and support for devices can be added easily with plugins written in Python (no need to change spectraread code, just copy plugin to spectrometer_modules folder).
 
-**This is a work in progress. It is not ready for use yet...**
+The GUI uses GTK3, support is currently just for Linux.
+![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/main.png)
+Features:
+- Add support for devices easily  with plugins written in Python (no need to change spectraread code, just copy plugin to spectrometer_modules folder)
+- Select Plugin on runtime
+- Baseline removal
+- Boxcar
+- Peak position fit
+- Save single/multiple spectra/peaks position data
+- Paralel processing/ very fast
+- Linear/ Log scale for viewing
+- Baseline subtract/ Scope/ Absorbance/ Transmitance mode
+- Zoom/ autoscale
+- Dark theme support
+- Get data on real time on another process using shared memory (fastmmapmq)
+- Peak position monitor
 
-      git clone https://git.luisvmf.com/SpectraRead
+Current plugins:
+- Generic (Arduino data acquisition, there is a demo osciloscope)
+- Demo (Just generates fake data for test);
+- imon256-v6
+___
+# ***Installing:***
 
-SpectraRead is a spectroscopy program with peak detection and baseline removal algorithms. It can be used for high speed acquisitions and support for devices can be added easily with plugins written in python (see source/spectrometer_modules).
+## Distributions with apt (Debian, Ubuntu, Linux Mint):
+### Add repository:
 
-The GUI uses GTK3.
+	echo "deb http://packages.luisvmf.com/ stable main" | sudo tee /etc/apt/sources.list.d/luisvmf.com.list
+	curl -fsSL https://luisvmf.com/pgp-key.public | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/luisvmfcom.gpg > /dev/null
+	sudo apt-get update
+### Install:
 
-![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/Screenshot%20from%202019-01-09%2016-08-54.png)
+	sudo apt-get install luisvmf.com-spectraread 
 
-![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/Screenshot%20from%202019-01-09%2016-09-29.png)
+### Install required plugins:
 
-![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/Screenshot%20from%202019-01-09%2016-09-47.png)
+    sudo apt-get install luisvmf.com-spectraread_demoplugin
+    sudo apt-get install luisvmf.com-spectraread_imonv6_256 
+Now spectraread should be avaliable on menu.
 
-![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/Screenshot%20from%202019-01-09%2016-10-43.png)
+### Requirements to run spectraread (***should be enabled by default on recent distributions***):
+
+        procfs mounted with support for /proc/pid/fd
+        x86_64 Linux Kernel with user namespace support:
+            CONFIG_USER_NS
+            One of the folowing (depending on distribution):
+                 /proc/sys/kernel/userns_restrict is zero
+                 sysctl user.max_user_namespaces larger than 10
+                 sudo sysctl -w kernel.unprivileged_userns_clone=1
+        /dev/shm mounted
 
 
+___
+
+### ***Building from source***:
+It is recomended to install from apt repository as above. To build from source:
+
+      git clone https://git.luisvmf.com/Namespace
+      Get demo containner: https://github.com/luisvmf/Namespace/releases/tag/2
+      ./nstest Runtime/ 1 1 1 1 /bin/bash
+      Inside containner:
+          mkdir $HOME
+          git clone https://git.luisvmf.com/SpectraRead
+          make
+        Then get plugins and build, inside source/spectrometer_modules folder
+
+### TODO:
+- Improve Build from source instructions
+- Explain how to create containner that mounts home folder ... as version from apt repository, for now see deb package and containner_utils folder on this git repo.
+- Plugins development docs
+- Peaks Gui
+- Not Working if path name of install folder is too big, probabily because of fastmmapmq.
+- Generic plugin
+
+
+![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/main.png)
+
+![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/log-scale.png)
+
+![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/help.png)
+
+![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/dark-theme.png)
+
+![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/peaksgui.png)
+
+![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/save1.png)
+
+
+![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/save2.png)
+
+
+![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/save3.png)

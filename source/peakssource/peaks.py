@@ -22,7 +22,7 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-
+print "ghg"
 import os, errno, time
 os.environ['MPLCONFIGDIR'] = os.path.expanduser("~")+"/.spectraread/spectrareadcfg/"
 os.environ['PYTHON_EGG_CACHE'] = os.path.expanduser("~")+"/.spectraread/spectrareadegg/"
@@ -50,7 +50,7 @@ def initgui(windowclose,datavar,datavaronlyone,currentshowlength):
 	peaksipcdatab=peaksipcdata
 	time.sleep(0.1)
 	fastmmap.write(mmap,",10load np")
-	import numpy as np
+	#import numpy as np
 	time.sleep(0.1)
 	fastmmap.write(mmap,",10load gi")
 	import gi
@@ -59,25 +59,25 @@ def initgui(windowclose,datavar,datavaronlyone,currentshowlength):
 	fastmmap.write(mmap,",05load gi repository")
 	from gi.repository import Gtk, Gdk, GObject ,Pango, Gio
 	fastmmap.write(mmap,",10load plot")
-	import matplotlib
-	import matplotlib.pyplot as plt
+	#import matplotlib
+	#import matplotlib.pyplot as plt
 	time.sleep(0.05)
 	fastmmap.write(mmap,",05load backend 1")
-	matplotlib.use('GTKAgg')
+	#matplotlib.use('GTKAgg')
 	time.sleep(0.1)
 	fastmmap.write(mmap,",10load figure")
-	from matplotlib.figure import Figure
-	from numpy import arange, pi, random, linspace
+	#from matplotlib.figure import Figure
+	#from numpy import arange, pi, random, linspace
 	#Possibly this rendering backend is broken currently
 	#from gi.repository import GObject
 	#from gi.repository import Gtk
 	time.sleep(0.1)
 	fastmmap.write(mmap,",10load backend 2")
-	from matplotlib.backends.backend_gtk3agg import FigureCanvasGTK3Agg as FigureCanvas
+	#from matplotlib.backends.backend_gtk3agg import FigureCanvasGTK3Agg as FigureCanvas
 	#from matplotlib.backends.backend_gtk3cairo import FigureCanvasGTK3Cairo as FigureCanvas
-	from matplotlib.colors import ColorConverter
-	from matplotlib.backends.backend_gtk3 import NavigationToolbar2GTK3 as NavigationToolbar
-	import matplotlib.patches as patches
+	#from matplotlib.colors import ColorConverter
+	#from matplotlib.backends.backend_gtk3 import NavigationToolbar2GTK3 as NavigationToolbar
+	#import matplotlib.patches as patches
 	bufferlength=900
 	currentshowlength.value=200
 	contarray=[]*0
@@ -121,8 +121,8 @@ def initgui(windowclose,datavar,datavaronlyone,currentshowlength):
 		else:
 			return True
 	inside=[0]*2
-	class CustomToolbar(NavigationToolbar):
-		toolitems=((u'Pan', u'Pan axes with left mouse, zoom with right', u'move', u'pan'), (u'Zoom', u'Zoom to rectangle', u'zoom_to_rect', u'zoom'),  )
+	#class CustomToolbar(NavigationToolbar):
+	#	toolitems=((u'Pan', u'Pan axes with left mouse, zoom with right', u'move', u'pan'), (u'Zoom', u'Zoom to rectangle', u'zoom_to_rect', u'zoom'),  )
 	hboxb = Gtk.Box(spacing=0, orientation=Gtk.Orientation.VERTICAL)
 	inmatplotlibbox = Gtk.Box(spacing=0, orientation=Gtk.Orientation.VERTICAL)
 	inmatplotlibboxb = Gtk.Box(spacing=0, orientation=Gtk.Orientation.VERTICAL)
@@ -136,61 +136,62 @@ def initgui(windowclose,datavar,datavaronlyone,currentshowlength):
 	inmatplotlibboxd.get_style_context().add_class(Gtk.STYLE_CLASS_LIST)
 	inmatplotlibboxe.get_style_context().add_class(Gtk.STYLE_CLASS_LIST)
 	inmatplotlibboxf.get_style_context().add_class(Gtk.STYLE_CLASS_LIST)
-	plt.rcParams['axes.linewidth'] = 2.1
-	plt.rcParams['font.size'] = 55
-	plt.rcParams['grid.linestyle'] = 'None'
-	plt.rcParams['agg.path.chunksize'] = 10000000
-	fig = Figure(figsize=(0.0000001,0.0000001), dpi=15)
-	plt.locator_params(nbins=4)
-	ax = fig.add_subplot(111)
+	#plt.rcParams['axes.linewidth'] = 2.1
+	#plt.rcParams['font.size'] = 55
+	#plt.rcParams['grid.linestyle'] = 'None'
+	#plt.rcParams['agg.path.chunksize'] = 10000000
+	#fig = Figure(figsize=(0.0000001,0.0000001), dpi=15)
+	#plt.locator_params(nbins=4)
+	#ax = fig.add_subplot(111)
 	entrytextselectstyle = Gtk.ToggleButton()
 	styletextselect = entrytextselectstyle.get_style_context()
 	selectcolor=styletextselect.get_background_color(Gtk.StateFlags.ACTIVE).to_color().to_floats()
-	ccb = ColorConverter()
-	ccb.to_rgba(selectcolor)
-	ax.format_coord = format_coord
-	ax.in_axes=aaa
-	ax.grid(False)
-	style = Gtk.ListBoxRow().get_style_context()
-	bg_color = style.lookup_color("theme_base_color").color.to_color().to_floats()
-	cc = ColorConverter()
-	cc.to_rgba(bg_color)
-	fg_color = style.get_color(Gtk.StateType.NORMAL).to_color().to_floats()
-	ccb = ColorConverter()
-	ccb.to_rgba(fg_color)
-	fig.patch.set_facecolor(bg_color)
-	ax.patch.set_facecolor(bg_color)
-	font = {'family' : 'normal',
-			'weight' : 'bold',
-			'size'   : 29}
-	ax.spines['bottom'].set_color(fg_color)
-	ax.spines['top'].set_color(fg_color) 
-	ax.spines['right'].set_color(fg_color)
-	ax.spines['left'].set_color(fg_color)
-	ax.spines['right'].set_visible(False)
-	ax.spines['top'].set_visible(False)
-	ax.xaxis.set_ticks_position('bottom')
-	ax.yaxis.set_ticks_position('left')
-	ax.tick_params(axis='x', colors=fg_color)
-	ax.tick_params(axis='y', colors=fg_color)
-	ax.yaxis.label.set_color(fg_color)
-	ax.xaxis.label.set_color(fg_color)
-	ax.tick_params(
-		axis='x',
-		which='both',
-		bottom=True,
-		top=False,
-		labelbottom=True)
-	ax.tick_params(
-		axis='y',
-		which='both',
-		left=False,
-		right=False,
-		labelleft=True)
-	matplotlib.rc('font', **font)
-	plt.rc('font', **font)
-	canvas = FigureCanvas(fig)
-	val=[0]*2
+	#ccb = ColorConverter()
+	#ccb.to_rgba(selectcolor)
+	#ax.format_coord = format_coord
+	#ax.in_axes=aaa
+	#ax.grid(False)
+	#style = Gtk.ListBoxRow().get_style_context()
+	#bg_color = style.lookup_color("theme_base_color").color.to_color().to_floats()
+	#cc = ColorConverter()
+	#cc.to_rgba(bg_color)
+	#fg_color = style.get_color(Gtk.StateType.NORMAL).to_color().to_floats()
+	#ccb = ColorConverter()
+	#ccb.to_rgba(fg_color)
+	#fig.patch.set_facecolor(bg_color)
+	#ax.patch.set_facecolor(bg_color)
+	#font = {'family' : 'normal',
+	#		'weight' : 'bold',
+	#		'size'   : 29}
+	#ax.spines['bottom'].set_color(fg_color)
+	#ax.spines['top'].set_color(fg_color) 
+	#ax.spines['right'].set_color(fg_color)
+	#ax.spines['left'].set_color(fg_color)
+	#ax.spines['right'].set_visible(False)
+	#ax.spines['top'].set_visible(False)
+	#ax.xaxis.set_ticks_position('bottom')
+	#ax.yaxis.set_ticks_position('left')
+	#ax.tick_params(axis='x', colors=fg_color)
+	#ax.tick_params(axis='y', colors=fg_color)
+	#ax.yaxis.label.set_color(fg_color)
+	#ax.xaxis.label.set_color(fg_color)
+	#ax.tick_params(
+	#	axis='x',
+	#	which='both',
+	#	bottom=True,
+	#	top=False,
+	#	labelbottom=True)
+	#ax.tick_params(
+	#	axis='y',
+	#	which='both',
+	#	left=False,
+	#	right=False,
+	#	labelleft=True)
+	#matplotlib.rc('font', **font)
+	#plt.rc('font', **font)
+	#canvas = FigureCanvas(fig)
+	#val=[0]*2
+	"""
 	def mousemoveevent(event):
 		intpos=[0]*2
 		valb=(str(event).split("xy=(")[1].split(")")[0].split(","))
@@ -217,10 +218,12 @@ def initgui(windowclose,datavar,datavaronlyone,currentshowlength):
 	canvas.mpl_connect('motion_notify_event', mousemoveevent)
 	canvas.set_size_request(200,200)
 	inmatplotlibtoolbarb = CustomToolbar(canvas, None)
+	"""
 	currentdataarr=[0]*0
 	linearr=[None]*0
 	realtimestampfrompproc1=[0]*0;
 	j=0
+	"""
 	def addline(currentinitvarlines):
 		currentdataarr.append([0]*bufferlength)
 		contarray.append([0]*0)
@@ -233,7 +236,9 @@ def initgui(windowclose,datavar,datavaronlyone,currentshowlength):
 		linearr.append(intvara)
 		ax.lines.remove(intvara)
 		currentinitvarlines[0]=currentinitvarlines[0]+1
+	"""
 	currentinitvarlines=[0]*2
+	"""
 	ax.tick_params(axis='both', which='major', pad=15)
 	ax.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(2))#here number tics x axis-------------------------------------
 	mousepos=[0]*2
@@ -281,6 +286,7 @@ def initgui(windowclose,datavar,datavaronlyone,currentshowlength):
 	ax.add_patch(rect)
 	rect.set_visible(False)
 	recttext.set_visible(False)
+	"""
 	selecteddatarows=[None]*0
 	linesshown=[None]*0
 	graphtimearray=[0]*bufferlength
@@ -289,6 +295,7 @@ def initgui(windowclose,datavar,datavaronlyone,currentshowlength):
 	while(k<len(graphtimearray)):
 		graphtimearray[k]=k/10000.0
 		k=k+1
+	"""
 	def desenhagrafico(i,autoscaleval,entrytextselectstyle,rect,mousepos,inside,recttext,mousepostext,winsize,timecounterb,infotext,returnedfalse,oldmouseposloopcontrol,selecteddatarows,linesshown,graphtimearray,currentshowlength,datamodeselected,realtimestampfrompproc1,val):
 		if(True):
 			if(time.time()-i[0]>0.1):
@@ -519,6 +526,7 @@ def initgui(windowclose,datavar,datavaronlyone,currentshowlength):
 		return True
 	infotext=""
 	GObject.timeout_add(100, loopcontrol,i,autoscaleval,entrytextselectstyle,rect,mousepos,inside,recttext,mousepostext,winsize,timecounterb,infotext,returnedfalse,oldmouseposloopcontrol,selecteddatarows,linesshown,graphtimearray,currentshowlength,datamodeselected,realtimestampfrompproc1,val,priority=GObject.PRIORITY_DEFAULT_IDLE)
+	"""
 	builder = Gtk.Builder()
 	builder.add_from_file(os.path.dirname(os.path.realpath(__file__))+"/ui.glade")
 	window = builder.get_object("window1")
@@ -535,7 +543,7 @@ def initgui(windowclose,datavar,datavaronlyone,currentshowlength):
 	rowlabelstruc[0]=[None]*1
 	rowlabelstruc[1]=[None]*1
 	def addlistbox(textlabel,listboxvar,listboxcommandstruc,currentinitvarlines):
-		addline(currentinitvarlines)
+		#addline(currentinitvarlines)
 		listboxcommandstruc[1].append(None)
 		listboxcommandstruc[2].append(None)
 		listboxcommandstruc[3].append(None)
@@ -644,7 +652,7 @@ def initgui(windowclose,datavar,datavaronlyone,currentshowlength):
 							ncountaaa=ncountaaa+1
 						cdataprimnames[i]=((cdataprimnames[i]).split(":")[0])
 						i=i+1
-					print cdataprimnames
+					#print cdataprimnames XXX XXX XXX XXX var contém picos
 					if(abs(lastupdatetime[0]-time.time())>=0.0):
 						if(1==1):
 							graphtimearray.append(currentpointtime[0])
@@ -692,20 +700,41 @@ def initgui(windowclose,datavar,datavaronlyone,currentshowlength):
 							i=i+1
 						lastupdatetime[0]=time.time()
 		except Exception as e:
-			print e
+			#print "err703"
+			#print e
+			pass
 		return True
+	import traceback
 	def adddatasources(datavar,listbox,listboxcommandstruc,addedsourcesstruc,currentinitvarlines,datasourcesupdateinforealname,datavaronlyone,currentdataarr,lastupdatetime,graphtimearray,starttime,pointdeleteval,totaldataarr,currentpointtime,dataupdaterunning,realtimestampfrompproc,updatedata):
 		try:
 			#datavara=datavar.value.split("|")
 			datavara=fastmmap.getsharedstring(peaksipcdatab).split("|")
+			print "init"
+			print datavara
 			del datavara[0]
 			for v in datavara:
 				datavarb=v.split(":")
 				datavarname=datavarb[0]
-				if(datavarb[1]!=""):
-					datavarlength=len(datavarb[1].split(" "))
-				else:
-					datavarlength=0
+				try:
+					if(datavarb[1]!=""):
+						datavarlength=len(datavarb[1].split(" "))
+					else:
+						datavarlength=0
+				except:
+					try:
+						#Remove if there is only one peak XXX XXX TODO This maybe causing problem two proccess opened removing all peaks in one. Check before remove if it is this the process with no peaks.
+						i=0
+						for v in addedsourcesstruc[0]:
+							if(v==datavarname):
+								lastint=addedsourcesstruc[2][i]
+								removelistboxrow(listbox,addedsourcesstruc[2][index][i],listboxcommandstruc)
+								del lastint[i]
+								addedsourcesstruc[2][index]=lastint
+							i=i+1
+						print addedsourcesstruc
+						print datavarname
+					except:
+						null=None
 				isnameadded=0
 				index=-1
 				i=0
@@ -728,6 +757,7 @@ def initgui(windowclose,datavar,datavaronlyone,currentshowlength):
 						addedsourcesstruc[2].append(lastint)
 					if(addedsourcesstruc[1][index]>datavarlength):
 						#remove extra elements
+						print "remove"
 						ndataremove=abs(addedsourcesstruc[1][index]-datavarlength)
 						lastint=addedsourcesstruc[2][index]
 						i=len(lastint)-1
@@ -749,8 +779,10 @@ def initgui(windowclose,datavar,datavaronlyone,currentshowlength):
 					addedsourcesstruc[0].append(str(datavarname))
 					addedsourcesstruc[1].append(datavarlength)
 					addedsourcesstruc[2].append(lastint)
-		except:
+		except Exception as errorintadd:
+			traceback.print_exc()
 			print "err601"
+			print errorintadd
 		updatedata(datavar,datavaronlyone,currentdataarr,datasourcesupdateinforealname,lastupdatetime,graphtimearray,starttime,pointdeleteval,totaldataarr,currentpointtime,dataupdaterunning,realtimestampfrompproc)
 		updatedata(datavar,datavaronlyone,currentdataarr,datasourcesupdateinforealname,lastupdatetime,graphtimearray,starttime,pointdeleteval,totaldataarr,currentpointtime,dataupdaterunning,realtimestampfrompproc)
 		return True

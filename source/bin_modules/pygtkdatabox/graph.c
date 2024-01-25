@@ -76,6 +76,7 @@ int setlimnext=0;
 int hasupdated=1;
 int showtooltip=0;
 int oldnsdf=-1;
+char *spectrareadproccessidnodegui;
 GtkDataboxGraph *graphgrid;
 GtkDataboxGraph *graphregionbox;
 GtkDataboxGraph *graphbrangea;
@@ -622,6 +623,19 @@ static PyObject *updategraph(PyObject*self,PyObject*args){
 		PyErr_SetString(PyExc_TypeError,"Error on update");
 		return NULL;
 }
+
+static PyObject *initmmapvar(PyObject*self,PyObject*args){
+	if(!PyArg_ParseTuple(args,"es", "utf-8", &spectrareadproccessidnodegui)){
+		goto err;
+	}
+	printf("Received on gtkdatabox process id: %s\n",spectrareadproccessidnodegui);
+	return Py_BuildValue("s","");
+	err:
+		PyErr_SetString(PyExc_TypeError,"Error on initmmapvar");
+		return NULL;
+}
+
+
 static PyObject *refresh_graph(PyObject*self,PyObject*args){
    timeoutid = g_timeout_add (1000/FRAME_RATE,(GSourceFunc)update_graph, NULL);
    timeoutidb = g_timeout_add (1000.0/FRAME_RATEb,(GSourceFunc)refresh_label_timeout, NULL);
@@ -885,14 +899,27 @@ int mapdatadarkidbdhdf=-1;
 static gint take_light(GtkWidget *button, GdkEventButton *event){
 	if(event->type==GDK_BUTTON_PRESS && event->button==1){
 		while(mapdatadarkidbdhdf==-1){
-			mapdatadarkidbdhdf=fastmmapmq_connectmmap("spectrareadd","scoperef");//XXX XXX XXX TODO
-			printf("Connecting fastmmap pygtkdatabox...\n");
+			mapdatadarkidbdhdf=fastmmapmq_connectmmap(spectrareadproccessidnodegui,"scoperef");//XXX XXX XXX TODO
+			printf("Connecting fastmmap pygtkdatabox... %s\n",spectrareadproccessidnodegui);
 		}
 		char *intdarkspec=fastmmapmq_getsharedstring_withsize(mapdatadarkidbdhdf,POINTS*sizeof(float)/sizeof(char));
 		float *auxbuf=(float *)intdarkspec;
-		printf("Take light\n");
-		for(int i=1;i<POINTS+1;i++){
-			auxbuf[i]=Y_notlogoffset[i-1];
+		if(aqmodethisspecfromnode==2){
+			printf("Take light !!!!!!!!Dark on array!!!!!!\n");
+			while(mapdatadarkid==-1){
+				mapdatadarkid=fastmmapmq_connectmmap(spectrareadproccessidnodegui,"darkref");//XXX XXX XXX TODO
+			printf("Connecting fastmmap pygtkdatabox... %s\n",spectrareadproccessidnodegui);
+			}
+			char *darkcharpointer_int_takelight=fastmmapmq_getsharedstring_withsize(mapdatadarkid,POINTS*sizeof(float)/sizeof(char));
+			float *darkfloatpointer_int_takelight=(float *)darkcharpointer_int_takelight;
+			for(int i=1;i<POINTS+1;i++){
+				auxbuf[i]=Y_notlogoffset[i-1]+darkfloatpointer_int_takelight[i-1];
+			}
+		}else{
+			printf("Take light no dark\n");
+			for(int i=1;i<POINTS+1;i++){
+				auxbuf[i]=Y_notlogoffset[i-1];
+			}
 		}
 		gtk_widget_set_sensitive(GTK_WIDGET(buttonlightb),TRUE);
 		gtk_widget_set_sensitive(GTK_WIDGET(buttonlightc),TRUE);
@@ -906,8 +933,8 @@ int aqmode=1;
 static gint dark_toggle(GtkWidget *button){
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button))==1){
 		while(mapdatadarkid==-1){
-			mapdatadarkid=fastmmapmq_connectmmap("spectrareadd","darkref");//XXX XXX XXX TODO
-			printf("Connecting fastmmap pygtkdatabox...\n");
+			mapdatadarkid=fastmmapmq_connectmmap(spectrareadproccessidnodegui,"darkref");//XXX XXX XXX TODO
+			printf("Connecting fastmmap pygtkdatabox... %s\n",spectrareadproccessidnodegui);
 		}
 		char *intdarkspec=(char *)malloc(POINTS*sizeof(float));
 		float *auxbuf=(float *)intdarkspec;
@@ -919,8 +946,8 @@ static gint dark_toggle(GtkWidget *button){
 		free(intdarkspec);
 	}else{
 		while(mapdatadarkid==-1){
-			mapdatadarkid=fastmmapmq_connectmmap("spectrareadd","darkref");//XXX XXX XXX TODO
-			printf("Connecting fastmmap pygtkdatabox...\n");
+			mapdatadarkid=fastmmapmq_connectmmap(spectrareadproccessidnodegui,"darkref");//XXX XXX XXX TODO
+			printf("Connecting fastmmap pygtkdatabox... %s\n",spectrareadproccessidnodegui);
 		}
 		char *intdarkspec=(char *)malloc(POINTS*sizeof(float));
 		float *auxbuf=(float *)intdarkspec;
@@ -935,8 +962,8 @@ static gint dark_toggle(GtkWidget *button){
 }
 void changespecmode(int mode){
 	while(mapdatadarkidbdhdf==-1){
-		mapdatadarkidbdhdf=fastmmapmq_connectmmap("spectrareadd","scoperef");//XXX XXX XXX TODO
-		printf("Connecting fastmmap pygtkdatabox...\n");
+		mapdatadarkidbdhdf=fastmmapmq_connectmmap(spectrareadproccessidnodegui,"scoperef");//XXX XXX XXX TODO
+			printf("Connecting fastmmap pygtkdatabox... %s\n",spectrareadproccessidnodegui);
 	}
 	char *intdarkspec=fastmmapmq_getsharedstring_withsize(mapdatadarkidbdhdf,(POINTS+1)*sizeof(float)/sizeof(char));
 	float *auxbuf=(float *)intdarkspec;
@@ -954,9 +981,15 @@ void setlightdarkbuttonenabled(){
 		gtk_widget_set_sensitive(GTK_TOGGLE_BUTTON(buttonlighta),TRUE);
 		gtk_widget_set_sensitive(GTK_TOGGLE_BUTTON(buttonlight),TRUE);
 	}else{
-		printf("disabled\n");
-		gtk_widget_set_sensitive(GTK_TOGGLE_BUTTON(buttonlighta),FALSE);
-		gtk_widget_set_sensitive(GTK_TOGGLE_BUTTON(buttonlight),FALSE);
+		if(aqmodethisspecfromnode==2){
+			printf("enable\n");
+			gtk_widget_set_sensitive(GTK_TOGGLE_BUTTON(buttonlighta),TRUE);
+			gtk_widget_set_sensitive(GTK_TOGGLE_BUTTON(buttonlight),TRUE);
+		}else{
+			printf("disabled\n");
+			gtk_widget_set_sensitive(GTK_TOGGLE_BUTTON(buttonlighta),FALSE);
+			gtk_widget_set_sensitive(GTK_TOGGLE_BUTTON(buttonlight),FALSE);
+		}
 	}
 }
 static PyObject *getspecmode(PyObject*self,PyObject*args){
@@ -964,8 +997,8 @@ static PyObject *getspecmode(PyObject*self,PyObject*args){
 }
 //XXX XXX
 static PyObject *resetscopedark(PyObject*self,PyObject*args){
-	mapdatadarkid=fastmmapmq_connectmmap("spectrareadd","darkref");//XXX XXX XXX TODO
-	mapdatadarkidbdhdf=fastmmapmq_connectmmap("spectrareadd","scoperef");//XXX XXX XXX TODO
+	mapdatadarkid=fastmmapmq_connectmmap(spectrareadproccessidnodegui,"darkref");//XXX XXX XXX TODO
+	mapdatadarkidbdhdf=fastmmapmq_connectmmap(spectrareadproccessidnodegui,"scoperef");//XXX XXX XXX TODO
 	if(mapdatadarkid==-1)
 		return Py_BuildValue("i",0);
 	//printf("Reset\n");
@@ -1362,6 +1395,7 @@ static PyMethodDef methods[]={
 	{"refresh_graph",refresh_graph,METH_VARARGS,""},
 	{"getspecmode",getspecmode,METH_VARARGS,""},
 	{"resetscopedark",resetscopedark,METH_VARARGS,""},
+	{"initmmapvar",initmmapvar,METH_VARARGS,""},
 	{NULL,NULL,0,NULL}
 };
 PyMODINIT_FUNC initpygtkdatabox(void){

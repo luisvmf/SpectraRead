@@ -424,6 +424,7 @@
 																	console.log("Error. File already exists.");
 																	mmap.WriteSharedStringSync(iderrmaingui,"err");
 																	mmap.WriteSync(errboxmmap,"-Error saving file: File already exists._");
+									console.log("Writeerr");
 																	showerrmessage=1;
 																}
 															}
@@ -437,6 +438,7 @@
 																if(erronthis==0){
 																	mmap.WriteSharedStringSync(iderrmaingui,"err");
 																	mmap.WriteSync(errboxmmap,"-Error on saving file:\n"+e.message+"_");	
+									console.log("Writeerr");
 																	erronthis=1;
 																	saveonthis=0;													
 																}
@@ -454,7 +456,7 @@
 					}else{
 						if(spectranumbercounter!=-1){
 							try{
-								spawn("notify-send",["--urgency=normal","--icon="+dirpython+"/../mime-type/icon.svg","SpectraRead acquisition","\nData acquisition is complete."]);
+								spawn("notify-send",["--urgency=normal","--icon="+dirpython+"/../mime-type/icon.svg","\"'SpectraRead acquisition'\"","\"'Data acquisition is complete.'\""]);
 								console.log("Running: notify-send --urgency=normal --icon="+dirpython+"/../mime-type/icon.svg SpectraRead acquisition \nData acquisition is complete.");
 							}catch(e){
 								console.log(e);
@@ -468,7 +470,7 @@
 				}else{
 					if(saveonthis!=0){
 						try{
-							spawn("notify-send",["--urgency=normal","--icon="+dirpython+"/../mime-type/icon.svg","SpectraRead acquisition","\nData acquisition is complete."]);
+							spawn("notify-send",["--urgency=normal","--icon="+dirpython+"/../mime-type/icon.svg","\"'SpectraRead acquisition'\"","\"'Data acquisition is complete.'\""]);
 							console.log("Running: notify-send --urgency=normal --icon="+dirpython+"/../mime-type/icon.svg SpectraRead acquisition \nData acquisition is complete.");
 						}catch(e){
 							console.log(e);
@@ -503,43 +505,43 @@
 		var finishloadjghgh=mmap.ConnectMmapSync(process.cwd()+"/spectrareads "+cmdargs,""+cmdargs);
 		while(finishloadjghgh==-1){
 			finishloadjghgh=mmap.ConnectMmapSync(process.cwd()+"/spectrareads "+cmdargs,""+cmdargs);
-			//console.log("Connection failed on worker 3 1...Reconnecting");
+			console.log("Connection failed on worker 3 1...Reconnecting");
 			pf.sleep(0.1);
 		}
 		var infosaveui=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/main.js spectrareadcurrentprocid:"+cmdargs,"@"+cmdargs);
 		while(infosaveui==-1){
 			infosaveui=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/main.js spectrareadcurrentprocid:"+cmdargs,"@"+cmdargs);
-			//console.log("Connection failed on worker 3...Reconnecting");
+			console.log("Connection failed on worker 3 2...Reconnecting");
 			pf.sleep(0.1);
 		}
 		var id=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:[","p[0"+cmdargs);
 		while(id==-1){
 			id=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:[","p[0"+cmdargs);
-			//console.log("Connection failed on worker 3...Reconnecting");
+			console.log("Connection failed on worker 3 3...Reconnecting");
 			pf.sleep(0.3);
 		}
 		var idb=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:~","p~0"+cmdargs);
 		while(idb==-1){
 			idb=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:~","p~0"+cmdargs);
-			//console.log("Connection failed on worker 3...Reconnecting");
+			console.log("Connection failed on worker 3 4...Reconnecting");
 			pf.sleep(0.1);
 		}
 		var idc=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:par","p(0"+cmdargs);
 		while(idc==-1){
 			idc=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:par","p(0"+cmdargs);
-			//console.log("Connection failed on worker 3...Reconnecting");
+			console.log("Connection failed on worker 3 5...Reconnecting");
 			pf.sleep(0.1);
 		}
 		var idd=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:{","p{0"+cmdargs);
 		while(idd==-1){
 			idd=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:{","p{0"+cmdargs);
-			//console.log("Connection failed on worker 3...Reconnecting");
+			console.log("Connection failed on worker 3 6...Reconnecting");
 			pf.sleep(0.1);
 		}
 		var ide=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:,","p,0"+cmdargs);
 		while(ide==-1){
 			ide=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:,","p,0"+cmdargs);
-			//console.log("Connection failed on worker 3...Reconnecting");
+			console.log("Connection failed on worker 3 7...Reconnecting");
 			pf.sleep(0.1);
 		}
 
@@ -547,31 +549,31 @@
 		var idf=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:[","p[1"+cmdargs);
 		while(idf==-1){
 			idf=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:[","p[1"+cmdargs);
-			//console.log("Connection failed on worker 3...Reconnecting");
+			console.log("Connection failed on worker 3 8...Reconnecting");
 			pf.sleep(0.3);
 		}
 		var idg=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:par","p(1"+cmdargs);
 		while(idg==-1){
 			idg=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:par","p(1"+cmdargs);
-			//console.log("Connection failed on worker 3...Reconnecting");
+			console.log("Connection failed on worker 3 9...Reconnecting");
 			pf.sleep(0.1);
 		}
 		var idh=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:{","p{1"+cmdargs);
 		while(idh==-1){
 			idh=mmap.ConnectMmapSync(process.cwd()+"/peaksworker.js spectrareadcurrentprocid:"+cmdargs+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:{","p{1"+cmdargs);
-			//console.log("Connection failed on worker 3...Reconnecting");
+			console.log("Connection failed on worker 3 10...Reconnecting");
 			pf.sleep(0.1);
 		}
 		var iderrmaingui=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/main.js spectrareadcurrentprocid:"+cmdargs,"errpd"+cmdargs);
 		while(iderrmaingui==-1){
 			iderrmaingui=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/main.js spectrareadcurrentprocid:"+cmdargs,"errpd"+cmdargs);
-			//console.log("Connection failed on worker 3 id errpd...Reconnecting");
+			console.log("Connection failed on worker 3 id errpd...Reconnecting");
 			pf.sleep(0.1);
 		}
 		var errboxmmap=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/main.js spectrareadcurrentprocid:"+cmdargs,"d"+cmdargs);
 		while(errboxmmap==-1){
 			errboxmmap=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/main.js spectrareadcurrentprocid:"+cmdargs,"d"+cmdargs);
-			//console.log("Connection failed on worker 3 id d...Reconnecting");
+			console.log("Connection failed on worker 3 id d...Reconnecting");
 			pf.sleep(0.1);
 		}
 		mmap.WriteSharedStringSync(finishloadjghgh,"ok");
@@ -616,6 +618,7 @@
 									erronthis=1;
 									mmap.WriteSharedStringSync(iderrmaingui,"err");
 									mmap.WriteSync(errboxmmap,"-Error on saving file:\n"+e.message+"_");
+									console.log("Writeerr");
 								}
 							}
 							firstsave=1;
@@ -629,6 +632,7 @@
 								erronthis=1;
 								mmap.WriteSharedStringSync(iderrmaingui,"err");
 								mmap.WriteSync(errboxmmap,"-Error on saving file:\n"+e.message+"_");
+								console.log("Writeerr");
 							}
 						}
 						notifytext[0]=datapeaks[0];
@@ -638,7 +642,7 @@
 						if(erronthis==0){
 							if(notifytext[1]!="false"){
 								try{
-									spawn("notify-send",["--urgency=normal","--icon="+dirpython+"/../mime-type/icon.svg","SpectraRead acquisition","\nData acquisition to: "+""+notifytext[0]+"/"+notifytext[1]+".dat is complete."]);
+									spawn("notify-send",["--urgency=normal","--icon="+dirpython+"/../mime-type/icon.svg","\"'SpectraRead acquisition'\"","\"'Data acquisition to: "+""+notifytext[0]+"/"+notifytext[1]+".dat is complete.'\""]);
 									console.log("Running: notify-send --urgency=normal --icon="+dirpython+"/../mime-type/icon.svg SpectraRead acquisition \nData acquisition to: "+""+notifytext[0]+"/"+notifytext[1]+".dat is complete.");
 								}catch(e){
 									console.log(e);

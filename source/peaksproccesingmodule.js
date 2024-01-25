@@ -1,6 +1,6 @@
 		//MIT License
 		//
-		//Copyright (c) 2018 Luís Victor Müller Fabris
+		//Copyright (c) 2022 Luís Victor Müller Fabris
 		//
 		//Permission is hereby granted, free of charge, to any person obtaining a copy
 		//of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,7 @@
 			var data="";
 			datasendfinal="";
 			predatavarvb="";
+			//console.log(datasources);
 			for(var i=0;i<datasources.length;i++){
 				try{
 					predatavarv="";
@@ -50,10 +51,17 @@
 						if(timestamp!=""){
 							if(timestamp!=" "){
 								if(Number(timestamp)>1000.0){
+									var datasourceidint="";
+									if(datasources[i][2].indexOf("spectrareadcurrentprocid:")>0){
+										datasourceidint=datasources[i][2].split("spectrareadcurrentprocid:")[1].split("spectrareadprocid")[0];
+									}else{
+										datasourceidint=datasources[i][3];
+									}
 									predatavarv=predatavarv.slice(0, predatavarv.length-1);
-									predatavarv=predatavarv+"|"+datasources[i][0]+""+i+":";
+									predatavarv=predatavarv+"|"+datasources[i][0]+""+datasourceidint+":";
 									predatavarvb=predatavarvb.slice(0, predatavarvb.length-1);
-									predatavarvb=predatavarvb+"|"+datasources[i][0]+""+i+":";
+									predatavarvb=predatavarvb+"|"+datasources[i][0]+""+datasourceidint+":";
+
 									for(var k=0;k<datarawreadmmapb.length;k++){
 										datarawreadmmapc=datarawreadmmapb[k];
 										if(datarawreadmmapc!=""){
@@ -71,6 +79,7 @@
 					predatavarv=predatavarv+",";
 					predatavarvb=predatavarvb.slice(0, predatavarvb.length-1);
 					predatavarvb=predatavarvb+",";
+					//console.log("aaa");
 					if(predatavarv!=","){
 						//console.log(predatavarv);
 						fastmmapmq.WriteSync(peaksipcint,predatavarv)
@@ -82,5 +91,7 @@
 			if(datasendfinal!=""){
 				//console.log(datasendfinal);
 				fastmmapmq.WriteSharedStringSync(peaksipcint,datasendfinal)
+			}else{
+				//console.log("null");
 			}
 		}

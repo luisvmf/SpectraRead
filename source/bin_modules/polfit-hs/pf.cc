@@ -279,16 +279,16 @@ void polfit(const FunctionCallbackInfo<Value>& info) {
 	while(durationtotalacquisition/1000000<nruns){
 		t2b=high_resolution_clock::now();
 		durationtotalacquisition=duration_cast<microseconds>(t2b-t1b).count();
-		if(readlastinteractionb<1000){
+		//if(readlastinteractionb<1000){
 			//usleep(0.01*1000000.0);
-		}
-		if(readlastinteractionb<250){
-			//usleep(0.05*1000000.0);
+		//}
+		if(readlastinteractionb<150){
+			usleep(0.01*1000000.0);
 		}
 		if(readlastinteractionb<550){
-			usleep(0.05*1000000.0);
+			usleep(0.001*1000000.0);
 		}
-		if(readlastinteractionb<5){
+		if(readlastinteractionb<2){
 			usleep(0.05*1000000.0);
 		}
 		readlastinteractionb=0;

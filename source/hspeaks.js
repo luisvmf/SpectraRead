@@ -33,10 +33,11 @@ function inithspeaksprocess(id,idb,createconnect,sleeptime){
 	var datahspeaksb=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/main.js spectrareadcurrentprocid:"+cmdargs,"@"+cmdargs);
 	while(datahspeaksb==-1){
 		datahspeaksb=mmap.ConnectMmapSync(process.cwd()+"/spectrareadd "+process.cwd()+"/main.js spectrareadcurrentprocid:"+cmdargs,"@"+cmdargs);
-		//console.log("Reconnecting on hspeaks.");
+		console.log("Reconnecting on hspeaks."+id+idb+cmdargs);
 		pf.sleep(0.1);
 	}
 	pf.sleep(sleeptime);
+	console.log("Initialize hspeaks."+id+idb+cmdargs);
 	pf.connect(id+""+cmdargs,idb+""+cmdargs,createconnect,process.cwd()+"/spectrareadd "+process.cwd()+"/main.js spectrareadcurrentprocid:"+cmdargs);
 	while(true){
 		datapeaks=mmap.GetSharedStringSync(datahspeaksb);

@@ -145,6 +145,7 @@ main(int argc, char ** argv, char ** envp){
 			   setenv("PYTHONPATH", (path+"Python/lib/python2.7").c_str(), 1);
 			   setenv("PYTHONHOME", (path+"Python/").c_str(), 1);
 			   setenv("LD_PRELOAD", (path+"Python/lib/libpython2.7.so.1.0 ").c_str(), 1);
+				printf("a\n");
 				execl((path+"spectrareadd").c_str(), (path+"spectrareadd").c_str(),(path+"daemon.js").c_str(), ("spectrareadcurrentprocid:"+randomstring+"spectrareadprocid").c_str(), "spectrareadcmdargdaemon", NULL);
 	//HERE STOPS THE MEDIUM DANGER PART FOR PROCESS 1
 	//------------------------------------------------
@@ -176,6 +177,12 @@ main(int argc, char ** argv, char ** envp){
 				//HERE STOPS THE DANGEROUS PART FOR PROCESS 2, WE CAN'T GAIN ROOT PRIVILEGES AGAIN AFTER THIS LINE.
 				//------------------------------------------------
 				//------------------------------------------------
+						int pid = getpid();
+						int retnice=setpriority((int)PRIO_PROCESS, pid, (int)0);
+						if(retnice<0){
+							printf("Error setting nice: %s.\n",strerror(errno));
+							//exit(-1);
+						}
 	//HERE WE ARE RUNNING WITH GROUPS OF THE USER WHO CALLED THE PROGRAM, SO WE CANNOT DIRECTLY TALK TO THE SPECTROMETER.
 	//------------------------------------------------
 	//------------------------------------------------
@@ -221,6 +228,7 @@ main(int argc, char ** argv, char ** envp){
 			int a=chdir(path.c_str());
 			//std::string execcommandb=path+"spectrareads "+randomstring+"";
 			//system(execcommandb.c_str()); //Start splash screen.
+				printf("b\n");
 			execl((path+"spectrareads").c_str(), (path+"spectrareads").c_str(), (""+randomstring+"").c_str(), NULL);
 		}else{
 			int pidbsafeb=fork();
@@ -243,6 +251,7 @@ main(int argc, char ** argv, char ** envp){
 			   setenv("PYTHONPATH", (path+"Python/lib/python2.7").c_str(), 1);
 			   setenv("PYTHONHOME", (path+"Python/").c_str(), 1);
 			   setenv("LD_PRELOAD", (path+"Python/lib/libpython2.7.so.1.0 "+path+"bin_modules/pygtkdatabox/gtkdatabox/install/lib/libgtkdatabox-0.9.2.so.0 ").c_str(), 1);
+				printf("c\n");
 				execl((path+"spectrareadd").c_str(), (path+"spectrareadd").c_str(),(path+"main.js").c_str(), ("spectrareadcurrentprocid:"+randomstring+"spectrareadprocid").c_str(), "spectrareadcmdarggui", NULL);
 			}else{
 				int pidbsafec=fork();
@@ -267,12 +276,17 @@ main(int argc, char ** argv, char ** envp){
 								int a=chdir(path.c_str());
 								//std::string execcommand="GI_TYPELIB_PATH=girepository-1.0 LD_LIBRARY_PATH=atlas-base DISPLAY=':0' PYTHONPATH="+path+"Python/lib/python2.7 PYTHONHOME="+path+"Python/ LD_PRELOAD='"+path+"Python/lib/libpython2.7.so.1.0 "+path+"atlas-base/libcblas.so.3.0 "+path+"atlas-base/libatlas.so.3 "+path+"libgfortran/libgfortran.so.3 "+path+"atlas-base/liblapack.so.3 "+path+"atlas-base/libblas.so.3 "+path+"atlas-base/libf77blas.so.3' "+path+"spectrareadd "+path+"peaksworker.js spectrareadcurrentprocid:"+randomstring+"spectrareadprocid spectrareadcmdarggui specreadprocpeaks:[ spec1";
 								//system(execcommand.c_str()); //Start splash screen.
-
+						int retnice=setpriority((int)PRIO_PROCESS, pid, (int)0);
+						if(retnice<0){
+							printf("Error setting nice: %s.\n",strerror(errno));
+							//exit(-1);
+						}
 			   setenv("GI_TYPELIB_PATH", "girepository-1.0", 1);
 			   setenv("LD_LIBRARY_PATH", "atlas-base", 1);
 			   setenv("PYTHONPATH", (path+"Python/lib/python2.7").c_str(), 1);
 			   setenv("PYTHONHOME", (path+"Python/").c_str(), 1);
 			   setenv("LD_PRELOAD", (path+"Python/lib/libpython2.7.so.1.0 ").c_str(), 1);
+				printf("d\n");
 				execl((path+"spectrareadd").c_str(), (path+"spectrareadd").c_str(),(path+"peaksworker.js").c_str(), ("spectrareadcurrentprocid:"+randomstring+"spectrareadprocid").c_str(), "spectrareadcmdarggui","specreadprocpeaks:[","spec1", NULL);
 
 
@@ -296,6 +310,7 @@ main(int argc, char ** argv, char ** envp){
 			   setenv("PYTHONPATH", (path+"Python/lib/python2.7").c_str(), 1);
 			   setenv("PYTHONHOME", (path+"Python/").c_str(), 1);
 			   setenv("LD_PRELOAD", (path+"Python/lib/libpython2.7.so.1.0 ").c_str(), 1);
+				printf("e\n");
 				execl((path+"spectrareadd").c_str(), (path+"spectrareadd").c_str(),(path+"peaksworker.js").c_str(), ("spectrareadcurrentprocid:"+randomstring+"spectrareadprocid").c_str(), "spectrareadcmdarggui","specreadprocpeaks:{","spec1", NULL);
 							}							
 						}else{
@@ -318,6 +333,7 @@ main(int argc, char ** argv, char ** envp){
 			   setenv("PYTHONPATH", (path+"Python/lib/python2.7").c_str(), 1);
 			   setenv("PYTHONHOME", (path+"Python/").c_str(), 1);
 			   setenv("LD_PRELOAD", (path+"Python/lib/libpython2.7.so.1.0 ").c_str(), 1);
+				printf("f\n");
 				execl((path+"spectrareadd").c_str(), (path+"spectrareadd").c_str(),(path+"peaksworker.js").c_str(), ("spectrareadcurrentprocid:"+randomstring+"spectrareadprocid").c_str(), "spectrareadcmdarggui","specreadprocpeaks:par","spec1", NULL);
 						}
 					}else{
@@ -340,6 +356,7 @@ main(int argc, char ** argv, char ** envp){
 			   setenv("PYTHONPATH", (path+"Python/lib/python2.7").c_str(), 1);
 			   setenv("PYTHONHOME", (path+"Python/").c_str(), 1);
 			   setenv("LD_PRELOAD", (path+"Python/lib/libpython2.7.so.1.0 ").c_str(), 1);
+				printf("g\n");
 				execl((path+"spectrareadd").c_str(), (path+"spectrareadd").c_str(),(path+"peaksworker.js").c_str(), ("spectrareadcurrentprocid:"+randomstring+"spectrareadprocid").c_str(), "spectrareadcmdarggui","specreadprocpeaks:[","spec2", NULL);
 					}
 				}else{
@@ -364,6 +381,7 @@ main(int argc, char ** argv, char ** envp){
 			   setenv("PYTHONPATH", (path+"Python/lib/python2.7").c_str(), 1);
 			   setenv("PYTHONHOME", (path+"Python/").c_str(), 1);
 			   setenv("LD_PRELOAD", (path+"Python/lib/libpython2.7.so.1.0 ").c_str(), 1);
+				printf("h\n");
 				execl((path+"spectrareadd").c_str(), (path+"spectrareadd").c_str(),(path+"peaksworker.js").c_str(), ("spectrareadcurrentprocid:"+randomstring+"spectrareadprocid").c_str(), "spectrareadcmdarggui","specreadprocpeaks:{","spec2", NULL);
 					}else{
 						int pidbsafel=fork();
@@ -387,6 +405,7 @@ main(int argc, char ** argv, char ** envp){
 			   setenv("PYTHONPATH", (path+"Python/lib/python2.7").c_str(), 1);
 			   setenv("PYTHONHOME", (path+"Python/").c_str(), 1);
 			   setenv("LD_PRELOAD", (path+"Python/lib/libpython2.7.so.1.0 ").c_str(), 1);
+				printf("i\n");
 				execl((path+"spectrareadd").c_str(), (path+"spectrareadd").c_str(),(path+"peaksworker.js").c_str(), ("spectrareadcurrentprocid:"+randomstring+"spectrareadprocid").c_str(), "spectrareadcmdarggui","specreadprocpeaks:par","spec2", NULL);
 						}else{
 
@@ -414,6 +433,7 @@ main(int argc, char ** argv, char ** envp){
 				   setenv("PYTHONPATH", (path+"Python/lib/python2.7").c_str(), 1);
 				   setenv("PYTHONHOME", (path+"Python/").c_str(), 1);
 				   setenv("LD_PRELOAD", (path+"Python/lib/libpython2.7.so.1.0 ").c_str(), 1);
+				printf("j\n");
 					execl((path+"spectrareadd").c_str(), (path+"spectrareadd").c_str(),(path+"peaksworker.js").c_str(), ("spectrareadcurrentprocid:"+randomstring+"spectrareadprocid").c_str(), "spectrareadcmdarggui","specreadprocpeaks:~","spec1", NULL);
 						}else{
 								//here
@@ -435,6 +455,7 @@ main(int argc, char ** argv, char ** envp){
 				   setenv("PYTHONPATH", (path+"Python/lib/python2.7").c_str(), 1);
 				   setenv("PYTHONHOME", (path+"Python/").c_str(), 1);
 				   setenv("LD_PRELOAD", (path+"Python/lib/libpython2.7.so.1.0 ").c_str(), 1);
+				printf("k\n");
 					execl((path+"spectrareadd").c_str(), (path+"spectrareadd").c_str(),(path+"peaksworker.js").c_str(), ("spectrareadcurrentprocid:"+randomstring+"spectrareadprocid").c_str(), "spectrareadcmdarggui","specreadprocpeaks:,","spec1", NULL);
 
 						}

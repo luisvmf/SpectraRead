@@ -92,9 +92,9 @@ main(int argc, char ** argv, char ** envp){
 	srand(time(NULL));
 	string randomstring;
 	stringstream aaa;
-	aaa << abs(rand()*rand()*rand()*rand()*2/100000);
+	aaa << abs(rand()*rand()*rand()*rand()*2/100000000);
 	stringstream aaab;
-	aaab << abs(getTime()/100000);
+	aaab << abs(getTime()/10000000000);
 	randomstring=aaa.str()+aaab.str();
 	int alreadyrunning=1;
 	while(alreadyrunning==1){

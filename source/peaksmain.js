@@ -21,6 +21,7 @@
 		//SOFTWARE.
 		const cluster = require('cluster');
 		if (cluster.isMaster) {
+			console.log("dffgfd");
 			var procb=cluster.fork();
 			var python = require('python.node');
 			var os = python.import('os');
@@ -48,7 +49,7 @@
 			var id=mmap.ConnectMmapSync("peakss",""+cmdargs);
 			while(id==-1){
 				id=mmap.ConnectMmapSync("peakss",""+cmdargs);
-				//console.log("Connection failed...Reconnecting");
+				console.log("Connection failed...Reconnecting"+cmdargs);
 				time.sleep(0.1);
 			}
 			mmap.WriteSync(id,",10loading libraries 1");
@@ -64,7 +65,7 @@
 			sys.path.append(dirpython+'/Python/lib');
 			sys.path.append(dirpython+'/Python/lib/python2.7');
 			sys.path.append(dirpython+'/Python/lib/python2.7/site-packages');
-			sys.path.append(dirpython+'/Python/lib/python2.7/site-packages/numpy');
+			//sys.path.append(dirpython+'/Python/lib/python2.7/site-packages/numpy');
 			time.sleep(0.1);
 			mmap.WriteSync(id,",10loading libraries 3");
 			time.sleep(0.02);

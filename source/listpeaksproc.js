@@ -1,6 +1,6 @@
 		//MIT License
 		//
-		//Copyright (c) 2018 Luís Victor Müller Fabris
+		//Copyright (c) 2022 Luís Victor Müller Fabris
 		//
 		//Permission is hereby granted, free of charge, to any person obtaining a copy
 		//of this software and associated documentation files (the "Software"), to deal
@@ -44,6 +44,7 @@
 		}
 		function listallthreads(programcmdline){
 				var retarray=[];
+				var pidsretarray=[];
 				function getDirectories(path){
 						return fs.readdirSync(path).filter(function (file) {
 							try{
@@ -63,17 +64,20 @@
 				for (i=0; i<listpids.length; i++){
 					try{
 						var cmdline=fs.readFileSync("/proc/"+listpids[i]+"/cmdline", "utf8");
-						if(cmdline.indexOf(""+programcmdline)>-1){
+						if(cmdline.replaceAll("\u0000"," ").indexOf(""+programcmdline)>-1){
+							//console.log(cmdline);
 							retarray.push(cmdline.replaceAll("\u0000"," ").slice(0, cmdline.replaceAll("\u0000"," ").length-1));
+							pidsretarray.push(listpids[i]);
 						}
 					}catch(e){}
 				}
-				return retarray;
+				return [retarray,pidsretarray];
 		}
 		function adddatasources(connectedarray,mapsid,connectmmap){
 				for(var index2=0;index2<configdata.length;index2++){
 					sourceid=configdata[index2];
-					dataproc=listallthreads(sourceid.location);
+					var intvarhj=listallthreads(sourceid.location);
+					dataproc=intvarhj[0];
 					for(var index3=0;index3<dataproc.length;index3++){
 						if(sourceid.type=="fastmmapmq"){
 							var push=1;
@@ -83,10 +87,11 @@
 								}
 							}
 							if(push==1){
-								connectedarray.push([sourceid.name,dataproc[index3]]);
+								connectedarray.push([sourceid.name,dataproc[index3],intvarhj[1][index3]]);
 								if(connectmmap==0){
 									mapsid.push(-1);
 								}else{
+									//console.log(dataproc[index3]+","+sourceid.key);
 									mapsid.push(fastmmapmq.ConnectMmapSync(dataproc[index3],sourceid.key));
 									if(mapsid[mapsid.length-1]==-1){
 										connectedarray.splice(connectedarray.length-1,1);
@@ -130,7 +135,7 @@
 			}
 			var retarray=[];
 			for(var index=0;index<connectedsourcesarray.length;index++){
-				retarray.push([connectedsourcesarray[index][0],mapsidarray[index]]);
+				retarray.push([connectedsourcesarray[index][0],mapsidarray[index],connectedsourcesarray[index][1],connectedsourcesarray[index][2]]);
 			}
 			return retarray;
 		}

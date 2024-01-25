@@ -13,12 +13,12 @@
     <property name="skip_pager_hint">True</property>
     <property name="program_name">Peaks Fit</property>
     <property name="version">1.0.0.1</property>
-    <property name="copyright" translatable="yes">Copyright (c) 2017 Luís Victor Müller Fabris [MIT License]</property>
+    <property name="copyright" translatable="yes">Copyright (c) 2023 Luís Victor Müller Fabris [MIT License]</property>
     <property name="website">https://luisvmf.com</property>
     <property name="website_label" translatable="yes">www.luisvmf.com</property>
     <property name="license" translatable="yes">MIT License
 
-Copyright (c) 2017 Luís Victor Müller Fabris
+Copyright (c) 2023 Luís Victor Müller Fabris
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -36,9 +36,151 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</property>
+SOFTWARE.
+
+Third-party libraries distributed with this software:
+
+GtkDataBox
+GNU LESSER GENERAL PUBLIC LICENSE Version 2.1, February 1999
+  source/bin_modules/pygtkdatabox/gtkdatabox/COPYING 
+
+Free FFT and convolution (C) Copyright (c) 2019 Project Nayuki. (MIT License)
+  source/bin_modules/fft 
+
+FastMmapMQ
+Copyright (c) 2022 Luís Victor Muller Fabris Apache License  Version 2.0, January 2004
+NodeJS
+  SpectraRead/source/node-v4.4.2/LICENSE
+  SpectraRead/source/node-v4.4.2
+
+Python 2.7
+ source/Python-2.7.9/LICENSE
+
+pycairo
+  source/pycairo
+
+PyGObject-3.27.1
+  source/PyGObject-3.27.1
+
+setuptools
+  source/setuptools-0.9.8
+
+pyserial-3.4
+ sources/sources/pyserial-3.4.tar.gz
+
+source/node_modules/abbrev
+source/node_modules/core-util-is
+source/node_modules/hawk
+source/node_modules/nan
+source/node_modules/safer-buffer
+source/node_modules/ajv
+source/node_modules/cryptiles
+source/node_modules/hoek
+source/node_modules/node-gyp
+source/node_modules/semver
+source/node_modules/ansi-regex
+source/node_modules/dashdash
+source/node_modules/http-signature
+source/node_modules/nopt
+source/node_modules/set-blocking
+source/node_modules/aproba
+source/node_modules/delayed-stream
+source/node_modules/inflight
+source/node_modules/npmlog
+source/node_modules/sha1
+source/node_modules/are-we-there-yet
+source/node_modules/delegates
+source/node_modules/inherits
+source/node_modules/number-is-nan
+source/node_modules/signal-exit
+source/node_modules/asn1
+source/node_modules/dotenv
+source/node_modules/isarray
+source/node_modules/oauth-sign
+source/node_modules/sntp
+source/node_modules/assert-plus
+source/node_modules/ecc-jsbn
+source/node_modules/isexe
+source/node_modules/object-assign
+source/node_modules/sshpk
+source/node_modules/asynckit
+source/node_modules/extend
+source/node_modules/is-fullwidth-code-point
+source/node_modules/once
+source/node_modules/string_decoder
+source/node_modules/aws4
+source/node_modules/extsprintf
+source/node_modules/isstream
+source/node_modules/osenv
+source/node_modules/stringstream
+source/node_modules/aws-sign2
+source/node_modules/fast-deep-equal
+source/node_modules/is-typedarray
+source/node_modules/os-homedir
+source/node_modules/string-width
+source/node_modules/balanced-match
+source/node_modules/fast-json-stable-stringify
+source/node_modules/jsbn
+source/node_modules/os-tmpdir
+source/node_modules/strip-ansi
+source/node_modules/bcrypt-pbkdf
+source/node_modules/forever-agent
+source/node_modules/jsonify
+source/node_modules/path
+source/node_modules/tailing-stream
+source/node_modules/bindings
+source/node_modules/form-data
+source/node_modules/json-schema
+source/node_modules/path-is-absolute
+source/node_modules/tar
+source/node_modules/block-stream
+source/node_modules/fs.realpath
+source/node_modules/json-schema-traverse
+source/node_modules/performance-now
+source/node_modules/tough-cookie
+source/node_modules/boom
+source/node_modules/fstream
+source/node_modules/json-stable-stringify
+source/node_modules/process-nextick-args
+source/node_modules/tunnel-agent
+source/node_modules/brace-expansion
+source/node_modules/gauge
+source/node_modules/json-stringify-safe
+source/node_modules/punycode
+source/node_modules/tweetnacl
+source/node_modules/caseless
+source/node_modules/getpass
+source/node_modules/jsprim
+source/node_modules/python.node
+source/node_modules/util-deprecate
+source/node_modules/co
+source/node_modules/glob
+source/node_modules/mime-db
+source/node_modules/qs
+source/node_modules/uuid
+source/node_modules/code-point-at
+source/node_modules/graceful-fs
+source/node_modules/mime-types
+source/node_modules/readable-stream
+source/node_modules/verror
+source/node_modules/combined-stream
+source/node_modules/har-schema
+source/node_modules/minimatch
+source/node_modules/request
+source/node_modules/which
+source/node_modules/concat-map
+source/node_modules/har-validator
+source/node_modules/minimist
+source/node_modules/rimraf
+source/node_modules/wide-align
+source/node_modules/console-control-strings
+source/node_modules/has-unicode
+source/node_modules/mkdirp
+source/node_modules/safe-buffer
+source/node_modules/wrappy
+</property>
     <property name="authors">Luís Victor Müller Fabris</property>
-    <property name="logo_icon_name">image-missing</property>
+    <property name="logo">../../mime-type/peaksfitlogo.svg</property>
     <signal name="response" handler="closeaboutdialog" swapped="no"/>
     <child>
       <placeholder/>
@@ -77,6 +219,7 @@ SOFTWARE.</property>
     <property name="height_request">500</property>
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">PeaksFit 1.0.0</property>
+    <property name="icon">../../mime-type/peaksfitlogo.svg</property>
     <signal name="delete-event" handler="quitapp" swapped="no"/>
     <signal name="destroy" handler="quitapp" swapped="no"/>
     <signal name="destroy-event" handler="quitapp" swapped="no"/>

@@ -165,6 +165,8 @@
 								tests.clearsavecommand();
 							}catch(e){
 								messagesend.sendmessage("errorshow","Error on saving file:\n"+e.message+"");
+									console.log("Writeerr");
+								tests.clearsavecommand();
 							}
 						}
 					}
@@ -175,6 +177,8 @@
 								tests.clearsavecommand();
 							}catch(e){
 								messagesend.sendmessage("errorshow", "Error on saving file:\n"+e.message+"");
+									console.log("Writeerr");
+								tests.clearsavecommand();
 							}
 						}
 					}
@@ -184,7 +188,9 @@
 								fileio.savesinglespectrumpeaks(currentspectrabuffer,currrentpeaksbuffer,""+savecomands[0]+"/"+savecomands[1],""+savecomands[0]+"/"+savecomands[2]);
 								tests.clearsavecommand();
 							}catch(e){
-								messagesend.sendmessage("errorshow:","Error on saving file:\n"+e.message+"");
+								messagesend.sendmessage("errorshow","Error on saving files:\n"+e.message);
+									console.log("Writeerrbb");
+								tests.clearsavecommand();
 							}
 						}
 					}
@@ -311,6 +317,7 @@
 													datapeaks=polfit.getpeakssync();
 	//console.log(Number(selectedvaluesintsha1sum.split(";")[1]));
 													//console.log("polfit.getspecsync("+xdataintpeaks+" ,"+dataintupdateui[i].split("buffer:")[1].split("?")[1].split("final")[0]+" ,"+Number(selectedvaluesintsha1sum.split(";")[0])+","+Number(selectedvaluesintsha1sum.split(";")[3])+","+Number(selectedvaluesintsha1sum.split(";")[1])+");");
+													//console.log(polfit.getstat()[0]);
 													tests.updategraphspectrumvariable(xdataintpeaks,(data+"").replace("[","").replace("]","").replace(new RegExp(",", 'g'), " "),polfit.getstat()[0]);//aquisition mode is the last argument.
 													k=0;
 													intvecx=xdataintpeaks.split(" ");

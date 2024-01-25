@@ -92,6 +92,8 @@ mmap=-1
 mmapbutton=-1
 def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose,uncheck,spectrumx,readyshoww,readshowwin,idspectraread,xydatalabel,oldtexthjgh,oldvaluesentryresetscope):
 	import pygtkdatabox
+	gfsgfefdega=os.getcwd()+"/spectrareadd "+os.getcwd()+"/main.js spectrareadcurrentprocid:"+str(idspectraread.value)
+	pygtkdatabox.initmmapvar(gfsgfefdega)
 	print "load gi"
 	import gi
 	import gtk
@@ -140,6 +142,14 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 							return False
 						Gtk.Dialog.__init__(self)
 						dialogb = Gtk.FileChooserDialog("Save spectrum", self,Gtk.FileChooserAction.SAVE,(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,Gtk.STOCK_SAVE, Gtk.ResponseType.OK))
+						try:
+							dialogb.set_current_folder("/home/")
+						except:
+							pass
+						try:
+							dialogb.set_current_folder(str(os.path.expanduser("~")))
+						except:
+							pass
 						#self.add_filters(dialog)
 						hboxsavedialog = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=3)
 						f2 = Gtk.Label("Line Ending:")
@@ -226,6 +236,14 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 							return False
 						Gtk.Dialog.__init__(self)
 						dialogb = Gtk.FileChooserDialog("Save peaks", self,Gtk.FileChooserAction.SAVE,(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,Gtk.STOCK_SAVE, Gtk.ResponseType.OK))
+						try:
+							dialogb.set_current_folder("/home/")
+						except:
+							pass
+						try:
+							dialogb.set_current_folder(str(os.path.expanduser("~")))
+						except:
+							pass
 						#self.add_filters(dialog)
 						hboxsavedialog = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=3)
 						f2 = Gtk.Label("Line Ending:")
@@ -386,6 +404,14 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 						global multiplefilesavedialoginternal
 						Gtk.Dialog.__init__(self)
 						dialogb = Gtk.FileChooserDialog(""+title_save_dialog+"", self,Gtk.FileChooserAction.SELECT_FOLDER,(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,Gtk.STOCK_SAVE, Gtk.ResponseType.OK))
+						try:
+							dialogb.set_current_folder("/home/")
+						except:
+							pass
+						try:
+							dialogb.set_current_folder(str(os.path.expanduser("~")))
+						except:
+							pass
 						response = dialogb.run()
 						if response == Gtk.ResponseType.OK:
 							savecommand.value=multiplefilesavedialoginternal+"/mbghjdghdhvbsbhdbhdgfbhdhdghbvhdvadflbvdfhbhgf:::..."+dialogb.get_filename()
@@ -429,13 +455,13 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 						viewb=Gtk.Viewport()
 						viewportbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=3)
 						viewb.add(viewportbox)
-						textpart1="hgghghghghjkyhjugyhjuh\nghdfsjbfghdgfusdyus\ndgsfhujbfsigbdfis\nigerftgie\nigerftgie\nigerftgie\nigerftgie"
-						textpart2="hgghghghghjkyhjugyhjuh\nghdfsjbfghdgfusdyus\ndgsfhujbfsigbdfis\nigerftgie"
-						textsubmenupart1="aaa\nnew line"
-						textsubmenupart2="bbb\nnew line"
+						textpart1="▣ TOP MENU: \n\n  ⬩File->Save Single\n     Save current spectrum or peaks\n\n  ⬩File->Save Multiple\n     Save multiple spectra or peaks until time set or continuous button unchecked\n\n  ⬩tools-> Open peaks Monitor\n     Opens peak monitor UI\n\n\n ▣ RIGHT MENU:\n\n  ⬩Full View/Zoom IN (Click and drag on graph to select area)\n\n  ⬩LOG/ Linear scale\n\n  ⬩Dark Subtract\n\n  ⬩Light Reference\n\n  ⬩Scope \n\n  ⬩Transmitance\n\n  ⬩Absorbance\n\n\n ▣ BOTTOM MENU:\n\n ⬩Device Selection (Plugin (device type) and device number)\n    Plugin can be installed separatedely to add support to new devices\n\n ⬩Peak detection and baseline removal parameters\n"
+						textpart2="\n\n▣ STATUS BAR:\n\n  ⬩Aquisition frequency\n\n  ⬩Device information from plugin\n\n  ⬩Dropped spectra\n     Increases if software is not able to proccess spectra in this frequency due to high CPU usage\n\n  ⬩Detected Peaks\n\n  ⬩Add\n     Show peaks displacement from current position\n\n ⬩Clear\n     Reset to peak position view"
+						textsubmenupart1="▣THRESHOLD:\n  Sensitivity in height to detect as peak, smaller is more sensitive\n\n▣BASELINE:\n  Polinomial order to fit and subtract as baseline, zero means disabled, 1 first order ...\n"
+						textsubmenupart2="▣BOXCAR:\n  Noise reduction by boxcar averaging\n\n\n"
 						labelhelppart1= Gtk.Label(textpart1)
 						labelhelppart2= Gtk.Label(textpart2)
-						labelhelppart1button=Gtk.Button(label="fdgfg")
+						labelhelppart1button=Gtk.Button(label="See Baseline Subtraction algorithm help")
 						labelhelppart1.set_halign(Gtk.Align.START)
 						labelhelppart2.set_halign(Gtk.Align.START)
 						labelhelppart1button.set_halign(Gtk.Align.START)
@@ -958,10 +984,10 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 						viewb=Gtk.Viewport()
 						viewportbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=3)
 						viewb.add(viewportbox)
-						textpart1="Program developed by: Luís Victor Müller Fabris\nMIT License\n\nCopyright (c) 2018 Luís Victor Müller Fabris\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."
+						textpart1="Program developed by: Luís Victor Müller Fabris\nMIT License\n\nCopyright (c) 2023 Luís Victor Müller Fabris\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."
 						textpart2=""
-						textsubmenupart1="aaa\nnew line"
-						textsubmenupart2="bbb\nnew line"
+						textsubmenupart1="GtkDataBox\nGNU LESSER GENERAL PUBLIC LICENSE Version 2.1, February 1999\n  source/bin_modules/pygtkdatabox/gtkdatabox/COPYING \n\nFree FFT and convolution (C) Copyright (c) 2019 Project Nayuki. (MIT License)\n  source/bin_modules/fft \n\nFastMmapMQ\nCopyright (c) 2022 Luís Victor Muller Fabris Apache License  Version 2.0, January 2004"
+						textsubmenupart2="\nNodeJS\n  SpectraRead/source/node-v4.4.2/LICENSE\n  SpectraRead/source/node-v4.4.2\n\nPython 2.7\n source/Python-2.7.9/LICENSE\n\npycairo\n  source/pycairo\n\nPyGObject-3.27.1\n  source/PyGObject-3.27.1\n\nsetuptools\n  source/setuptools-0.9.8\n\npyserial-3.4\n sources/sources/pyserial-3.4.tar.gz\n\nsource/node_modules/abbrev\nsource/node_modules/core-util-is\nsource/node_modules/hawk\nsource/node_modules/nan\nsource/node_modules/safer-buffer\nsource/node_modules/ajv\nsource/node_modules/cryptiles\nsource/node_modules/hoek\nsource/node_modules/node-gyp\nsource/node_modules/semver\nsource/node_modules/ansi-regex\nsource/node_modules/dashdash\nsource/node_modules/http-signature\nsource/node_modules/nopt\nsource/node_modules/set-blocking\nsource/node_modules/aproba\nsource/node_modules/delayed-stream\nsource/node_modules/inflight\nsource/node_modules/npmlog\nsource/node_modules/sha1\nsource/node_modules/are-we-there-yet\nsource/node_modules/delegates\nsource/node_modules/inherits\nsource/node_modules/number-is-nan\nsource/node_modules/signal-exit\nsource/node_modules/asn1\nsource/node_modules/dotenv\nsource/node_modules/isarray\nsource/node_modules/oauth-sign\nsource/node_modules/sntp\nsource/node_modules/assert-plus\nsource/node_modules/ecc-jsbn\nsource/node_modules/isexe\nsource/node_modules/object-assign\nsource/node_modules/sshpk\nsource/node_modules/asynckit\nsource/node_modules/extend\nsource/node_modules/is-fullwidth-code-point\nsource/node_modules/once\nsource/node_modules/string_decoder\nsource/node_modules/aws4\nsource/node_modules/extsprintf\nsource/node_modules/isstream\nsource/node_modules/osenv\nsource/node_modules/stringstream\nsource/node_modules/aws-sign2\nsource/node_modules/fast-deep-equal\nsource/node_modules/is-typedarray\nsource/node_modules/os-homedir\nsource/node_modules/string-width\nsource/node_modules/balanced-match\nsource/node_modules/fast-json-stable-stringify\nsource/node_modules/jsbn\nsource/node_modules/os-tmpdir\nsource/node_modules/strip-ansi\nsource/node_modules/bcrypt-pbkdf\nsource/node_modules/forever-agent\nsource/node_modules/jsonify\nsource/node_modules/path\nsource/node_modules/tailing-stream\nsource/node_modules/bindings\nsource/node_modules/form-data\nsource/node_modules/json-schema\nsource/node_modules/path-is-absolute\nsource/node_modules/tar\nsource/node_modules/block-stream\nsource/node_modules/fs.realpath\nsource/node_modules/json-schema-traverse\nsource/node_modules/performance-now\nsource/node_modules/tough-cookie\nsource/node_modules/boom\nsource/node_modules/fstream\nsource/node_modules/json-stable-stringify\nsource/node_modules/process-nextick-args\nsource/node_modules/tunnel-agent\nsource/node_modules/brace-expansion\nsource/node_modules/gauge\nsource/node_modules/json-stringify-safe\nsource/node_modules/punycode\nsource/node_modules/tweetnacl\nsource/node_modules/caseless\nsource/node_modules/getpass\nsource/node_modules/jsprim\nsource/node_modules/python.node\nsource/node_modules/util-deprecate\nsource/node_modules/co\nsource/node_modules/glob\nsource/node_modules/mime-db\nsource/node_modules/qs\nsource/node_modules/uuid\nsource/node_modules/code-point-at\nsource/node_modules/graceful-fs\nsource/node_modules/mime-types\nsource/node_modules/readable-stream\nsource/node_modules/verror\nsource/node_modules/combined-stream\nsource/node_modules/har-schema\nsource/node_modules/minimatch\nsource/node_modules/request\nsource/node_modules/which\nsource/node_modules/concat-map\nsource/node_modules/har-validator\nsource/node_modules/minimist\nsource/node_modules/rimraf\nsource/node_modules/wide-align\nsource/node_modules/console-control-strings\nsource/node_modules/has-unicode\nsource/node_modules/mkdirp\nsource/node_modules/safe-buffer\nsource/node_modules/wrappy"
 						labelhelppart1= Gtk.Label(textpart1)
 						labelhelppart2= Gtk.Label(textpart2)
 						labelhelppart1button=Gtk.Button(label="Show Licenses of libraries distributed with this software")
@@ -1017,7 +1043,12 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 				dialog = Dialog()
 				dialog.run()
 			def openpeaksfit(fsgdfghghgfdgfgfd):
-				subprocess.call([os.getcwd()+"/peaksfit/peaks"])
+				class peaksthread(threading.Thread):
+					def run(self):
+						subprocess.call([os.getcwd()+"/../peaks"])
+				threadpeaks=peaksthread()
+				threadpeaks.daemon=True
+				threadpeaks.start()
 			global returna
 			global currentdevice
 			global removedselectitem
@@ -2278,12 +2309,18 @@ p2=Process(target=mainui, args=(ui_values,gtkcolorsfromnode,spectrum,savecommand
 globalpeaks=""
 fgje=-1
 fgjeb=-1
+alreadyloaded=-1
 def mainload(processid):
+	global alreadyloaded
 	global mmap
 	global startedp2final
 	global mmapbutton
 	global fgje
 	global fgjeb
+	if(alreadyloaded==1):
+		print("Error on mainui.py! Process already loaded, but mainload() has been called again. Is there another process conected to the main-uiproc.py fastmmapmq?")
+		return
+	alreadyloaded=1
 	fgje=fastmmap.createmmap("id+"+str(processid),"rwx------")
 	fgjeb=fastmmap.createmmap("idb+"+str(processid),"rwx------")
 	mmap=fastmmap.connectmmap(os.getcwd()+"/spectrareads "+str(processid),""+str(processid))
