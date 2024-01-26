@@ -60,13 +60,19 @@ ___
 It is recomended to install from apt repository as above. To build from source:
 
       git clone https://git.luisvmf.com/Namespace
-      Get demo containner: https://github.com/luisvmf/Namespace/releases/tag/2
+      Get demo containner: https://github.com/luisvmf/Namespace/releases/tag/2 and extract
+      cd Runtime
+      git clone https://git.luisvmf.com/SpectraRead
+      cd ..
       ./nstest Runtime/ 1 1 1 1 /bin/bash
-      Inside containner:
+      Now inside containner:
           mkdir $HOME
-          git clone https://git.luisvmf.com/SpectraRead
+	  cd SpectraRead
           make
-        Then get plugins and build, inside source/spectrometer_modules folder
+      test:
+        ./spectraread
+      Now spectraread should open, but there are no devices to select on device combobox
+      Clone plugins from Spectraread-Plugins repository and build (if required), inside source/spectrometer_modules folder.
 
 ### TODO:
 - Improve Build from source instructions
