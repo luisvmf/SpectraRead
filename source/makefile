@@ -7,6 +7,5 @@ all: $(OBJS)
 	cp --recursive pycairo Python/include/pycairo
 	./buildpyserial.sh
 	cd bin_modules&&make
-	spectrometer_modules/imon256-v6/build-python.sh
 clean:
 	echo "Nothing to do."
