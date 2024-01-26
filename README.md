@@ -61,6 +61,10 @@ ___
 It is recomended to install from apt repository as above. To build from source:
 
       git clone https://git.luisvmf.com/Namespace
+      cd Namespace
+      make
+      cp nstest ../nstest
+      cd ..
       Get demo containner: https://github.com/luisvmf/Namespace/releases/tag/2 and extract
       cd Runtime
       git clone https://git.luisvmf.com/SpectraRead
