@@ -1,4 +1,5 @@
 all: $(OBJS)
+	mkdir source/spectrometer_modules
 	cd spectraread_splash_screenfiles&&make
 	cd peaksmonitor_splash_screenfiles&&make
 	cp spectraread_splash_screenfiles/spectraread spectraread
