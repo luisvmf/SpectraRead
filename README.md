@@ -1,5 +1,6 @@
 # ***SpectraRead***
 ![alt tag](https://img.shields.io/badge/build-pass-green.svg)
+
 SpectraRead is a program for data acquisition of devices that generate XY data, ex spectrometers, osciloscopes... It has peak detection and baseline removal algorithms. It can be used for high speed acquisitions and support for devices can be added easily with plugins written in Python (no need to change spectraread code, just copy plugin to spectrometer_modules folder).
 
 The GUI uses GTK3, support is currently just for Linux.
