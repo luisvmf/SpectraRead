@@ -27,7 +27,7 @@ Current plugins:
 ___
 # ***Installing:***
 
-## Distributions with apt (Debian, Ubuntu, Linux Mint):
+## Distributions with apt (Debian, Ubuntu, Linux Mint), for tested distributions versions, check https://packages.luisvmf.com/versions.html:
 ### Add repository:
 
 	sudo apt-get install curl gpg
