@@ -68,7 +68,7 @@ It is recomended to install from apt repository as above. To build from source:
       make
       cp nstest ../nstest
       cd ..
-      Get demo containner: https://github.com/luisvmf/Namespace/releases/tag/2 and extract
+      Get demo containner: https://github.com/luisvmf/Namespace/releases/tag/2 file Runtime-build.tar and extract
       cd Runtime
       git clone https://git.luisvmf.com/SpectraRead
       cd ..
@@ -81,10 +81,9 @@ It is recomended to install from apt repository as above. To build from source:
         ./spectraread
       Now spectraread should open, but there are no devices to select on device combobox
       Clone plugins from Spectraread-Plugins repository and build (if required), inside source/spectrometer_modules folder.
-
+      Folder debfile contains directory structure for creating .deb package. It requires package luisvmf.com-runtimelibs which puts containts of https://github.com/luisvmf/Namespace/releases/tag/2 file 
+Runtime-run.tar on /usr/lib/luisvmf.com-Runtimelibs (/usr/lib/luisvmf.com-Runtimelibs/Runtime).
 ### TODO:
-- Improve Build from source instructions
-- Explain how to create containner that mounts home folder ... as version from apt repository, for now see deb package and containner_utils folder on this git repo.
 - Plugins development docs
 - Peaks Gui
 - Not Working if path name of install folder is too big, probabily because of fastmmapmq.
