@@ -1113,6 +1113,8 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 						firstloadmodule=firstloadmodulec
 					internalcounterloadedmodulesincombobox=internalcounterloadedmodulesincombobox+1
 			Gtk.Window.__init__(self,title="SpectraRead v1.5.9")
+			from gi.repository import GLib
+			GLib.set_prgname("luisvmfcom-spectraread")
 			self.set_size_request(950, 550)
 			self.set_default_icon_from_file("resources/icon.svg")
 			hbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)

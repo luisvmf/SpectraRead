@@ -1,9 +1,7 @@
 [Desktop Entry]
 Name=SpectraRead
-Exec=/usr/lib/luisvmf.com-spectraread/SpectraRead.sh %U
 MimeType=application/spectrareadluisvmfcom
 Icon=application-spectrareadluisvmfcomapp
 Terminal=false
 Type=Application
-Comment=Measure Spectra
-Categories=Utility;Education;
+NoDisplay=1

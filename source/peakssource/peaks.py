@@ -58,6 +58,8 @@ def initgui(windowclose,datavar,datavaronlyone,currentshowlength):
 	time.sleep(0.1)
 	fastmmap.write(mmap,",05load gi repository")
 	from gi.repository import Gtk, Gdk, GObject ,Pango, Gio
+	from gi.repository import GLib
+	GLib.set_prgname("luisvmfcom-spectraread")
 	fastmmap.write(mmap,",10load plot")
 	#import matplotlib
 	#import matplotlib.pyplot as plt
