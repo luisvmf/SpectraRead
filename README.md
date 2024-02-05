@@ -30,6 +30,7 @@ ___
 ## Distributions with apt (Debian, Ubuntu, Linux Mint):
 ### Add repository:
 
+	sudo apt-get install curl gpg
 	echo "deb http://packages.luisvmf.com/ stable main" | sudo tee /etc/apt/sources.list.d/luisvmf.com.list
 	curl -fsSL https://luisvmf.com/pgp-key.public | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/luisvmfcom.gpg > /dev/null
 	sudo apt-get update
@@ -39,9 +40,11 @@ ___
 
 ### Install required plugins:
 
-    sudo apt-get install luisvmf.com-spectraread_demoplugin
-    sudo apt-get install luisvmf.com-spectraread_imonv6_256 
+    sudo apt-get install luisvmf.com-spectraread-demoplugin
+    sudo apt-get install luisvmf.com-spectraread-imonv6plugin
 Now spectraread should be avaliable on menu.
+
+___
 
 ### Requirements to run spectraread (***should be enabled by default on recent distributions***):
 
