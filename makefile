@@ -16,18 +16,17 @@ all: $(OBJS)
 	mkdir debfile/usr/lib/
 	cp -R aptpackagecontainerlauncher debfile/usr/lib/luisvmf.com-spectraread
 	mkdir debfile/usr/lib/luisvmf.com-spectraread/SpectraRead
-	cp -R mime-type debfile/usr/lib/luisvmf.com-spectraread/mime-type
-	cp -R peaksmonitor_splash_screenfiles debfile/usr/lib/luisvmf.com-spectraread/peaksmonitor_splash_screenfiles
-	cp -R res debfile/usr/lib/luisvmf.com-spectraread/res
-	cp -R Screenshots debfile/usr/lib/luisvmf.com-spectraread/Screenshots
-	cp -R source debfile/usr/lib/luisvmf.com-spectraread/source
-	cp -R spectraread_splash_screenfiles debfile/usr/lib/luisvmf.com-spectraread/spectraread_splash_screenfiles
-	cp -R spectraread.conf debfile/usr/lib/luisvmf.com-spectraread/spectraread.conf
-	cp -R peaks debfile/usr/lib/luisvmf.com-spectraread/peaks
-	cp -R peakss debfile/usr/lib/luisvmf.com-spectraread/peakss
-	cp -R spectraread debfile/usr/lib/luisvmf.com-spectraread/spectraread
-	cp -R spectrareads debfile/usr/lib/luisvmf.com-spectraread/spectrareads
-	cp -R README.md debfile/usr/lib/luisvmf.com-spectraread/README.md
+	cp -R mime-type debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/mime-type
+	cp -R peaksmonitor_splash_screenfiles debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/peaksmonitor_splash_screenfiles
+	cp -R res debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/res
+	cp -R Screenshots debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/Screenshots
+	cp -R source debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/source
+	cp -R spectraread_splash_screenfiles debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/spectraread_splash_screenfiles
+	cp -R spectraread.conf debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/spectraread.conf
+	cp -R peaks debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/peaks
+	cp -R spectraread debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/spectraread
+	cp -R spectrareads debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/spectrareads
+	cp -R README.md debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/README.md
 	cp -R package-controlfiles debfile/DEBIAN
 clean:
 	echo "Nothing to do."
