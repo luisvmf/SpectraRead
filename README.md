@@ -81,8 +81,8 @@ It is recomended to install from apt repository as above. To build from source:
         ./spectraread
       Now spectraread should open, but there are no devices to select on device combobox
       Clone plugins from Spectraread-Plugins repository and build (if required), inside source/spectrometer_modules folder.
-      Folder debfile contains directory structure for creating .deb package. It requires package luisvmf.com-runtimelibs which puts containts of https://github.com/luisvmf/Namespace/releases/tag/2 file 
-Runtime-run.tar on /usr/lib/luisvmf.com-Runtimelibs (/usr/lib/luisvmf.com-Runtimelibs/Runtime).
+      Folder debfile contains directory structure for creating .deb package. It requires package luisvmf.com-runtimelibs which puts containts of https://github.com/luisvmf/Namespace/releases/tag/2 file Runtime-run.tar on /usr/lib/luisvmf.com-Runtimelibs (/usr/lib/luisvmf.com-Runtimelibs/Runtime).
+
 ### TODO:
 - Plugins development docs
 - Peaks Gui
