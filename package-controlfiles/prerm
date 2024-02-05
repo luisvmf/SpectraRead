@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "prerm called"
+bash -c "/usr/lib/luisvmf.com-spectraread/SpectraRead/mime-type/uninstall.sh"
