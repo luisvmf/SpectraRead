@@ -1,7 +1,7 @@
 # ***SpectraRead***
 ![alt tag](https://img.shields.io/badge/build-pass-green.svg)
 
-SpectraRead is a program for data acquisition of devices that generate XY data, ex spectrometers, osciloscopes... It has peak detection and baseline removal algorithms. It can be used for high speed acquisitions and support for devices can be added easily with plugins written in Python (no need to change spectraread code, just copy plugin to spectrometer_modules folder).
+SpectraRead is a program for data acquisition of devices that generate XY data, ex spectrometers, oscilloscopes... It has peak detection and baseline removal algorithms. It can be used for high speed acquisitions and support for devices can be added easily with plugins written in Python (no need to change spectraread code, just copy plugin to spectrometer_modules folder).
 
 The GUI uses GTK3, support is currently just for Linux.
 ![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/main.png)
@@ -12,7 +12,7 @@ Features:
 - Boxcar
 - Peak position fit
 - Save single/multiple spectra/peaks position data
-- Paralel processing/ very fast
+- Parallel processing/ very fast
 - Linear/ Log scale for viewing
 - Baseline subtract/ Scope/ Absorbance/ Transmitance mode
 - Zoom/ autoscale
@@ -42,7 +42,7 @@ ___
 
     sudo apt-get install luisvmf.com-spectraread-demoplugin
     sudo apt-get install luisvmf.com-spectraread-imonv6plugin
-Now spectraread should be avaliable on menu.
+Now spectraread should be available on menu.
 
 ___
 
@@ -61,7 +61,7 @@ ___
 ___
 
 ### ***Building from source***:
-It is recomended to install from apt repository as above. To build from source:
+It is recommended to install from apt repository as above. To build from source:
 
       git clone https://git.luisvmf.com/Namespace
       cd Namespace
@@ -73,7 +73,7 @@ It is recomended to install from apt repository as above. To build from source:
       git clone https://git.luisvmf.com/SpectraRead
       cd ..
       ./nstest Runtime/ 1 1 1 1 /bin/bash
-      Now inside containner:
+      Now inside container:
           mkdir $HOME
 	  cd SpectraRead
           make
@@ -81,12 +81,12 @@ It is recomended to install from apt repository as above. To build from source:
         ./spectraread
       Now spectraread should open, but there are no devices to select on device combobox
       Clone plugins from Spectraread-Plugins repository and build (if required), inside source/spectrometer_modules folder.
-      Folder debfile contains directory structure for creating .deb package. It requires package luisvmf.com-runtimelibs which puts containts of https://github.com/luisvmf/Namespace/releases/tag/2 file Runtime-run.tar on /usr/lib/luisvmf.com-Runtimelibs (/usr/lib/luisvmf.com-Runtimelibs/Runtime).
+      Folder debfile contains directory structure for creating .deb package. It requires package luisvmf.com-runtimelibs which puts contents of https://github.com/luisvmf/Namespace/releases/tag/2 file Runtime-run.tar on /usr/lib/luisvmf.com-Runtimelibs (/usr/lib/luisvmf.com-Runtimelibs/Runtime).
 
 ### TODO:
 - Plugins development docs
 - Peaks Gui
-- Not Working if path name of install folder is too big, probabily because of fastmmapmq.
+- Not Working if path name of install folder is too big, probably because of fastmmapmq.
 - Generic plugin
 
 
