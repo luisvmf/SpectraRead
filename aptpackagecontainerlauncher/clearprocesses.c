@@ -28,6 +28,7 @@ int main(void){
 	if(mapid==-1){
 		printf("Spectraread not running\n");
 		system("pkill -f -9 /usr/lib/luisvmf.com-spectraread/nstest");
+		system("pkill -f -9 /usr/lib/luisvmf.com-qimon/nstest");
 		return 0;
 	}
 	printf("Spectraread already running\n");
