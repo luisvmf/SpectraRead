@@ -14,6 +14,7 @@ export HOME=$H
 export DISPLAY=$D
 export PATH=$P
 cd /usr/lib/luisvmf.com-spectraread
+./clearprocesses
 echo "Try running Spectraread in existing namespace"
 ./server
 export PATH=/usr/kerberos/bin:/bin:/usr/bin:/usr/bin/X11:/usr/local/bin:$PATH

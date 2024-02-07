@@ -142,6 +142,7 @@ char *destckktbaaa=malloc(strlen(args->local)+bufferaddlength);
     char *newargv[] = { args->command, NULL };
     //execv(args->command, newargv);
 	system(args->command);
+	pause(); //Keep running for programs that used nsenter.
 }
 
 
