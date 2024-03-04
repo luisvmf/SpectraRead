@@ -544,7 +544,7 @@ static PyObject *updategraph(PyObject*self,PyObject*args){
 			break;
 		double foo=PyFloat_AsDouble(next);
 		Py_DECREF(next);// Prevent memory leak.
-		if(roundf(10*X_old[i])/10.0!=roundf(10*foo)/10.0){
+		if(roundf(10*X[i])/10.0!=roundf(10*foo)/10.0){// was if(roundf(10*X_old[i])/10.0!=roundf(10*foo)/10.0){, changed to fix graph plot error when number of points increases, decreases and then increses again.
 			X[i]=foo;
 			X_old[i]=foo;
 			hasupdated=1;
