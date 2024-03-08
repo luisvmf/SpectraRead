@@ -21,7 +21,7 @@ Features:
 - Peak position monitor
 
 Current plugins:
-- Generic (Arduino data acquisition, there is a demo osciloscope)
+- ArduinoOsciloscope (Arduino data acquisition demo - osciloscope, check https://git.luisvmf.com/Spectraread-Plugins/ArduinoOsciloscope/firmware for arduino code)
 - Demo (Just generates fake data for test);
 - imon256-v6
 ___
@@ -42,6 +42,7 @@ ___
 
     sudo apt-get install luisvmf.com-spectraread-demoplugin
     sudo apt-get install luisvmf.com-spectraread-imonv6plugin
+    sudo apt-get install luisvmf.com-spectraread-arduinoosciloscope
 Now spectraread should be available on menu.
 
 ___
