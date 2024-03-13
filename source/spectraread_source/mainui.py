@@ -1134,6 +1134,7 @@ def mainui(ui_values,gtkcolorsfromnode,spectrum,savecommand,infotext,windowclose
 			submenubar = Gtk.Menu()
 			submenubartools = Gtk.Menu()
 			menuitembtools = Gtk.ImageMenuItem(Gtk.STOCK_OPEN,label='Open peaks monitor')
+			menuitembtools.set_sensitive(False)
 			menuitemb = Gtk.ImageMenuItem(Gtk.STOCK_SAVE,label='Save single')
 			menuitemb.set_image(Gtk.Image.new_from_icon_name("document-save-as",Gtk.IconSize.BUTTON))
 			menuitembtools.set_image(Gtk.Image.new_from_icon_name("document-open",Gtk.IconSize.BUTTON))
