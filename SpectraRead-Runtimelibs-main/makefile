@@ -9,6 +9,7 @@ x86_64:
 	cp fixaptcontainer RuntimeX86/fix.sh
 	chmod ugo+x RuntimeX86/fix.sh
 	./nstest RuntimeX86/ 0 0 0 1 "/bin/bash -c '/fix.sh'"
+	tar -xvf proot-src.tar
 	 cp -R proot-src/ RuntimeX86/proot
 	./nstest RuntimeX86/ 0 0 0 0 "/bin/bash -c 'cd proot&&make'"
 	cp RuntimeX86/proot/proot proot
