@@ -12,3 +12,6 @@ all:
 	cp SpectraRead-Runtimelibs-main/loader-m32.elf build/debfile/usr/lib/luisvmf.com-spectraread/loader-m32.elf
 	cp SpectraRead-Runtimelibs-main/loader.elf build/debfile/usr/lib/luisvmf.com-spectraread/loader.elf
 	cp spectraread.conf  build/debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/spectraread.conf
+	cp build/debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/source/spectraread build/debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/spectraread
+	cp build/debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/source/spectrareads build/debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/spectrareads
+	cp build/debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/source/peaks build/debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/peaks
