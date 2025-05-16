@@ -19,7 +19,6 @@ all: $(OBJS)
 	cp -R mime-type debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/mime-type
 	cp -R peaksmonitor_splash_screenfiles debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/peaksmonitor_splash_screenfiles
 	cp -R res debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/res
-	cp -R Screenshots debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/Screenshots
 	cp -R source debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/source
 	cp -R spectraread_splash_screenfiles debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/spectraread_splash_screenfiles
 	cp -R spectraread.conf debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/spectraread.conf

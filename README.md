@@ -45,41 +45,12 @@ ___
     sudo apt-get install luisvmf.com-spectraread-arduinoosciloscope
 Now spectraread should be available on menu.
 
-___
 
-### Requirements to run spectraread (***should be enabled by default on recent distributions***):
-
-        procfs mounted with support for /proc/pid/fd
-        x86_64 Linux Kernel with user namespace support:
-            CONFIG_USER_NS
-            One of the folowing (depending on distribution):
-                 /proc/sys/kernel/userns_restrict is zero
-                 sysctl user.max_user_namespaces larger than 10
-                 sudo sysctl -w kernel.unprivileged_userns_clone=1
-        /dev/shm mounted
-
-
-___
 
 ### ***Building from source***:
-It is recommended to install from apt repository as above. To build from source:
-
-      git clone https://git.luisvmf.com/SpectraRead-Runtimelibs
-      cd SpectraRead-Runtimelibs
-      make
-      cd RuntimeX86
-      git clone https://git.luisvmf.com/SpectraRead
-      cd ..
-      ./nstest Runtime/ 0 0 0 0 /bin/bash
-      Now inside container:
-          mkdir $HOME
-          cd SpectraRead
-          make
-      test:
-        ./spectraread
-      Now spectraread should open, but there are no devices to select on device combobox
-      Clone plugins from Spectraread-Plugins repository and build (if required), inside source/spectrometer_modules folder.
-      Folder debfile contains directory structure for creating .deb package. It requires package luisvmf.com-runtimelibs which puts contents of https://github.com/luisvmf/Namespace/releases/tag/2 file Runtime-run.tar on /usr/lib/luisvmf.com-Runtimelibs (/usr/lib/luisvmf.com-Runtimelibs/Runtime).
+	make
+	This downloads a ubuntu docker container to use dependencies from, no docker daemon is required, container is downloaded with a script (SpectraRead-Runtimelibs-main/util/download-frozen-image-v2.sh).
+	After build is finished directory build is created. Launch Spectraread with script build/debfile/usr/lib/luisvmf.com-spectraread/SpectraRead.sh
 
 ### TODO:
 - Plugins development docs

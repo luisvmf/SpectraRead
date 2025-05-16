@@ -1,5 +1,5 @@
 Package: luisvmf.com-spectraread
-Version: 1.6.5
+Version: 1.6.7
 Maintainer: luisvmf <luis@luisvmf.com>
 Depends: libc6, luisvmf.com-runtimelibs
 Architecture: amd64

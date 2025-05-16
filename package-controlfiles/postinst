@@ -1,7 +1,3 @@
 #!/bin/bash
 echo "postinst called"
-groupadd -f luisvmfcomsda
-chown root:luisvmfcomsda /usr/lib/luisvmf.com-spectraread/run-suid
-chmod ug+rs /usr/lib/luisvmf.com-spectraread/run-suid
-chmod go-w /usr/lib/luisvmf.com-spectraread/run-suid
 bash -c "/usr/lib/luisvmf.com-spectraread/SpectraRead/mime-type/install.sh"
