@@ -3,7 +3,7 @@ all:
 	cp -R package-controlfiles src/package-controlfiles
 	cd SpectraRead-Runtimelibs-main&&make
 	cp -R src SpectraRead-Runtimelibs-main/RuntimeX86/src
-	cd SpectraRead-Runtimelibs-main&&./nstest RuntimeX86/ 1 0 0 0 "/bin/bash -c 'cd /src&&mkdir $HOME&&make'"
+	cd SpectraRead-Runtimelibs-main&&./nstest RuntimeX86/ 1 0 0 0 "/bin/bash -c 'cd /src&&mkdir $$HOME&&make'"
 	mkdir build
 	mv SpectraRead-Runtimelibs-main/RuntimeX86/src/debfile build/debfile
 	rm -rf SpectraRead-Runtimelibs-main/RuntimeX86/src/
