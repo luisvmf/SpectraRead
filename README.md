@@ -64,19 +64,16 @@ ___
 ### ***Building from source***:
 It is recommended to install from apt repository as above. To build from source:
 
-      git clone https://git.luisvmf.com/Namespace
-      cd Namespace
+      git clone https://git.luisvmf.com/SpectraRead-Runtimelibs
+      cd SpectraRead-Runtimelibs
       make
-      cp nstest ../nstest
-      cd ..
-      Get demo containner: https://github.com/luisvmf/Namespace/releases/tag/2 file Runtime-build.tar and extract
-      cd Runtime
+      cd RuntimeX86
       git clone https://git.luisvmf.com/SpectraRead
       cd ..
-      ./nstest Runtime/ 1 1 1 1 /bin/bash
+      ./nstest Runtime/ 0 0 0 0 /bin/bash
       Now inside container:
           mkdir $HOME
-	  cd SpectraRead
+          cd SpectraRead
           make
       test:
         ./spectraread

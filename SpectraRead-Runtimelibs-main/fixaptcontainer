@@ -1,0 +1,17 @@
+apt-config dump | grep Sandbox::root
+cat <<EOF > /etc/apt/apt.conf.d/sandbox-disable
+APT::Sandbox::User "root";
+EOF
+cd /etc
+echo "nameserver 127.0.0.53" >resolv.conf
+echo "root:x:0:0:root:/root:/bin/bash" >/etc/passwd
+export DEBIAN_FRONTEND=noninteractive
+apt-get update
+apt-get install -yq  gcc
+apt-get install -yq  gcc g++ make
+apt-get install -yq  gcc g++ make build-essential libgtk-3-0 libgtk-3-dev
+apt-get install -yq  gcc g++ make build-essential libgtk-3-0 libgtk-3-dev gobject-introspection libgirepository-1.0-1 libgirepository1.0-dev autoconf automake libtool pcmanfm
+apt install -yq -f
+apt-get install -yq python
+apt-get install -yq  python2.7
+apt-get install -yq  git
