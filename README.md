@@ -49,22 +49,6 @@ ___
     sudo apt-get install luisvmf.com-spectraread-arduinoosciloscope
 Now spectraread should be available on menu.
 
-
-___
-### ***Building from source***:
-	make
-	This downloads a ubuntu docker container to use dependencies from, no docker daemon is required, container is downloaded with a script (SpectraRead-Runtimelibs-main/util/download-frozen-image-v2.sh).
-	After build is finished directory build is created. Launch Spectraread with script build/debfile/usr/lib/luisvmf.com-spectraread/SpectraRead.sh
-	Plugins must be instaled inside build/debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/source/spectrometer_modules so that program is able to aquire data, check Spectraread-plugins git repo.
-	After Compilation and plugin install run ./buildappimage.sh to build AppImage inside build/debfile/usr/lib/.
-___
-### TODO:
-- Plugins development docs
-- Peaks Gui only updates data sources on start
-- Not Working if path name of install folder is too big, probably because of fastmmapmq.
-- Generic plugin
-
-
 ![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/main.png)
 
 ![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/log-scale.png)
@@ -82,3 +66,19 @@ ___
 
 
 ![alt tag](https://raw.githubusercontent.com/luisvmf/SpectraRead/master/Screenshots/save3.png)
+
+___
+### ***Building from source***:
+	make
+	Building requires user namespace support. makefile downloads a ubuntu docker container to use dependencies from, no docker daemon is required, container is downloaded with a script (SpectraRead-Runtimelibs-main/util/download-frozen-image-v2.sh).
+	After build is finished directory build is created. Launch Spectraread with script build/debfile/usr/lib/luisvmf.com-spectraread/SpectraRead.sh
+	Plugins must be instaled inside build/debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/source/spectrometer_modules so that program is able to aquire data, check Spectraread-plugins git repo.
+	After Compilation and plugin install run ./buildappimage.sh to build AppImage inside build/debfile/usr/lib/.
+___
+### TODO:
+- Plugins development docs
+- Peaks Gui only updates data sources on start
+- Not Working if path name of install folder is too big, probably because of fastmmapmq.
+- Generic plugin
+
+
