@@ -50,14 +50,14 @@ ___
 Now spectraread should be available on menu.
 
 
-
+___
 ### ***Building from source***:
 	make
 	This downloads a ubuntu docker container to use dependencies from, no docker daemon is required, container is downloaded with a script (SpectraRead-Runtimelibs-main/util/download-frozen-image-v2.sh).
 	After build is finished directory build is created. Launch Spectraread with script build/debfile/usr/lib/luisvmf.com-spectraread/SpectraRead.sh
 	Plugins must be instaled inside build/debfile/usr/lib/luisvmf.com-spectraread/SpectraRead/source/spectrometer_modules so that program is able to aquire data, check Spectraread-plugins git repo.
 	After Compilation and plugin install run ./buildappimage.sh to build AppImage inside build/debfile/usr/lib/.
-
+___
 ### TODO:
 - Plugins development docs
 - Peaks Gui only updates data sources on start
