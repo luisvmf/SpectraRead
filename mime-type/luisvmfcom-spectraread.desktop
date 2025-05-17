@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=SpectraRead
-Exec=/usr/lib/luisvmf.com-spectraread/SpectraRead.sh %U
+Exec=/bin/bash -c "/usr/lib/luisvmf.com-spectraread/SpectraRead.sh"
 MimeType=application/spectrareadluisvmfcom
 Icon=application-spectrareadluisvmfcomapp
 Terminal=false
