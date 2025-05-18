@@ -28,7 +28,7 @@ ___
 # ***Installing:***
 
 ## Using Appimage:
-	Download SpectraRead.AppImage make executable and run.
+	Download SpectraRead.AppImage (https://github.com/luisvmf/SpectraRead/releases/download/Release1_5_9/SpectraReadX86_64.appimage) make executable and run.
 	You might need to install udev rules manually so that program can access devices, check Spectraread-plugins git repo  https://git.luisvmf.com/Spectraread-Plugins/ for extra information and Arduino firmware for ArduinoOsciloscope plugin.
 
 ## Distributions with apt (Debian, Ubuntu, Linux Mint), for tested distributions versions, check [here](https://packages.luisvmf.com/versions.html):
